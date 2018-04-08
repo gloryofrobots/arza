@@ -70,9 +70,9 @@ class Stack:
         self.__pointer = jit.promote(self.__pointer)
 
     @jit.unroll_safe
-    def pop_n_tuple(self, n):
+    def pop_n_array(self, n):
         if n < 1:
-            return space.newunit()
+            return space.newemptyarray()
 
         result = []
         i = n
@@ -81,30 +81,5 @@ class Stack:
             e = self.pop()
             result = [e] + result
 
-        return space.newtuple(result)
+        return space.newarray(result)
 
-    @jit.unroll_safe
-    def get_n_tuple(self, n):
-        if n < 1:
-            return space.newunit()
-
-        result = []
-        for i in range(n):
-            e = self.get(self.top_index() - i)
-            result = [e] + result
-
-        return space.newtuple(result)
-
-    @jit.unroll_safe
-    def pop_n_list(self, n):
-        lst = plist.empty()
-        if n < 1:
-            return lst
-
-        i = n
-        while i > 0:
-            i -= 1
-            value = self.pop()
-            lst = plist.cons(value, lst)
-
-        return lst

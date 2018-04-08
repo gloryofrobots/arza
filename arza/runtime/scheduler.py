@@ -128,7 +128,7 @@ class Scheduler:
         self.loop(main)
 
     def loop(self, main_func):
-        self.root.activate(main_func, space.newunit())
+        self.root.activate(main_func, space.newemptyarray())
         while True:
             if self.is_unactive():
                 return

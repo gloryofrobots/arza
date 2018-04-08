@@ -67,7 +67,7 @@ def load_class(process, name):
 def __evaluate_class_env(process, name, filename):
     from arza.builtins.lang import compile_module
     env = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
-                             space.newtuple([space.newstring_s(filename), name, process.classes.prelude]))
+                             space.newarray([space.newstring_s(filename), name, process.classes.prelude]))
 
     if process.is_terminated():
         error.signal(env)

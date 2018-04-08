@@ -140,7 +140,7 @@ def create_environment(process, source, parent_env):
         return source.env
 
     compile_func = W_EnvCompileFunction(source.name, source.bytecode, parent_env)
-    process.subprocess(compile_func, space.newunit())
+    process.subprocess(compile_func, space.newemptyarray())
 
     source.env = compile_func.env
     return source.env
@@ -218,7 +218,7 @@ class W_Env(W_Root):
         return self.exported_names
 
     def exported_values(self):
-        data = space.new_empty_assoc_array()
+        data = space.newemptytable()
         for name in self.exported_names:
             value = self.data._at_(name)
             data._put_(name, value)

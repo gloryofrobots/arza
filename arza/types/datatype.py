@@ -11,7 +11,7 @@ class W_Record(W_Hashable):
         self.type = type
 
     def _call_(self, process, args):
-        new_args = space.newtuple([self, args])
+        new_args = space.newarray([self, args])
         api.call(process, process.std.functions.call, new_args)
 
     def _to_string_(self):
@@ -96,7 +96,7 @@ class W_Record(W_Hashable):
 
 
 def descriptors(fields):
-    d = space.new_empty_assoc_array()
+    d = space.newemptytable()
     for i in range(len(fields)):
         f = fields[i]
         d = api.put(d, f, space.newint(i))
@@ -109,7 +109,7 @@ class W_BaseDatatype(W_Hashable):
         # list of all known interfaces
         self.interfaces = space.newlist([])
         # 'is_implemented' lookup cache
-        self.interfaces_table = space.new_empty_assoc_array()
+        self.interfaces_table = space.newemptytable()
         self.name = name
         for interface in interfaces:
             self.register_interface(interface)

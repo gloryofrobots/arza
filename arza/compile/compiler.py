@@ -21,11 +21,11 @@ from arza.builtins import lang_names
 def compile_error(compiler, code, node, message):
     line = code.info.get_line(api.to_i(nodes.node_line(node)))
     return error.throw(error.Errors.COMPILE_ERROR,
-                       space.newtuple([
+                       space.newarray([
                            space.newstring(message),
                            space.newint(nodes.node_type(node)),
                            space.newstring_s(nodes.node_value_s(node)),
-                           space.newtuple([space.newstring(u"line"), nodes.node_line(node),
+                           space.newarray([space.newstring(u"line"), nodes.node_line(node),
                                            space.newstring(u"column"), nodes.node_column(node)]),
                            space.newstring(line)
                        ]))
@@ -286,10 +286,6 @@ def _emit_void(code):
     code.emit_0(VOID, codeinfo_unknown())
 
 
-def _emit_empty_list(code):
-    code.emit_1(LIST, 0, codeinfo_unknown())
-
-
 def _emit_symbol(compiler, code, node, literal):
     idx = _declare_symbol(compiler, literal)
     code.emit_1(LITERAL, idx, info(node))
@@ -445,31 +441,6 @@ def _compile_NOT(compiler, code, node):
 
 #########################################################
 
-def _compile_match(compiler, code, node, patterns, error_code):
-    from arza.compile.match_compiler.transform import transform
-    from arza.compile.parse.nodes import create_goto_node
-    temp_idx = _declare_temporary(compiler)
-    code.emit_1(STORE_TEMPORARY, temp_idx, codeinfo_unknown())
-
-    endmatch = code.prealocate_label()
-
-    graph = transform(compiler, code, node, patterns, create_goto_node(endmatch), temp_idx)
-    _compile(compiler, code, graph)
-
-    # Allocate error in case of no match
-    err_node = nodes.create_match_fail_node(nodes.node_token(node), str(error_code), temp_idx)
-    _compile(compiler, code, err_node)
-    code.emit_0(THROW, info(node))
-
-    code.emit_1(LABEL, endmatch, codeinfo_unknown())
-
-
-def _compile_MATCH(compiler, code, node):
-    exp = node_first(node)
-    patterns = node_second(node)
-    _compile(compiler, code, exp)
-    _compile_match(compiler, code, node, patterns, error.Errors.MATCH_ERROR)
-
 
 def _compile_UNDEFINE(compiler, code, node):
     varname = node_first(node)
@@ -500,7 +471,7 @@ def _compile_GOTO(compiler, code, node):
 def _compile_destruct(compiler, code, left, exp):
     _compile(compiler, code, exp)
 
-    if node_type(left) != NT_TUPLE or not _is_optimizable_unpack_seq_pattern(left):
+    if node_type(left) != NT_ARRAY or not _is_optimizable_unpack_seq_pattern(left):
         compile_error(compiler, code, left, u"Invalid tuple unpack")
     else:
         _compile_destruct_unpack_seq(compiler, code, left)
@@ -517,7 +488,7 @@ def _compile_destruct_unpack_seq(compiler, code, node):
     _emit_dup(code)
     names = node_first(node)
     length = len(names)
-    code.emit_1(UNPACK_TUPLE, length, info(node))
+    code.emit_1(UNPACK_ARRAY, length, info(node))
     if length > 1:
         for name in names[0:length - 1]:
             _emit_store_name(compiler, code, name)
@@ -555,18 +526,8 @@ def _compile_ASSIGN(compiler, code, node):
         _declare_local(compiler, symbol)
         _compile(compiler, code, exp)
         _emit_store_name(compiler, code, left)
-    elif is_simple_pattern(left, False):
-        # print "DESTRUCT ASSIGN"
-        return _compile_destruct(compiler, code, left, exp)
     else:
-        # print " MATCH ASSIGN"
-        scope = _current_scope(compiler)
-        idx = scope.what_next_temporary()
-        exp_node = nodes.create_temporary_node(nodes.node_token(node), idx)
-        match = nodes.create_match_node(nodes.node_token(node), exp, [nodes.list_node(
-            [left, nodes.list_node([exp_node])]
-        )])
-        _compile(compiler, code, match)
+        return _compile_destruct(compiler, code, left, exp)
 
 
 def _compile_node_name_lookup(compiler, code, node):
@@ -649,25 +610,17 @@ def _compile_MAP(compiler, code, node):
     code.emit_1(MAP, len(items), info(node))
 
 
-def _compile_TUPLE(compiler, code, node):
-    items = node_first(node)
-    for c in items:
-        _compile(compiler, code, c)
-
-    code.emit_1(TUPLE, len(items), info(node))
-
-
 def _compile_UNIT(compiler, code, node):
-    code.emit_1(TUPLE, 0, info(node))
+    code.emit_1(ARRAY, 0, info(node))
 
 
-def _compile_LIST(compiler, code, node):
+def _compile_ARRAY(compiler, code, node):
     items = node_first(node)
     assert nodes.is_list_node(items), items
     for c in items:
         _compile(compiler, code, c)
 
-    code.emit_1(LIST, len(items), info(node))
+    code.emit_1(ARRAY, len(items), info(node))
 
 
 def _compile_func_args_and_body(compiler, code, name, params, body):
@@ -706,33 +659,10 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
     code.emit_1(FUNCTION, source_index, info(name))
 
 
-def _compile_case_function(compiler, code, node, name, cases):
-    funcname = _get_symbol_name_or_empty(compiler.process, name)
-    _enter_scope(compiler)
-
-    funccode = newcode(compiler)
-    arity = nodes.pattern_length(cases[0][0])
-    _declare_arguments(compiler, arity, True)
-
-    # if not api.isempty(funcname):
-    #     _emit_fself(compiler, funccode, name, funcname)
-
-    funccode.emit_0(FARGS, codeinfo_unknown())
-    _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH_ERROR)
-    current_scope = _current_scope(compiler)
-    scope = current_scope.finalize(_previous_scope(compiler), None)
-    _exit_scope(compiler)
-
-    compiled_code = funccode.finalize_compilation(scope)
-
-    source = space.newfuncsource(funcname, compiled_code)
-    source_index = _declare_literal(compiler, source)
-    code.emit_1(FUNCTION, source_index, info(node))
-
 
 def is_simple_pattern(pattern, allow_unit):
     ntype = node_type(pattern)
-    if ntype == NT_TUPLE:
+    if ntype == NT_ARRAY:
         for child in node_first(pattern):
             if node_type(child) != NT_NAME:
                 return False
@@ -749,11 +679,8 @@ def _compile_LAMBDA(compiler, code, node):
     func = funcs[0]
     params = func[0]
     body = func[1]
-    if not is_simple_pattern(params, True):
-        _compile_case_function(compiler, code, node, nodes.empty_node(), funcs)
-    else:
-        _compile_func_args_and_body(compiler, code,
-                                    nodes.empty_node(), params, body)
+    _compile_func_args_and_body(compiler, code,
+                                nodes.empty_node(), params, body)
 
 
 def _compile_FUN(compiler, code, node):
@@ -773,12 +700,13 @@ def _compile_FUN(compiler, code, node):
         params = func[0]
         body = func[1]
         if not is_simple_pattern(params, True):
-            _compile_case_function(compiler, code, node, namenode, funcs)
+            assert False, "Implement DESTRUCT"
+            # _compile_case_function(compiler, code, node, namenode, funcs)
         else:
             # print "SIMPLE FUNC", funcname
             _compile_func_args_and_body(compiler, code, namenode, params, body)
     else:
-        _compile_case_function(compiler, code, node, namenode, funcs)
+        assert False, "Implement DESTRUCT"
 
     if index is not None:
         funcname_index = _declare_symbol(compiler, funcname)
@@ -832,7 +760,7 @@ def _compile_TRY(compiler, code, node):
 
     # exception on top of the stack due to internal process/routine logic
     code.emit_1(LABEL, catchlabel, codeinfo_unknown())
-    _compile_match(compiler, code, node, catches, error.Errors.EXCEPTION_MATCH_ERROR)
+    # _compile_match(compiler, code, node, catches, error.Errors.EXCEPTION_MATCH_ERROR)
 
     code.emit_1(JUMP, finallylabel, codeinfo_unknown())
     code.emit_1(LABEL, finallylabel, codeinfo_unknown())
@@ -1181,33 +1109,27 @@ def _compile_node(compiler, code, node):
         _compile_CONDITION(compiler, code, node)
     elif NT_WHEN == ntype:
         _compile_WHEN_NO_ELSE(compiler, code, node)
-    elif NT_MATCH == ntype:
-        _compile_MATCH(compiler, code, node)
     elif NT_TRY == ntype:
         _compile_TRY(compiler, code, node)
     elif NT_EXPORT == ntype:
         _compile_EXPORT(compiler, code, node)
     elif NT_IMPORT == ntype:
         _compile_IMPORT(compiler, code, node)
-    elif NT_IMPORT_HIDING == ntype:
-        _compile_IMPORT_HIDING(compiler, code, node)
     elif NT_INCLUDE == ntype:
         _compile_INCLUDE(compiler, code, node)
     elif NT_INCLUDE_HIDING == ntype:
         _compile_INCLUDE_HIDING(compiler, code, node)
 
-    elif NT_RECEIVE == ntype:
-        _compile_RECEIVE(compiler, code, node)
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
+    elif NT_MODIFY == ntype:
+        _compile_MODIFY(compiler, code, node)
 
     elif NT_CALL == ntype:
         _compile_CALL(compiler, code, node)
 
-    elif NT_LIST == ntype:
-        _compile_LIST(compiler, code, node)
-    elif NT_TUPLE == ntype:
-        _compile_TUPLE(compiler, code, node)
+    elif NT_ARRAY == ntype:
+        _compile_ARRAY(compiler, code, node)
     elif NT_UNIT == ntype:
         _compile_UNIT(compiler, code, node)
     elif NT_MAP == ntype:
@@ -1215,14 +1137,10 @@ def _compile_node(compiler, code, node):
 
     elif NT_CLASS == ntype:
         _compile_CLASS(compiler, code, node)
-    elif NT_CONS == ntype:
-        _compile_CONS(compiler, code, node)
     elif NT_AS == ntype:
         _compile_AS(compiler, code, node)
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)
-    elif NT_MODIFY == ntype:
-        _compile_MODIFY(compiler, code, node)
     elif NT_DECORATOR == ntype:
         _compile_DECORATOR(compiler, code, node)
     elif NT_AND == ntype:

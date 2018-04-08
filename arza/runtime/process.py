@@ -185,7 +185,7 @@ class Process(root.W_Root):
 
     def result_safe(self):
         if self.result is None:
-            return space.newunit()
+            return space.newnil()
 
         return self.result
 

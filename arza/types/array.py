@@ -220,3 +220,13 @@ def drop(arr, count):
         error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
 
     return W_Array(arr._items[count:])
+
+
+def types_array(process, arr):
+    error.affirm_type(arr, space.isarray)
+    types = []
+    for el in arr._items:
+        _type = api.get_type(process, el)
+        types.append(_type)
+
+    return W_Array(types)

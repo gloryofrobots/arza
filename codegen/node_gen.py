@@ -21,13 +21,12 @@ NODES = [
 
   "NT_CLASS",
   "NT_MAP",
-  "NT_LIST",
-  "NT_TUPLE",
+  "NT_ARRAY",
   "NT_UNIT",
-  "NT_CONS",
   "NT_COMMA",
   "NT_CASE",
   "NT_LITERAL",
+  "NT_BIND",
 
   "NT_FUN",
   "NT_USE",
@@ -39,7 +38,6 @@ NODES = [
   "NT_WHEN",
   "NT_MATCH",
   "NT_TRY",
-  "NT_RECEIVE",
   "NT_DECORATOR",
 
   "NT_IMPORT",
@@ -49,9 +47,7 @@ NODES = [
   "NT_EXPORT",
   "NT_LOAD",
   "NT_EXTEND",
-  "NT_METHOD",
-
-  "NT_BIND",
+  "NT_MODIFY",
 
   "NT_THROW",
 
@@ -70,12 +66,8 @@ NODES = [
   "NT_DROP",
   "NT_RANGE",
 
-  "NT_MODIFY",
-
   "NT_OF",
-  "NT_IS_IMPLEMENTED",
   "NT_AS",
-  "NT_DELAY",
   "NT_LET",
 
   "NT_NOT",

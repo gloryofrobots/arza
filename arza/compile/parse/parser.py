@@ -106,20 +106,14 @@ class ExpressionParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
         self.pattern_parser = PatternParser()
-        self.fun_pattern_parser = FunPatternParser()
-        self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
-        self.let_parser = LetParser(self)
         self.map_key_parser = MapKeyParser(self)
         self.modify_key_parser = ModifyKeyParser(self)
 
         self.add_subparsers(
             [
                 self.pattern_parser,
-                self.fun_pattern_parser,
-                self.guard_parser,
                 self.name_parser,
-                self.let_parser,
                 self.map_key_parser,
                 self.modify_key_parser
             ])
@@ -140,7 +134,6 @@ class ExpressionParser(BaseParser):
         symbol(self, TT_THEN)
         symbol(self, TT_CATCH)
         symbol(self, TT_FINALLY)
-        symbol(self, TT_WITH)
         symbol(self, TT_IN)
         symbol(self, TT_ASSIGN)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
@@ -159,29 +152,25 @@ class ExpressionParser(BaseParser):
 
         prefix(self, TT_FUN, None, prefix_fun, layout=layout_fun)
 
-        prefix(self, TT_MATCH, None, prefix_match, layout=layout_match)
-        prefix(self, TT_RECEIVE, None, prefix_receive, layout=layout_receive)
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
         prefix(self, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
         prefix(self, TT_THROW, None, prefix_throw)
         prefix(self, TT_CLASS, None, prefix_class, layout=layout_fun)
 
-        prefix(self, TT_LET, None, prefix_let, layout=layout_let)
-
         infix(self, TT_ARROW, None, 10, infix_arrow)
         infix(self, TT_WHEN, None, 10, infix_when)
 
+        infix(self, TT_ASSIGN, None, 10, led_assign)
         infix(self, TT_OF, NT_OF, 15, led_infix)
         infix(self, TT_AS, NT_AS, 20, led_infix)
         infix(self, TT_OR, NT_OR, 25, led_infix)
         infix(self, TT_AND, NT_AND, 30, led_infix)
         infix(self, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
-        infix(self, TT_DOUBLE_COLON, NT_CONS, 70, led_infixr)
         infix(self, TT_DOT, None, 100, infix_dot)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
         infix(self, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly, layout=layout_lcurly)
-        infix(self, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
+        infix(self, TT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
         # OTHER OPERATORS ARE DECLARED IN prelude.arza
 
 
@@ -194,44 +183,12 @@ class PatternParser(BaseParser):
             self.map_key_parser
         ])
 
-        prefix(self, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
         prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
         prefix(self, TT_LCURLY, None, prefix_lcurly_pattern, layout=layout_lcurly)
-        prefix(self, TT_SHARP, None, prefix_sharp)
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
-
-        infix(self, TT_OF, NT_OF, 10, led_infix)
-
-        infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
-        infix(self, TT_AS, None, 15, infix_bind)
-        infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
-
-        symbol(self, TT_WHEN)
-        symbol(self, TT_CASE)
-        symbol(self, TT_RPAREN)
-        symbol(self, TT_RCURLY)
-        symbol(self, TT_RSQUARE)
-        symbol(self, TT_ASSIGN)
-        symbol(self, TT_COLON)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
         init_parser_literals(self)
-
-
-class LetParser(PatternParser):
-    def __init__(self, expression_parser):
-        PatternParser.__init__(self)
-        self.expression_parser = expression_parser
-        self.name_parser = name_parser_init(BaseParser())
-        self.add_subparsers([
-            self.name_parser,
-        ])
-        infix(self, TT_ASSIGN, None, 10, led_let_assign)
-
-
-class FunPatternParser(PatternParser):
-    def __init__(self):
-        PatternParser.__init__(self)
 
 
 class ModifyKeyParser(BaseParser):
@@ -303,34 +260,7 @@ class ModuleParser(ExpressionParser):
         stmt(self, TT_PREFIX, None, stmt_prefix)
         stmt(self, TT_IMPORT, None, stmt_import)
         stmt(self, TT_INCLUDE, None, stmt_include)
-        stmt(self, TT_EXPORT, None, stmt_export)
         symbol(self, TT_ENDSTREAM)
-
-
-def guard_parser_init(parser):
-    parser.allow_overloading = True
-    parser = init_parser_literals(parser)
-
-    symbol(parser, TT_RPAREN)
-    symbol(parser, TT_RCURLY)
-    symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_ASSIGN)
-
-    prefix(parser, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-    prefix(parser, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
-    prefix(parser, TT_LCURLY, None, prefix_lcurly, layout=layout_lcurly)
-    prefix(parser, TT_SHARP, None, prefix_sharp)
-    prefix(parser, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
-    prefix(parser, TT_NOT, NT_NOT, prefix_nud, 35)
-
-    infix(parser, TT_OR, NT_OR, 25, led_infix)
-    infix(parser, TT_AND, NT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
-    infix(parser, TT_DOT, None, 100, infix_dot)
-    infix(parser, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
-    infix(parser, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly, layout=layout_lcurly)
-    infix(parser, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
-    return parser
 
 
 def map_key_pattern_parser_init(parser):
@@ -393,7 +323,6 @@ def import_parser_init(parser):
     symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     symbol(parser, TT_LPAREN)
     symbol(parser, TT_HIDING)
-    symbol(parser, TT_HIDE)
     symbol(parser, TT_IMPORT)
     symbol(parser, TT_WILDCARD)
     infix(parser, TT_AS, NT_AS, 15, infix_name_pair)

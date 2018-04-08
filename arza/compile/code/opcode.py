@@ -29,27 +29,24 @@ PUSH_CATCH = 27
 JUMP_IF_TRUE = 28
 POP = 29
 THROW = 30
-UNPACK_TUPLE = 31
-VECTOR = 32
-TUPLE = 33
-MAP = 34
-LIST = 35
+UNPACK_ARRAY = 31
+MAP = 32
+ARRAY = 33
 
 # ************************************************
 
 __OPCODE_REPR__ = ["VOID", "NIL", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "TEMPORARY", "IMPORT_NAME", "FUNCTION",
                    "DUP", "LOOKUP", "FARGS", "FSELF", "LABEL", "SWAP", "STORE_LOCAL_CONST", "STORE_LOCAL_VAR",
                    "STORE_TEMPORARY", "RETURN", "POP_CATCH", "CALL", "METHOD_CALL", "JUMP", "JUMP_IF_FALSE_NOPOP",
-                   "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "UNPACK_TUPLE",
-                   "VECTOR", "TUPLE", "MAP", "LIST", ]
+                   "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "UNPACK_ARRAY",
+                   "MAP", "ARRAY", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
 __STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, ]
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -79,12 +76,10 @@ def opcode_estimate_stack_change(opcode):
 
     if tag == MAP:
         return -1 * arg1 + 1
-    elif tag == VECTOR:
+    elif tag == ARRAY:
         return -1 * arg1 + 1
-    elif tag == UNPACK_TUPLE:
+    elif tag == UNPACK_ARRAY:
         return arg1 - 1
-    elif tag == TUPLE:
-        return -1 * arg1 + 1
     return 0
 
 

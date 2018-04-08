@@ -83,7 +83,6 @@ RULES = [
     (token('\n'), TT_NEWLINE),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
-    (token('\.\['), TT_INFIX_DOT_LSQUARE),
     (token('[ ]+'), -2),
     (token('[\t]+'), -3),
     (token('//[^\n]*'), -1),
@@ -95,9 +94,6 @@ RULES = [
 
     (keyword('then'), TT_THEN),
     (keyword('of'), TT_OF),
-    (keyword('match'), TT_MATCH),
-    (keyword('receive'), TT_RECEIVE),
-    (keyword('with'), TT_WITH),
     (keyword('fun'), TT_FUN),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
@@ -118,18 +114,15 @@ RULES = [
     (keyword('for'), TT_FOR),
 
 
-    (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),
     (keyword('include'), TT_INCLUDE),
     (keyword('from'), TT_FROM),
     (keyword('hiding'), TT_HIDING),
-    (keyword('hide'), TT_HIDE),
 
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('is'), TT_IS),
     (keyword('let'), TT_LET),
-    (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),
     (keyword('in'), TT_IN),
 
@@ -152,7 +145,6 @@ RULES = [
     (token(name_const), TT_NAME),
 
     (token('\$'), TT_DOLLAR),
-    (token('=>'), TT_FAT_ARROW),
     (token('\-\>'), TT_ARROW),
     (token('\;'), TT_END_EXPR),
     (token('#'), TT_SHARP),
@@ -303,21 +295,6 @@ def create_end_expression_token(token):
 #                     token_line(token),
 #                     token_column(token))
 
-
-def create_indent_token(token):
-    return newtoken(TT_INDENT, "(indent)",
-                    token_position(token),
-                    token_line(token),
-                    token_column(token),
-                    token_indentation(token))
-
-
-def create_dedent_token(token):
-    return newtoken(TT_DEDENT, "(dedent)",
-                    token_position(token),
-                    token_line(token),
-                    token_column(token),
-                    token_indentation(token))
 
 
 def token_to_s(token):

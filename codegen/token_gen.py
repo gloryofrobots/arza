@@ -6,23 +6,18 @@ TOKENS = [
   ("TT_MULTI_STR", None,),
   ("TT_CHAR", None,),
   ("TT_NAME", None),
-  ("TT_TICKNAME", None),
-  ("TT_TYPENAME", None),
   ("TT_OPERATOR", None),
   ("TT_VOID", None),
   ("TT_NIL", None),
 
   ("TT_FUN", "fun"),
 
-  ("TT_MATCH", "match"),
-  ("TT_WITH", "with"),
-  ("TT_CASE", "|"),
+  ("TT_CASE", "case"),
 
   ("TT_BREAK", "break"),
   ("TT_CONTINUE", "continue"),
   ("TT_WHILE", "while"),
 
-  ("TT_DEF", "def"),
   ("TT_CLASS", "class"),
   ("TT_EXTENDS", "extends"),
 
@@ -51,18 +46,11 @@ TOKENS = [
   ("TT_INCLUDE", "include"),
   ("TT_FROM", "from"),
   ("TT_HIDING", "hiding"),
-  ("TT_HIDE", "hide"),
-  ("TT_EXPORT", "export"),
   ("TT_USE", "use"),
   ("TT_FOR", "for"),
 
-  ("TT_RECEIVE", "receive"),
-  ("TT_AFTER", "after"),
-
   ("TT_END_EXPR", ";"),
   ("TT_NEWLINE", "(newline)"),
-  ("TT_INDENT", "(indent)"),
-  ("TT_DEDENT", "(dedent)"),
 
   ("TT_INFIXL", "infixl"),
   ("TT_INFIXR", "infixr"),
@@ -73,9 +61,6 @@ TOKENS = [
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),
   ("TT_ARROW", "->"),
-  ("TT_FAT_ARROW", "=>"),
-  ("TT_BACKARROW", "<-"),
-  ("TT_DISPATCH", "-:"),
   ("TT_AT_SIGN", "@"),
   ("TT_DOUBLE_AT", "@@"),
   ("TT_DOLLAR", "$"),
@@ -90,7 +75,6 @@ TOKENS = [
   ("TT_ASSIGN", "="),
 
   ("TT_INFIX_DOT_LCURLY", ".{"),
-  ("TT_INFIX_DOT_LSQUARE", ".["),
   ("TT_LPAREN", "("),
   ("TT_RPAREN", ")"),
 
@@ -99,7 +83,6 @@ TOKENS = [
   ("TT_DOT", "."),
   ("TT_COLON", ":"),
   ("TT_DOUBLE_COLON", "::"),
-  ("TT_TRIPLE_COLON", ":::"),
   ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK_NAME", "`"),
   ("TT_BACKTICK_OPERATOR", "`"),

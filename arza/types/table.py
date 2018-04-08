@@ -189,7 +189,7 @@ class W_AssocArray(W_Root):
     def to_list(self):
         result = plist.empty()
         for k, i in self.slot_bindings.items():
-            result = plist.cons(space.newtuple([k, api.at_index(self.slot_values, i)]), result)
+            result = plist.cons(space.newarray([k, api.at_index(self.slot_values, i)]), result)
 
         return result
 

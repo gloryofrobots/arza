@@ -1,6 +1,6 @@
 from arza.types.root import W_Callable, W_Root
 from arza.runtime.error import *
-from arza.types import api, tuples
+from arza.types import api, array
 
 
 class W_FunctionSource(W_Root):
@@ -64,24 +64,3 @@ class W_Function(W_Callable):
         return self.bytecode is other.bytecode
 
 
-class W_Method(W_Function):
-    # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
-
-    def _call_from_(self, process, receiver, args):
-        new_args = tuples.prepend(receiver, args)
-        length = api.length_i(new_args)
-        if not self.is_variadic and length != self.arity:
-            return throw_5(Errors.INVOKE_ERROR, space.newstring(u"Invalid count of arguments "),
-                           self, space.newint(self.arity), space.newint(length), new_args)
-
-        process.call_object(self, new_args)
-
-    def _equal_(self, other):
-        from arza.types import space
-        if not space.isfunction(other):
-            return False
-
-        if not api.equal_b(self.name, other.name):
-            return False
-
-        return self.bytecode is other.bytecode

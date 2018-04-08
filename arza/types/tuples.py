@@ -202,7 +202,7 @@ def concat(tupl1, tupl2):
 def prepend(tupl, val):
     type_check(tupl)
     if space.isunit(tupl):
-        return space.newtuple([val])
+        return space.newarray([val])
 
     return W_Tuple([val] + tupl.elements)
 
@@ -261,11 +261,3 @@ def modify_tuple(t, index, val):
     t.elements[index] = val
 
 
-def types_tuple(process, t):
-    error.affirm_type(t, space.isrealtuple)
-    types = []
-    for el in t.elements:
-        _type = api.get_type(process, el)
-        types.append(_type)
-
-    return W_Tuple(types)

@@ -1,6 +1,6 @@
 from arza.types.root import W_Callable
 from arza.runtime import error
-from arza.types import api, space, partial
+from arza.types import api, space
 from arza.misc.platform import jit
 
 

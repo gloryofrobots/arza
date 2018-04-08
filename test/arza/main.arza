@@ -5,33 +5,31 @@ class X =
         self.{_x = x}
 
 class Y(X) =
-    nil
-//class Y(X) =
-//    fun xy(self, x, y) =
-//        self.super().x(x)
-//        self.{y = y}
+    fun xy(self, x, y) =
+        self.super().x(x)
+        self.{y = y}
 
-//class Pair =
-//    fun __init__(self, first, second) =
-//        self.{first = first, second = second}
-//
-//    fun __add__(self, other) =
-//        let f = self.first + other.first
-//        let s = self.second + other.second
-//        Pair(f, s)
-//
-//    fun sum(self) =
-//        self.first + self.second
+class Pair =
+    fun __init__(self, first, second) =
+        self.{first = first, second = second}
+
+    fun __add__(self, other) =
+        f = self.first + other.first
+        s = self.second + other.second
+        Pair(f, s)
+
+    fun sum(self, third, fourth) =
+        self.first + self.second + third + fourth
 
 
 fun main() =
-    let x = X()
+    x = X()
     print(X.type())
     print(X.parent())
     print(x.type())
     print(x.parent())
 
-//    X.x(1)
+    X.x(1)
 //    print(x.type())
 //    print(Y)
 //    print(Y._x)
@@ -40,10 +38,10 @@ fun main() =
 //    print(Y.super())
 //    print(1.super())
 //    Y.xy(1,2)
-//    let p = Pair(1, 2)
-//    print(p.sum())
-//    p.{x = 1}
-//    print(p.x)
+    p = Pair(1, 2)
+    print(p.sum(3, 4))
+    p.{x = 1}
+    print(p.x)
 
 
     __env__()

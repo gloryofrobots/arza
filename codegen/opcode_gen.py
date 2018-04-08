@@ -41,11 +41,9 @@ OPCODES = [
     ("POP", -1),
     ("THROW", -1),
 
-    ("UNPACK_TUPLE", "__UNKNOWN_CHANGE__"),
-    ("VECTOR", "__UNKNOWN_CHANGE__"),
-    ("TUPLE", "__UNKNOWN_CHANGE__"),
+    ("UNPACK_ARRAY", "__UNKNOWN_CHANGE__"),
     ("MAP", "__UNKNOWN_CHANGE__"),
-    ("LIST", "__UNKNOWN_CHANGE__"),
+    ("ARRAY", "__UNKNOWN_CHANGE__"),
 ]
 
 def gen_ocode_ids():

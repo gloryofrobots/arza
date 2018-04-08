@@ -10,25 +10,12 @@ LOAD_MODULE = PREFIX + "load_module"
 
 ISNOT = "__isnot__"
 KINDOF = "__kindof__"
-IS_IMPLEMENTED = "__is_implemented__"
 
 # functions used by compiler in code gen
-DESCRIBE = PREFIX + "describe"
-IS_INDEXED = PREFIX + "is_indexed"
-IS_TUPLE = PREFIX + "is_tuple"
+IS_ARRAY = PREFIX + "is_array"
 IS_SEQ = PREFIX + "is_seq"
-IS_DICT = PREFIX + "is_dict"
+IS_TABLE = PREFIX + "is_table"
 DEFCLASS = PREFIX + "defclass"
-LENSE = PREFIX + "lense"
-
-CURRY = PREFIX + "curry"
-
-SPECIFY = PREFIX + "specify"
-OVERRIDE = PREFIX + "override"
-OVERRIDE_HELPER = PREFIX + "__override__"
-RECEIVE_HELPER = PREFIX + "__receive__"
-
-AFFIRM_TYPE_DECORATOR = PREFIX + "__affirm_type_decorator__"
 
 SLICE = "__slice__"
 DROP = "__drop__"

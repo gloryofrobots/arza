@@ -79,7 +79,7 @@ class W_Arguments(W_Root):
         return self._to_string_()
 
 def type_check(t):
-    error.affirm_type(t, space.istuple)
+    error.affirm_type(t, space.isarray)
 
 
 def to_list(t):

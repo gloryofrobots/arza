@@ -174,9 +174,9 @@ class CodeRoutine(BaseRoutine):
                 value = stack.top()
                 env.set_temporary(arg1, value)
             # *************************************
-            elif UNPACK_TUPLE == tag:
+            elif UNPACK_ARRAY == tag:
                 seq = stack.pop()
-                error.affirm_type(seq, space.istuple)
+                error.affirm_type(seq, space.isarray)
                 seq_length = api.length_i(seq)
                 if seq_length != arg1:
                     return error.throw_1(error.Errors.UNPACK_SEQUENCE_ERROR, seq)
@@ -185,19 +185,12 @@ class CodeRoutine(BaseRoutine):
                     el = api.at_index(seq, i)
                     stack.push(el)
             # *************************************
-            elif TUPLE == tag:
-                tupl = stack.pop_n_tuple(arg1)
+            elif ARRAY == tag:
+                tupl = stack.pop_n_array(arg1)
                 stack.push(tupl)
             # *************************************
-            elif VECTOR == tag:
-                raise NotImplementedError()
-            # *************************************
-            elif LIST == tag:
-                lst = stack.pop_n_list(arg1)
-                stack.push(lst)
-            # *************************************
             elif METHOD_CALL == tag:
-                args = stack.pop_n_tuple(arg1)
+                args = stack.pop_n_array(arg1)
                 func = stack.pop()
                 res = api.call(process, func, args)
                 if res is not None:
@@ -205,7 +198,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif CALL == tag:
                 func = stack.pop()
-                args = stack.pop_n_tuple(arg1)
+                args = stack.pop_n_array(arg1)
                 # if arg1 < 0:
                 #     args = space.newunit()
                 # else:
@@ -266,7 +259,7 @@ class CodeRoutine(BaseRoutine):
                     args.append(name)
                     args.append(w_elem)
 
-                obj = space.new_assoc_array(args)
+                obj = space.newtable(args)
                 stack.push(obj)
             # *************************************
             elif FUNCTION == tag:

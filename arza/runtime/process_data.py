@@ -42,7 +42,7 @@ class Classes:
         error.affirm_type(path, space.islist)
         error.affirm_iterable(path, space.isstring)
 
-        self.classes = space.new_empty_assoc_array()
+        self.classes = space.newemptytable()
         self.path = path
         self.prelude = prelude
 

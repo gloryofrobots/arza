@@ -131,7 +131,7 @@ def set_error_print_enabled(process, routine):
     val_b = api.to_b(val)
     pid.process.set_error_print_enabled(val_b)
     # p.mailbox.push(msg)
-    return space.newunit()
+    return space.newnil()
 
 
 @complete_native_routine
@@ -140,7 +140,7 @@ def send_message(process, routine):
     msg = routine.get_arg(1)
     # p.mailbox.push(msg)
     pid.receive(process, msg)
-    return space.newunit()
+    return space.newnil()
 
 
 @complete_native_routine
@@ -149,14 +149,14 @@ def push(process, routine):
     pid = routine.get_arg(1)
     # p.mailbox.push(msg)
     pid.process.receive(msg)
-    return space.newunit()
+    return space.newnil()
 
 
 @complete_native_routine
 def resume(process, routine):
     pid = routine.get_arg(0)
     pid.process.resume()
-    return space.newunit()
+    return space.newnil()
 
 
 @complete_native_routine
@@ -169,4 +169,4 @@ def get_active_processes(process, routine):
 def pause(process, routine):
     pid = routine.get_arg(0)
     pid.process.pause()
-    return space.newunit()
+    return space.newnil()

@@ -1,6 +1,6 @@
 from root import W_Callable
 from arza.runtime import error
-from arza.types import api, space, tuples
+from arza.types import api, space, array
 
 
 class W_FiberChannel(W_Callable):
@@ -21,7 +21,7 @@ class W_FiberChannel(W_Callable):
             error.throw_1(error.Errors.FIBER_FLOW_ERROR, space.newstring(u"Can't resume active fiber"))
 
         if api.length_i(args) == 0:
-            value = space.newunit()
+            value = space.newnil()
         elif api.length_i(args) == 1:
             value = api.at_index(args, 0)
         else:
@@ -57,7 +57,7 @@ class W_Coroutine(W_Callable):
     def _call_(self, process, args):
         self.chan1.fiber = process.fiber
         if not self.initialised:
-            new_args = tuples.prepend(args, self.chan1)
+            new_args = array.prepend(args, self.chan1)
             process.activate_fiber(self.chan2.fiber, self, new_args)
             self.initialised = True
         else:

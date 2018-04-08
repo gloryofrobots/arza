@@ -192,7 +192,7 @@ def _find_function(symbol, record):
 
 class W_Scope(W_Root):
     def __init__(self):
-        self.__locals = space.new_empty_assoc_array()
+        self.__locals = space.newemptytable()
 
         self.__temp_index = 0
 
@@ -204,15 +204,15 @@ class W_Scope(W_Root):
         self.__symbols = Symbols(self.__literals)
 
         self.__local_references = ScopeSet()
-        self.__operators = space.new_empty_assoc_array()
+        self.__operators = space.newemptytable()
         self.__declared_exports = plist.empty()
         self.__static_references = plist.empty()
 
-        self.imports = space.new_empty_assoc_array()
-        self.imported_names = space.new_empty_assoc_array()
-        self.imported_modules = space.new_empty_assoc_array()
+        self.imports = space.newemptytable()
+        self.imported_names = space.newemptytable()
+        self.imported_modules = space.newemptytable()
 
-        self.functions = space.new_empty_assoc_array()
+        self.functions = space.newemptytable()
         self.arg_count = -1
         self.references = None
         self.is_variadic = None
@@ -246,7 +246,7 @@ class W_Scope(W_Root):
     def add_imported_module(self, name):
         assert space.issymbol(name)
         assert platform.is_absent_index(api.get_index(self.imported_modules, name))
-        return self.imported_modules.insert(name, space.newunit())
+        return self.imported_modules.insert(name, space.newnil())
 
     def has_imported_module(self, name):
         return api.contains_b(self.imported_modules, name)
@@ -256,7 +256,7 @@ class W_Scope(W_Root):
     def add_imported_name(self, name):
         assert space.issymbol(name)
         assert platform.is_absent_index(api.get_index(self.imported_names, name))
-        return self.imported_names.insert(name, space.newunit())
+        return self.imported_names.insert(name, space.newnil())
 
     def has_imported_name(self, name):
         return api.contains_b(self.imported_names, name)
@@ -294,7 +294,7 @@ class W_Scope(W_Root):
         ref_idx = self.get_scope_reference(ref.name)
         assert not platform.is_absent_index(ref_idx), "Invalid static reference declaration. Reference id not defined"
 
-        self.__static_references = plist.cons(space.newtuple([ref, space.newint(ref_idx)]), self.__static_references)
+        self.__static_references = plist.cons(space.newarray([ref, space.newint(ref_idx)]), self.__static_references)
 
     ###########################
 

@@ -25,7 +25,7 @@ TERM_SINGLE_CATCH = [TT_FINALLY]
 TERM_LET = [TT_IN]
 
 TERM_PATTERN = [TT_WHEN]
-TERM_BLOCK = [TT_DEDENT]
+TERM_BLOCK = []
 
 TERM_CASE_FUN_BLOCK = TERM_BLOCK + [TT_CASE]
 TERM_FUN_GUARD = [TT_ASSIGN]
@@ -35,13 +35,13 @@ TERM_FUN_SIGNATURE = [TT_ASSIGN, TT_CASE]
 TERM_TRAIT_SIGNATURE = [TT_ASSIGN]
 TERM_TRAIT_GUARD = [TT_ASSIGN]
 
-TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
+TERM_FROM_IMPORTED = [TT_IMPORT]
 TERM_DEF_SIGNATURE = [TT_CASE, TT_ASSIGN, TT_AS]
 
 NAME_NODES = [NT_NAME]
 IMPORT_NODES = [NT_IMPORT, NT_INCLUDE, NT_INCLUDE_HIDING, NT_IMPORT_HIDING]
 LET_NODES = [NT_DECORATOR, NT_TRY, NT_FUN, NT_ASSIGN]
-EXPORT_NODES = [NT_NAME, NT_TUPLE]
+EXPORT_NODES = [NT_NAME, NT_ARRAY]
 DEF_ARGS_NODES = [NT_NAME, NT_WILDCARD]
 
 LAYOUT_LPAREN = [TT_RPAREN]
@@ -71,18 +71,17 @@ INDENTS_CODE = [TT_DOUBLE_COLON, TT_COLON,
                 TT_LCURLY,
                 TT_LSQUARE,
                 TT_INFIX_DOT_LCURLY,
-                TT_INFIX_DOT_LSQUARE
                 ]
 
 INDENTS_IF = [TT_IF, TT_THEN, TT_ELSE] + INDENTS_CODE
 INDENTS_LET = [TT_LET, TT_IN] + INDENTS_CODE
 INDENTS_TRY = [TT_TRY, TT_FINALLY, TT_CATCH, TT_ASSIGN] + INDENTS_CODE
-INDENTS_MATCH = [TT_MATCH, TT_CASE, TT_ASSIGN] + INDENTS_CODE
-INDENTS_RECEIVE = [TT_RECEIVE, TT_CASE, TT_ASSIGN] + INDENTS_CODE
+INDENTS_MATCH = [TT_CASE, TT_ASSIGN] + INDENTS_CODE
+INDENTS_RECEIVE = [TT_CASE, TT_ASSIGN] + INDENTS_CODE
 INDENTS_USE = [TT_USE, TT_IN]
 INDENTS_FUN = [TT_FUN, TT_WHEN, TT_CASE, TT_ASSIGN] + INDENTS_CODE
 INDENTS_CLASS = [TT_CLASS, TT_ASSIGN] + INDENTS_CODE
-INDENTS_DEF = [TT_DEF, TT_ASSIGN, TT_WHEN] + INDENTS_CODE
+INDENTS_DEF = [TT_ASSIGN, TT_WHEN] + INDENTS_CODE
 INDENTS_DECORATOR = [TT_FUN, TT_CLASS] + INDENTS_CODE
 
 
@@ -92,7 +91,7 @@ INDENTS_DECORATOR = [TT_FUN, TT_CLASS] + INDENTS_CODE
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
-                       space.newtuple([
+                       space.newarray([
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
                            space.newstring(line)
@@ -106,8 +105,8 @@ def parse_error(parser, message, token):
         line = get_line(parser.ts.src, api.to_i(tokens.token_line(token)))
 
     return error.throw(error.Errors.PARSE_ERROR,
-                       space.newtuple([
-                           space.newtuple([tokens.token_position(token),
+                       space.newarray([
+                           space.newarray([tokens.token_position(token),
                                            tokens.token_line(token),
                                            tokens.token_column(token)]),
                            # tokens.token_to_string(token),
@@ -121,7 +120,7 @@ def parser_error_indentation(parser, msg, position, lineno, column):
     print parser.ts.layouts
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
-                       space.newtuple([
+                       space.newarray([
                            space.newint(position),
                            space.newint(lineno),
                            space.newint(column),
@@ -130,15 +129,10 @@ def parser_error_indentation(parser, msg, position, lineno, column):
                        ]))
 
 
-def skip_indent(parser):
-    if parser.token_type == TT_INDENT:
-        advance(parser)
-
-
 class ParserScope(root.W_Root):
     def __init__(self):
-        self.operators = space.new_empty_assoc_array()
-        self.macro = space.new_empty_assoc_array()
+        self.operators = space.newemptytable()
+        self.macro = space.newemptytable()
 
 
 class ParseState:
@@ -537,11 +531,6 @@ def advance_expected_one_of(parser, ttypes):
     return parser.next_token()
 
 
-def advance_dedent(parser):
-    if parser.ts.current_layout().is_free():
-        return
-    advance_expected(parser, TT_DEDENT)
-
 
 def on_endofexpression(parser):
     if parser.isend():
@@ -671,7 +660,7 @@ def commas_as_list(parser, node):
 def maybe_tuple(parser, node):
     if node.node_type == NT_COMMA:
         els = commas_as_list(parser, node)
-        return nodes.node_1(NT_TUPLE, nodes.node_token(node), els)
+        return nodes.node_1(NT_ARRAY, nodes.node_token(node), els)
     return node
 
 
@@ -694,7 +683,7 @@ def postprocess(parser, node):
     ntype = nodes.node_type(node)
     if ntype == NT_COMMA:
         items = commas_as_list(parser, node)
-        flatten = nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
+        flatten = nodes.node_1(NT_ARRAY, nodes.node_token(node), items)
         return postprocess(parser, flatten)
     else:
         children = []

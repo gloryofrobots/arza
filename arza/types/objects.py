@@ -1,5 +1,5 @@
 from arza.types.root import W_Hashable
-from arza.types import api, space, plist, tuples
+from arza.types import api, space, plist, array
 from arza.misc import platform
 from arza.types import api, space, plist, symbol
 from arza.types.root import W_Root, W_Callable
@@ -85,12 +85,12 @@ class W_Class(W_Object):
         return process.std.classes.Class
 
     def _call_(self, process, args):
-        obj = W_Object(self, space.new_empty_assoc_array())
+        obj = W_Object(self, space.newemptytable())
         ctor = self.lookup_symbol(process.symbols.init)
         if space.isvoid(ctor):
             return obj
         else:
-            new_args = tuples.prepend(args, obj)
+            new_args = array.prepend(args, obj)
             process.call_object(W_Constructor(ctor, obj), new_args)
 
     def _equal_(self, other):

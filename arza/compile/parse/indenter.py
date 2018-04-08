@@ -257,21 +257,6 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.index += 1
         return token
 
-    # def _skip_indent(self):
-    #     if not self.has_logic_tokens():
-    #         return None
-    #
-    #     token = self.next_logical()
-    #     while tokens.token_type(token) == tt.TT_INDENT:
-    #         # log("++++ SKIP")
-    #         token = self.next_logical()
-    #
-    #         if not self.has_logic_tokens():
-    #             break
-    #
-    #     self.index -= 1
-    #     return token
-
     def skip_newlines(self):
         token = self.next_physical()
         while tokens.token_type(token) == tt.TT_NEWLINE:

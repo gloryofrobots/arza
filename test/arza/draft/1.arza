@@ -1,89 +1,15 @@
-interface Map[K, V] as T =
-    at(T, K) = V
-    put(T, K, V) = ()
+fun map(seq, fn) =
+    cond seq
+        if [] then seq.empty()
+        if [0] = x
 
-interface Num[T2, T3] as T1 =
-    + (T1 T2) = T3
-    - (T1, T2) = T3
-
-module map =
-    expect
-        type K of Hashed
-        type V
-
-    import array as ArrayPair where T = Pair
-    import std
-    type Pair = (k of K, v of V)
-
-    type __Map =
-        data of ArrayPair
-
-    trait (M, K, V) for (__Map, K, V) =
-        def put(m of M, k of K, v of V) -> () = ...
-        def at(m of M, k of K, v of V) -> V = ...
-        describe M as Map
-
-
-
-interface I[T1, T2] =
-    f(I, T1, T2) = T2
-
-interface I2[T1, T2] =
-    f(T1, I2, T2) = T2
-
-
-type Option[T]
-    | None
-    | Some =
-        Result of T
-
-
-
-interface C =
-    f1(C, Map[Int, Int]) = Option[Int]
-
-
-type MapInt as Map[Int, Int]
-
-def::Int -> Int -> Int
-   add(x,y) =
-
-def [Int, Int, Int]
-   add(x,y) =
-
-def [Int, Int] = Int
-   add(x,y) =
-
-def (Int, Int) = Int
-   add(x,y) =
-
-for [Int, Int] = Int
-    def add(x,y) =
-
-:: [Int, Int] = Int
-    def add(x,y) =
-
-
-def add (a, a) =
-    a + a
-
-protocol Add(a) =
-    fun add(a, a)
-
-protocol Sub(a) =
-    fun sub(a, a)
-
-impl Sub(Int) =
-    def sub(x, y) = x - y
-
-trait S(Var) =
-    use Add
-
-    impl Sub(Var) =
-        def sub(x, y) = x - y
-
-    impl Sub(Var) =
-        def sub(x, y) = x - y
+cond X
+     if [0] == 1, [1] == #c, [1..] == [1,2,3] then
+     if #ccc then
+     if of Map then
+     if [0] of Map then
+     if [#ccc] as c of Int and c == 1 then
+     if [#ccc] of Int == 1 then
 
 
 

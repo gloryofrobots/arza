@@ -59,12 +59,6 @@ def simplify_not(compiler, code, node):
     return nodes.create_not_call(nodes.node_token(node), left)
 
 
-def simplify_cons(compiler, code, node):
-    left = node_first(node)
-    right = node_second(node)
-    return nodes.create_cons_call(nodes.node_token(node), left, right)
-
-
 def simplify_as(compiler, code, node):
     source = node_first(node)
     interfaces = node_second(node)

@@ -7,16 +7,16 @@ def convert_to_script_error(process, err):
 
 def error(process, symbol_unistr, args_tuple):
     from arza.types import environment, api
-    assert space.istuple(args_tuple)
+    assert space.isarray(args_tuple)
     assert isinstance(symbol_unistr, unicode)
     module = process.classes.prelude
     symbol = space.newsymbol(process, symbol_unistr)
     err_type = environment.get_value(module, symbol)
     if space.isvoid(err_type):
-        return space.newtuple([symbol, args_tuple])
+        return space.newarray([symbol, args_tuple])
     else:
         affirm_type(err_type, space.isdatatype)
-        instance = api.call(process, err_type, space.newtuple([args_tuple]))
+        instance = api.call(process, err_type, space.newarray([args_tuple]))
         return instance
 
 
@@ -26,7 +26,7 @@ def signal(err):
 
 
 def build(symbol_unistr, args):
-    t = space.newtuple(args)
+    t = space.newarray(args)
     return ArzaError(symbol_unistr, t)
 
 
@@ -35,35 +35,35 @@ def throw(symbol_unistr, args_tuple):
 
 
 def throw_0(symbol_unistr):
-    throw(symbol_unistr, space.newunit())
+    throw(symbol_unistr, space.newarray([]))
 
 
 def throw_1(symbol_unistr, arg):
-    throw(symbol_unistr, space.newtuple([arg]))
+    throw(symbol_unistr, space.newarray([arg]))
 
 
 def throw_2(symbol_unistr, arg1, arg2):
-    throw(symbol_unistr, space.newtuple([arg1, arg2]))
+    throw(symbol_unistr, space.newarray([arg1, arg2]))
 
 
 def throw_3(symbol_unistr, arg1, arg2, arg3):
-    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3]))
+    throw(symbol_unistr, space.newarray([arg1, arg2, arg3]))
 
 
 def throw_4(symbol_unistr, arg1, arg2, arg3, arg4):
-    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4]))
+    throw(symbol_unistr, space.newarray([arg1, arg2, arg3, arg4]))
 
 
 def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
-    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5]))
+    throw(symbol_unistr, space.newarray([arg1, arg2, arg3, arg4, arg5]))
 
 
 def throw_6(symbol_unistr, arg1, arg2, arg3, arg4, arg5, arg6):
-    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5, arg6]))
+    throw(symbol_unistr, space.newarray([arg1, arg2, arg3, arg4, arg5, arg6]))
 
 
 def throw_7(symbol_unistr, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
-    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
+    throw(symbol_unistr, space.newarray([arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
 
 
 def affirm_iterable(it, condition):

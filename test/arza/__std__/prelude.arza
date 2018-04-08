@@ -27,4 +27,4 @@ prefix (~, __bnot__, 70)
 //    obj.__init__(...args)
 //    obj
 
-let print = PL
+print = PL

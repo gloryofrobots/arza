@@ -12,12 +12,12 @@ def newnode(ntype, token, children):
     if children is not None:
         for child in children:
             assert is_node(child), (child.__class__, child)
-        return space.newtuple([
+        return space.newarray([
             space.newint(ntype), token, space.newlist(children),
             space.newstring(tt.token_type_to_u(tokens.token_type(token)))
         ])
     else:
-        return space.newtuple([
+        return space.newarray([
             space.newint(ntype), token, space.newlist([]),
             space.newstring(tt.token_type_to_u(tokens.token_type(token)))
         ])
@@ -44,11 +44,11 @@ def is_list_node(node):
 
 
 def is_single_node(node):
-    return space.istuple(node) and api.length_i(node) == 4
+    return space.isarray(node) and api.length_i(node) == 4
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) \
+    return space.islist(node) or space.isarray(node) \
            or space.isvoid(node) or is_scope_node(node) or is_int_node(node)
 
 
@@ -217,20 +217,20 @@ def is_equal_pattern(pat1, pat2):
 def pattern_length(n):
     ntype = node_type(n)
     if ntype == nt.NT_WHEN:
-        return tuple_node_length(node_first(n))
-    return tuple_node_length(n)
+        return array_node_length(node_first(n))
+    return array_node_length(n)
 
 
 def list_node_length(l):
     return api.length_i(node_first(l))
 
 
-def tuple_node_length(n):
+def array_node_length(n):
     if node_type(n) == nt.NT_UNIT:
         return 0
 
-    if node_type(n) != nt.NT_TUPLE:
-        assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_s(node_type(n))
+    if node_type(n) != nt.NT_ARRAY:
+        assert node_type(n) == nt.NT_ARRAY, nt.node_type_to_s(node_type(n))
     return api.length_i(node_first(n))
 
 
@@ -366,7 +366,7 @@ def create_fun_1_node(token, name, arg, body):
 
 
 def create_lambda_node(token, args, exp):
-    assert node_type(args) == nt.NT_TUPLE or node_type(args) == nt.NT_UNIT, args
+    assert node_type(args) == nt.NT_ARRAY or node_type(args) == nt.NT_UNIT, args
     return node_1(nt.NT_LAMBDA, token,
                   create_function_variants(
                       args,
@@ -500,12 +500,12 @@ def tuple_node_to_list(node):
 
 
 def create_tuple_node(token, elements):
-    return node_1(nt.NT_TUPLE, token, list_node(elements))
+    return node_1(nt.NT_ARRAY, token, list_node(elements))
 
 
 def create_tuple_node_from_list(token, elements):
     assert is_list_node(elements)
-    return node_1(nt.NT_TUPLE, token, elements)
+    return node_1(nt.NT_ARRAY, token, elements)
 
 
 def create_list_node(token, items):
@@ -601,10 +601,6 @@ def create_kindof_call(token, left, right):
     return create_lookup_call_s(token, left, lang_names.KINDOF, [right])
 
 
-def create_is_implemented_call(token, left, right):
-    return create_lookup_call_s(token, left, lang_names.IS_IMPLEMENTED, [right])
-
-
 def create_isnot_call(token, left, right):
     return create_lookup_call_s(token, left, lang_names.ISNOT, [right])
 
@@ -616,41 +612,29 @@ def create_is_call(token, left, right):
 def create_elem_call(token, left, right):
     return create_lookup_call_s(token, left, lang_names.ELEM, [right])
 
+
 def create_len_call(token, val):
     return create_lookup_call_s(token, val, lang_names.LEN, [])
 
 
-
-def create_is_indexed_call(token, val):
-    return create_call_node_s(token, lang_names.IS_INDEXED, [val])
-
-
-def create_is_tuple_call(token, val):
-    return create_call_node_s(token, lang_names.IS_TUPLE, [val])
+def create_is_array_call(token, val):
+    return create_lookup_call_s(token, val, lang_names.IS_ARRAY, [])
 
 
-def create_is_dict_call(token, val):
-    return create_call_node_s(token, lang_names.IS_DICT, [val])
+def create_is_table_call(token, val):
+    return create_lookup_call_s(token, val, lang_names.IS_TABLE, [])
 
 
 def create_is_empty_call(token, val):
-    return create_call_node_s(token, lang_names.IS_EMPTY, [val])
+    return create_lookup_call_s(token, val, lang_names.IS_EMPTY, [])
 
 
 def create_is_seq_call(token, val):
-    return create_call_node_s(token, lang_names.IS_SEQ, [val])
-
-
-def create_cons_call(token, left, right):
-    return create_call_node_s(token, lang_names.CONS, [left, right])
+    return create_lookup_call_s(token, val, lang_names.IS_SEQ, [])
 
 
 def create_not_call(token, left):
     return create_call_node_s(token, lang_names.NOT, [left])
-
-
-def create_to_seq_call(token, left):
-    return create_call_node_s(token, lang_names.TO_SEQ, [left])
 
 
 def _create_unpack_call_args(seqs):

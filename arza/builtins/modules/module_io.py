@@ -35,4 +35,4 @@ def _write(process, routine):
     io = routine.get_arg(1)
     error.affirm_type(io, space.isiodevice)
     io.write(val)
-    return space.newunit()
+    return space.newnil()

@@ -1,6 +1,6 @@
 from arza.runtime.routine.routine import complete_native_routine
 from arza.runtime import error
-from arza.types import api, space, plist, environment, datatype, partial
+from arza.types import api, space, plist, environment
 
 from arza.misc.strutil import encode_unicode_utf8
 from arza.misc.platform import rstring, compute_unique_id
@@ -28,15 +28,10 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.ENV, __env, 0)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
-    put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
-    put_lang_func(process, module, lang_names.IS_TUPLE, is_tuple, 1)
-    put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
-    put_lang_func(process, module, lang_names.IS_DICT, is_dict, 1)
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.DEFCLASS, __class, 3)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
-    put_lang_func(process, module, u"vector", __vector, -1)
     put_lang_func(process, module, u"array", __array, -1)
 
 
@@ -68,7 +63,7 @@ def _id(process, routine):
 def _print(process, routine):
     args = routine._args.to_l()
     if len(args) == 0:
-        return space.newunit()
+        return space.newnil()
 
     builder = rstring.UnicodeBuilder()
     for arg in args[:-1]:
@@ -80,7 +75,7 @@ def _print(process, routine):
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
     print print_str
-    return space.newunit()
+    return space.newnil()
 
 
 @complete_native_routine
@@ -88,7 +83,7 @@ def __env(process, routine):
     from arza.runtime.routine.code_routine import CodeRoutine
     prev = process.fiber.previous_routine()
     if not isinstance(prev, CodeRoutine):
-        return space.newunit()
+        return space.newnil()
 
     return prev.env
 
@@ -100,13 +95,7 @@ def __dmark(process, routine):
     _num = routine.get_arg(0)
     error.affirm_type(_num, space.isint)
     api.d.add_bp(api.to_i(_num))
-    return space.newunit()
-
-
-@complete_native_routine
-def __vector(process, routine):
-    args = routine._args.to_l()
-    return space.newpvector(args)
+    return space.newnil()
 
 
 @complete_native_routine
@@ -130,7 +119,7 @@ def _eval(process, routine):
     env = space.newenv(space.newsymbol(process, u"__eval__"), source.code.scope, parent_env)
 
     func = space.newfunc(source.name, source.code, env)
-    args = space.newunit()
+    args = space.newnil()
     api.call(process, func, args)
 
 
@@ -139,9 +128,8 @@ def apply(process, routine):
     args = routine.get_arg(1)
     if space.islist(args):
         args = plist.to_tuple(args)
-    elif not space.istuple(args):
-        # args = space.newtuple([args])
-        return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"expected tuple"))
+    elif not space.isarray(args):
+        return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"expected array"))
     api.call(process, func, args)
 
 
@@ -190,62 +178,9 @@ def load_module(process, routine):
 
 
 @complete_native_routine
-def __curry(process, routine):
-    func = routine.get_arg(0)
-    return space.newpartial(func)
-
-
-@complete_native_routine
-def __partial(process, routine):
-    args = routine._args.to_l()
-    func = args[0]
-    args_t = space.newtuple(args[1:])
-    return partial.newfunction_partial(func, args_t)
-
-
-@complete_native_routine
 def time(process, routine):
     import time
     return space.newfloat(time.time())
-
-
-@complete_native_routine
-def is_tuple(process, routine):
-    v1 = routine.get_arg(0)
-    if space.istuple(v1) or space.isarguments(v1):
-        return space.newbool(True)
-
-    return space.newbool(False)
-
-
-@complete_native_routine
-def is_indexed(process, routine):
-    v1 = routine.get_arg(0)
-    if space.istuple(v1) or space.isarguments(v1) or space.isarray(v1):
-        return space.newbool(True)
-
-
-    return space.newbool(False)
-
-
-@complete_native_routine
-def is_seq(process, routine):
-    from arza.types.space import islist, newbool
-    v1 = routine.get_arg(0)
-    if islist(v1):
-        return newbool(True)
-
-    return newbool(False)
-
-
-@complete_native_routine
-def is_dict(process, routine):
-    v1 = routine.get_arg(0)
-
-    if space.isassocarray(v1):
-        return space.newbool(True)
-
-    return space.newbool(False)
 
 
 @complete_native_routine

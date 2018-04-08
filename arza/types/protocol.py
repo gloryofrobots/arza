@@ -1,7 +1,7 @@
 from arza.types.root import W_Hashable
 from arza.misc import platform
 from arza.runtime import error
-from arza.types import api, space, plist, tuples
+from arza.types import api, space, plist, array
 from arza.compile.parse import nodes
 
 
@@ -24,7 +24,7 @@ class W_Method(W_Hashable):
 
         self.default = default
         self.dag = None
-        self.methods = space.new_empty_assoc_array()
+        self.methods = space.newemptytable()
 
     def _to_string_(self):
         return "<method %s/%s>" % (api.to_s(self.name), api.to_s(self.arity))
@@ -35,7 +35,7 @@ class W_Method(W_Hashable):
     def register_double(self, process, type_1, type_2, fn):
         lookup = api.lookup(self.methods, type_1, space.newvoid())
         if space.isvoid(lookup):
-            lookup = space.new_empty_assoc_array()
+            lookup = space.newemptytable()
             api.put(self.methods, type_1, lookup)
         api.put(lookup, type_2, fn)
 
@@ -55,7 +55,7 @@ class W_Method(W_Hashable):
         if space.isvoid(table):
             return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
                                  self,
-                                 tuples.types_tuple(process, args),
+                                 array.types_array(process, args),
                                  args)
 
         self.__dispatch_single(process, args, self.dispatch_indexes[1], table)
@@ -73,7 +73,7 @@ class W_Method(W_Hashable):
         if space.isvoid(method):
             return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
                                  self,
-                                 tuples.types_tuple(process, args),
+                                 array.types_array(process, args),
                                  args)
 
         assert method is not self

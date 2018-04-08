@@ -204,28 +204,14 @@ def newnativefunc(name, function, arity):
 
 
 def isfunction(value):
-    from arza.types.function import W_Function, W_Method
+    from arza.types.function import W_Function
     from arza.types.native_function import W_NativeFunction
-    from arza.types.partial import W_Partial
-    return isinstance(value, W_Function) or isinstance(value, W_NativeFunction) \
-           or isinstance(value, W_Partial) or isinstance(value, W_Method)
+    return isinstance(value, W_Function) or isinstance(value, W_NativeFunction)
 
 
 def isnativefunction(value):
     from arza.types.native_function import W_NativeFunction
     return isinstance(value, W_NativeFunction)
-
-
-########################################################
-
-def newpartial(func):
-    from arza.types.partial import newpartial
-    return newpartial(func)
-
-
-def ispartial(w):
-    from arza.types.partial import W_Partial
-    return isinstance(w, W_Partial)
 
 
 ########################################################
@@ -243,34 +229,25 @@ def isiodevice(w):
 
 ########################################################
 
-def new_assoc_array(args):
-    from arza.types.assoc_array import create_assoc_array
+def newtable(args):
+    from arza.types.table import create_assoc_array
     return create_assoc_array(args)
 
 
-def new_empty_assoc_array():
-    from arza.types.assoc_array import create_empty_assoc_array
+def newemptytable():
+    from arza.types.table import create_empty_assoc_array
     return create_empty_assoc_array()
 
 
-def isassocarray(value):
-    from arza.types.assoc_array import W_AssocArray
+def istable(value):
+    from arza.types.table import W_AssocArray
     return isinstance(value, W_AssocArray)
 
 
 ########################################################
 
-def newpmap(args):
-    from arza.types.pmap import pmap
-    return pmap(args)
-
-
-def ispmap(value):
-    from arza.types.pmap import W_PMap
-    return isinstance(value, W_PMap)
-
-
-########################################################
+def newemptyarray():
+    return newarray([])
 
 
 def newarray(items):
@@ -284,21 +261,6 @@ def newarray(items):
 def isarray(value):
     from arza.types.array import W_Array
     return isinstance(value, W_Array)
-
-
-########################################################
-
-def newpvector(items):
-    assert isinstance(items, list)
-    verify_list_DEBUG(items)
-    from arza.types.pvector import newpvector
-    obj = newpvector(items)
-    return obj
-
-
-def ispvector(value):
-    from arza.types.pvector import W_PVector
-    return isinstance(value, W_PVector)
 
 
 ########################################################
@@ -321,41 +283,6 @@ def verify_list_DEBUG(items):
 
 ########################################################
 
-def newtuple(items):
-    from arza.types.tuples import W_Tuple
-    assert isinstance(items, list)
-    if len(items) == 0:
-        return newunit()
-
-    verify_list_DEBUG(items)
-    return W_Tuple(items)
-
-
-def newunit():
-    from arza.types.tuples import W_Unit
-    return W_Unit()
-
-
-def newtupleunit():
-    return newtuple([newunit()])
-
-
-def isunit(w):
-    from arza.types.tuples import W_Unit
-    return isinstance(w, W_Unit)
-
-
-def istuple(w):
-    from arza.types.tuples import W_Tuple, W_Unit
-    return isinstance(w, W_Tuple) or isinstance(w, W_Unit)
-
-
-def isrealtuple(w):
-    from arza.types.tuples import W_Tuple
-    return isinstance(w, W_Tuple)
-
-
-#########################################################
 
 def newarguments(stack, index, length):
     from arza.types.arguments import W_Arguments
@@ -411,7 +338,7 @@ def newclass(name, base, slots):
 
 
 def newemptyclass(name, base):
-    return newclass(name, base, new_empty_assoc_array())
+    return newclass(name, base, newemptytable())
 
 
 def newcompiledclass(name, base, env):

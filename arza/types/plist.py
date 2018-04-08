@@ -111,7 +111,7 @@ def empty():
 
 
 def to_tuple(pl):
-    return space.newtuple(pl.to_l())
+    return space.newarray(pl.to_l())
 
 
 def foldl(func, acc, pl):
