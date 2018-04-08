@@ -274,20 +274,7 @@ class Empty:
     __call() = 3
 )
 
-
-
-class List:
-    __init__(head, tail):
-        self.head = head
-        self.tail = tail
-
-
-    cons(val):
-        List(val, self)
-
 let l = List(1, Empty)
-
-
 
 
 class A is P
@@ -359,15 +346,6 @@ process p(x, y) =
     f()
 
 fun f1(x, y, {x or 1, y or 4, z})
-
-&&d.s1.s2
-%d.s1.s2
-
-%(d.s1.s2)
-$(d.s1.s2)
-
-##(d.s1.s2)
-
 
 
 d = {
