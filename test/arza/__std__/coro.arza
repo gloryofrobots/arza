@@ -8,28 +8,27 @@ import seq
 //////////////////////////////////////
 
 
-trait TCoro(C) for Coroutine =
-    def is_empty(self of C) as std_behavior:is_empty
+extend Coroutine =
+    def is_empty(self) as std_behavior:is_empty
 
-    def len(self of C) = throw NotImplementedError ("Coroutine can't define len")
+    def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
-    def first(self of C) =
+    def first(self) =
         if not is_empty(self) then
             self ()
         else
             throw FiberFlowError("Coroutine is closed")
 
-    def rest(self of C) =
+    def rest(self) =
         if not is_empty(self) then
             self
         else
             []
 
-    def to_seq(self of C) = self
-    def from_seq(self of C) = self
-    def empty(self of C) = []
+    def to_seq(self) = self
+    def from_seq(self) = self
+    def empty(self) = []
 
-describe Coroutine as (Len, ToSeq, Seq, Empty)
 
 // REFS
 type Reference (val)
@@ -51,18 +50,17 @@ fun ref(v) =
     co(v)
     Reference(co)
 
-trait TReference(R) for Reference =
-    def repr(self of R) = str(self)
+extend Reference =
+    def repr(self) = str(self)
 
-    def &(self of R) = self.val(#Read)
+    def &(self) = self.val(#Read)
 
-    def :=(self of R, value) = self.val((#Write, value))
+    def :=(self) = self.val((#Write, value))
 
-    def ==(self of R, other) = self.val == other.val
+    def ==(self) = self.val == other.val
 
-    def str(self of R) = "Var"
+    def str(self) = "Var"
 
-describe Reference as (Repr, Ref)
 ///////////////////////////////////////////////////////
 
 // helper for creating looping generators

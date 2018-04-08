@@ -3,46 +3,34 @@ import std
 import seq
 
 
-trait __TStringEq(T) for [String, Char, Symbol] =
-    instance std:TEq(T)
-    instance std:TStr(T)
+seq:foreach((fun (T) =
+        std:TEq(T)
+        std:TStr(T)
+     ), [String, Char, Symbol])
+
+extend String
+    def at (self, k) as std_behavior:at
+    def put (self, k, v) as std_behavior:put
+    def del (self, el) as std_behavior:del
+    def has (self, el) as std_behavior:has
+    def is_empty (self) as std_behavior:is_empty
+    def len (self) as std_behavior:len
+
+    def append(self, v) as _string:append
+    def prepend(self, v) as _string:prepend
+    def to_seq(self) as _string:to_list
+    def slice(self, _from, _to) as _string:slice
+    def drop(self, x) as _string:drop
+    def take(self, x) as _string:take
+
+    def cons (value of Char, self) = _string:append(self, value)
+    def empty(self) = ""
 
 
-trait __TString(S) for String =
-    def at (self of S, k) as std_behavior:at
-    def put (self of S, k, v) as std_behavior:put
-    def del (self of S, el) as std_behavior:del
-    def has (self of S, el) as std_behavior:has
-    def is_empty (self of S) as std_behavior:is_empty
-    def len (self of S) as std_behavior:len
-
-    def append(self of S, v) as _string:append
-    def prepend(self of S, v) as _string:prepend
-    def to_seq(self of S) as _string:to_list
-    def slice(self of S, _from, _to) as _string:slice
-    def drop(self of S, x) as _string:drop
-    def take(self of S, x) as _string:take
-
-    def cons (value of Char, self of S) = _string:append(self, value)
-    def empty(self of S) = ""
-
-
-def ++ (s1 of String, s2 of String) = _string:concat(s1, s2)
-def ++ (s1 of String, s2 of Symbol) = _string:concat(s1, str(s2))
-def ++ (s1 of Symbol, s2 of String) = _string:concat(str(s1), s2)
-def ++ (s1 of Symbol, s2 of Symbol) = symbol(_string:concat(str(s1), str(s2)))
-
-
-describe (Symbol, Char) as (Eq, Repr)
-
-
-describe Symbol as  Concat
-
-
-describe String as (Eq, Repr,
-       Len, Coll,
-       Prepend, Append, Concat, Cons,
-       ToSeq, Slice, Empty)
+def ++[String, String] (s1, s2) = _string:concat(s1, s2)
+def ++[String, Symbol] (s1, s2) = _string:concat(s1, str(s2))
+def ++[Symbol, String] (s1, s2) = _string:concat(str(s1), s2)
+def ++[Symbol, Symbol] (s1, s2) = symbol(_string:concat(str(s1), str(s2)))
 
 
 fun concat (str1 of String, str2 of String) =

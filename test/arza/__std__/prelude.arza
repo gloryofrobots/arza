@@ -160,7 +160,7 @@ fun [valueof T]lower_bound(T)
 fun [valueof T]upper_bound(T)
 fun [T, valueof W] cast(T, W)
 
-extend Record with
+extend Record
     def index_of (self, val) as _datatype:record_index_of
     def keys(self) as _datatype:record_keys
     def values(self) as _datatype:record_values
@@ -174,7 +174,7 @@ extend Record with
     def cast(self, to_what) as std_behavior:cast
 
 
-extend Any with
+extend Any
     def == (self, other) as std_behavior:equal
     def != (self, other) as  std_behavior:not_equal
 

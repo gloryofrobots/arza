@@ -60,52 +60,46 @@ fun replicate(count, hasent) =
         throw ValueError(count)
 ---------------------------------------------------
 
-trait TList(T) for List =
-    def != (self of T, other) as std_behavior:not_equal
-    def ==(self of T, other) = seq:equal(self, other)
+extend List
+    def != (self, other) as std_behavior:not_equal
+    def ==(self, other) = seq:equal(self, other)
 
-    def put (self of T, k, v) as std_behavior:put
-    def at (self of T, k) as std_behavior:at
-    def del (self of T, k) as std_behavior:del
-    def has (self of T, el) as std_behavior:has
+    def put (self, k, v) as std_behavior:put
+    def at (self, k) as std_behavior:at
+    def del (self, k) as std_behavior:del
+    def has (self, el) as std_behavior:has
 
 
-    def repr(self of T) =
+    def repr(self) =
         "[" ++ string:join_with(", ", self, repr) ++ "]"
 
-    def str(self of T) =
+    def str(self) =
         "[" ++ string:join_with(", ", self, str) ++ "]"
 
-    def first(self of T) = _list:head(self)
+    def first(self) = _list:head(self)
 
-    def rest(self of T) = _list:tail(self)
+    def rest(self) = _list:tail(self)
 
-    def cons(value, self of T) = _list:cons(value, self)
+    def cons(value, self) = _list:cons(value, self)
 
-    def to_seq(self of T) = self
-    def from_seq(self of T) = self
+    def to_seq(self) = self
+    def from_seq(self) = self
 
-    def len(self of T) = _list:length(self)
+    def len(self) = _list:length(self)
 
-    def is_empty(self of T) = _list:is_empty(self)
+    def is_empty(self) = _list:is_empty(self)
 
-    def empty(self of T) = []
+    def empty(self) = []
 
-    def slice(self of T, first, last) as _list:slice
+    def slice(self, first, last) as _list:slice
 
-    def drop(self of T, count) as _list:drop
+    def drop(self, count) as _list:drop
 
-    def take(self of T, count) as _list:take
+    def take(self, count) as _list:take
 
-    def append(self of T, val) = seq:append(val, self)
+    def append(self, val) = seq:append(val, self)
 --------------------------------------------------
 
-def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)
-def ++ (t of Tuple, l of List) = t ++ _list:to_tuple(l)
-def ++ (l of List, t of Tuple) = _list:to_tuple(l) ++ t
-
-
-describe List as  (Eq, Repr,
-       Len, Coll,
-       Concat, Cons,
-       ToSeq, Seq, Slice)
+def ++[List,List] (l1, l2) = seq:concat(l1, l2)
+def ++[Tuple, List] (tuple, l) = t ++ _list:to_tuple(l)
+def ++[List, Tuple] (l, tuple) = _list:to_tuple(l) ++ t

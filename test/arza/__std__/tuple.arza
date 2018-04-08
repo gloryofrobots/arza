@@ -4,46 +4,39 @@ import std
 import io
 
 
-trait (T) for Tuple =
-    instance std:TEq(T)
+std:TEq(Tuple)
+extend Tuple
+    def put (self, k, v) as std_behavior:put
+    def del (self, el) as std_behavior:del
+    def has (self, el) as std_behavior:has
+    def is_empty (self) as std_behavior:is_empty
+    def len (self) as std_behavior:len
 
-    def put (self of T, k, v) as std_behavior:put
-    def del (self of T, el) as std_behavior:del
-    def has (self of T, el) as std_behavior:has
-    def is_empty (self of T) as std_behavior:is_empty
-    def len (self of T) as std_behavior:len
+    def ++ (t1, t2) as _tuple:concat
+    def prepend(self, v) as _tuple:prepend
+    def append(self, v) as _tuple:append
+    def to_seq(self) as _tuple:to_list
+    def slice(self, first, last) as _tuple:slice
+    def drop(self, x) as _tuple:drop
+    def take(self, x) as _tuple:take
 
-    def ++ (t1 of T, t2 of T) as _tuple:concat
-    def prepend(self of T, v) as _tuple:prepend
-    def append(self of T, v) as _tuple:append
-    def to_seq(self of T) as _tuple:to_list
-    def slice(self of T, first, last) as _tuple:slice
-    def drop(self of T, x) as _tuple:drop
-    def take(self of T, x) as _tuple:take
+    def index_of(self, el) as _tuple:index_of
 
-    def index_of(self of T, el) as _tuple:index_of
-
-    def repr(self of T) =
+    def repr(self) =
         if len(self) == 1 then
             "(" ++ repr(at(self, 0)) ++ ",)"
         else
             "(" ++ string:join_with(", ", to_seq(self), repr) ++ ")"
 
-    def str(self of T) =
+    def str(self) =
         if len(self) == 1 then
             "(" ++ str(at(self, 0)) ++ ",)"
         else
             "(" ++ string:join_with(", ", to_seq(self), str) ++ ")"
 
 
-describe Tuple as (Eq, Repr,
-       Len, Coll,
-       Prepend, Concat, Indexed,
-       ToSeq, Slice)
-
-
 fun ensure_tuple
-    | t of Tuple = t
+    | tuple = t
     | v = (v,)
 
 

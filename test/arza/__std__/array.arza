@@ -4,50 +4,48 @@ import io
 import std
 
 
-trait TArray(A) for Array =
-    instance std:TEq(A)
+std:TEq(Array)
+extend Array
+    def at (self, k) as std_behavior:at
+    def put (self, k, v) as std_behavior:put
+    def del (self, el) as std_behavior:del
+    def has (self, el) as std_behavior:has
+    def is_empty (self) as std_behavior:is_empty
+    def len (self) as std_behavior:len
 
-    def at (self of A, k) as std_behavior:at
-    def put (self of A, k, v) as std_behavior:put
-    def del (self of A, el) as std_behavior:del
-    def has (self of A, el) as std_behavior:has
-    def is_empty (self of A) as std_behavior:is_empty
-    def len (self of A) as std_behavior:len
+    def ++ (a1, a2) as _array:concat
 
-    def ++ (a1 of A, a2 of A) as _array:concat
+    def prepend(self, v) as _array:prepend
+    def append(self, v) as _array:append
 
-    def prepend(self of A, v) as _array:prepend
-    def append(self of A, v) as _array:append
+    def slice(self, first, last) as _array:slice
+    def drop(self, x) as _array:drop
+    def take(self, x) as _array:take
 
-    def slice(self of A, first, last) as _array:slice
-    def drop(self of A, x) as _array:drop
-    def take(self of A, x) as _array:take
+    def index_of(self, el) as _array:index_of
 
-    def index_of(self of A, el) as _array:index_of
-
-    def repr(self of A) =
+    def repr(self) =
         if len(self) == 1 then
             "Array(" ++ repr(at(self, 0)) ++ ",)"
         else
             "Array(" ++ string:join_with(", ", to_seq(self), repr) ++ ")"
 
-    def str(self of A) =
+    def str(self) =
         if len(self) == 1 then
             "Array(" ++ str(at(self, 0)) ++ ",)"
         else
             "Array(" ++ string:join_with(", ", to_seq(self), str) ++ ")"
 
-//    def cast(Seq, self of A) = to_seq(self)
+//    def cast(Seq, self) = to_seq(self)
 --------------------------------------------------
 
 type ArraySeq (arr, index, dest)
 type ArraySeqEmpty (dest)
 
-trait TArraySeq(A) for ArraySeq =
+extend ArraySeq =
+    def to_seq(self) = self
 
-    def to_seq(self of A) = self
-
-    def first({arr, index} of A) = arr.[index]
+    def first({arr, index}) = arr.[index]
 
     def rest(A(arr, index, dest)) =
         let
@@ -59,11 +57,11 @@ trait TArraySeq(A) for ArraySeq =
                 A(arr, index + 1, dest)
 
 
-    def is_empty({arr, index} of A) = index >= len(arr)
+    def is_empty({arr, index}) = index >= len(arr)
 
-    def empty(self of A) = ArraySeqEmpty(self.dest)
+    def empty(self) = ArraySeqEmpty(self.dest)
 
-    def len({arr, index} of A) =
+    def len({arr, index}) =
         let
             l = len(arr) - index
         in
@@ -74,36 +72,33 @@ trait TArraySeq(A) for ArraySeq =
         A(arr, index+1, prepend(dest, v))
 
 
-describe ArraySeq as (Seq, Len, Empty)
-
 --------------------------------------------------
 
-trait TArraySeqEmpty(A) for ArraySeqEmpty =
-    def to_seq(self of A) = self
-    def first(self of A) = throw EmptySeqError("ArraySequence is empty")
+extend ArraySeqEmpty
+    def to_seq(self) = self
+    def first(self) = throw EmptySeqError("ArraySequence is empty")
 
-    def rest(self of A) =
+    def rest(self) =
         throw EmptySeqError("ArraySequence is empty")
 
-    def empty(self of A) = self
+    def empty(self) = self
 
-    def is_empty(self of A) = True
+    def is_empty(self) = True
 
-    def len(self of A) = 0
+    def len(self) = 0
 
-    def cons(v, self of A) =
+    def cons(v, self) =
         prepend(self.dest, v)
         self
 
-    def from_seq(self of A) = self.dest
+    def from_seq(self) = self.dest
 
-describe ArraySeqEmpty as (Seq, Len)
 
 --------------------------------------------------
 
-def to_seq(self of Array) = ArraySeq(self, 0, array())
+def to_seq[Array] (self) = ArraySeq(self, 0, array())
 
-fun map (f, arr of Array) =
+fun map (f, arr) =
     let
         size = len(arr)
         fun _map
@@ -116,7 +111,3 @@ fun map (f, arr of Array) =
     in
         _map(0, array())
 
-describe Array as (Eq, Repr,
-       Len, Coll,
-       Prepend, Append, Concat, Indexed,
-       ToSeq, Slice)

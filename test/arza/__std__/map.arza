@@ -3,27 +3,23 @@ import string
 import seq
 import std
 
-trait TMap(M) for Map =
-    instance std:TEq(M)
+std:TEq(Map)
+extend Map
+    def put (self, k, v) as std_behavior:put
+    def del (self, el) as std_behavior:del
+    def has (self, el) as std_behavior:has
+    def is_empty (self) as std_behavior:is_empty
 
-    def put (self of M, k, v) as std_behavior:put
-    def del (self of M, el) as std_behavior:del
-    def has (self of M, el) as std_behavior:has
-    def is_empty (self of M) as std_behavior:is_empty
+    def repr(self) = str(self)
 
-    def repr(self of M) = str(self)
-
-    def str(self of M) =
+    def str(self) =
         let fun _joiner((fst, snd)) =
                 str(fst) ++ "=" ++ repr(snd)
         in "{"
                 ++ string:join_with(", ", to_seq(self), _joiner) ++
            "}"
 
-    def to_seq(self of M) = _map:to_list(self)
+    def to_seq(self) = _map:to_list(self)
 
-    def keys(self of M) = seq:map(at(_, 0), to_seq(self))
-    def values(self of M) = seq:map(at(_, 1), to_seq(self))
---------------------------------------------------
-
-describe Map as (Eq, Repr, Coll, Dict, ToSeq)
+    def keys(self) = seq:map(at(_, 0), to_seq(self))
+    def values(self) = seq:map(at(_, 1), to_seq(self))
