@@ -19,7 +19,6 @@ class StdClasses:
         _s = symbols.symbol
         self.Object = newclass(_s(u"Object"), space.newnil())
         self.Class = newclass(_s(u"Class"), self.Object)
-        self.Object.retype(self.Class)
 
         newtype = lambda name: newclass(name, self.Object)
         newtype_2 = lambda name, parent: newclass(name, parent)

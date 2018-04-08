@@ -10,12 +10,13 @@ def setup(process, stdlib):
 
 def setup_class(process, _class):
     api.put_native_function(process, _class, u'type', _type, 1)
-    api.put_native_function(process, _class, u'super', _type, 1)
+    api.put_native_function(process, _class, u'parent', _parent, 1)
     api.put_native_function(process, _class, u'__not__', _not, 1)
     api.put_native_function(process, _class, u'__is__', _is, 2)
     api.put_native_function(process, _class, u'__len__', length, 1)
     api.put_native_function(process, _class, u'__is_empty__', is_empty, 1)
     api.put_native_function(process, _class, u'__put__', put, 3)
+    api.put_native_function(process, _class, u'__put_default__', put_default, 3)
     api.put_native_function(process, _class, u'__at__', at, 2)
     api.put_native_function(process, _class, u'__elem__', elem, 2)
     api.put_native_function(process, _class, u'__del__', delete, 2)
@@ -38,13 +39,13 @@ def _type(process, routine):
     return api.get_type(process, arg0)
 
 @complete_native_routine
-def _super(process, routine):
+def _parent(process, routine):
     arg0 = routine.get_arg(0)
     t = api.get_type(process, arg0)
     if not space.isclass(t):
         return space.newnil()
     else:
-        return t.behavior
+        return t.super
 
 
 @complete_native_routine
@@ -76,6 +77,21 @@ def put(process, routine):
     arg0 = routine.get_arg(0)
 
     return api.put(arg0, arg1, arg2)
+
+
+@complete_native_routine
+def put_default(process, routine):
+    arg2 = routine.get_arg(2)
+
+    arg1 = routine.get_arg(1)
+
+    arg0 = routine.get_arg(0)
+
+    existed = api.lookup(arg0, arg1, space.newvoid())
+    if space.isvoid(existed):
+        return api.put(arg0, arg1, arg2)
+    else:
+        return arg0
 
 
 @complete_native_routine

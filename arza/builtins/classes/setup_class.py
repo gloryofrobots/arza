@@ -9,10 +9,11 @@ def setup(process, stdlib):
 
 
 def setup_class(process, _class):
-    api.put_native_function(process, _class, u'__instance__', instance, 0)
+    # api.put_native_function(process, _class, u'parent', _parent, 1)
+    pass
 
 
 @complete_native_routine
-def instance(process, routine):
+def _parent(process, routine):
     arg0 = routine.get_arg(0)
-    return objects.newinstance(process, arg0)
+    return arg0.super

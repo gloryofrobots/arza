@@ -11,17 +11,17 @@ class W_Object(W_Hashable):
     def __init__(self, _type, slots):
         W_Hashable.__init__(self)
         # list of all known interfaces
-        self.behavior = _type
+        self.super = _type
         self.slots = slots
 
     def _at_(self, key):
         val = api.lookup(self.slots, key, space.newvoid())
         if space.isvoid(val):
-            return self.behavior.lookup_symbol(key)
+            return self.super.lookup_symbol(key)
         return val
 
-    def retype(self, cls):
-        self.behavior = cls
+    def resuper(self, cls):
+        self.super = cls
 
     def _put_(self, k, v):
         self.slots._put_(k, v)
@@ -34,10 +34,10 @@ class W_Object(W_Hashable):
         return other is self
 
     def _type_(self, process):
-        return self.behavior
+        return self.super
 
     def _to_string_(self):
-        return "<instance %s %s>" % (api.to_s(self.behavior), api.to_s(self.slots))
+        return "<instance %s %s>" % (api.to_s(self.super), api.to_s(self.slots))
 
     def _to_repr_(self):
         return self._to_string_()
@@ -76,13 +76,13 @@ class W_Class(W_Object):
             val = api.lookup(cls.slots, key, space.newvoid())
             if not space.isvoid(val):
                 return val
-            cls = cls.behavior
+            cls = cls.super
             if space.isnil(cls):
                 break
         return space.newvoid()
 
     def _type_(self, process):
-        return process.classes.Class
+        return process.std.classes.Class
 
     def _call_(self, process, args):
         obj = W_Object(self, space.new_empty_assoc_array())
@@ -97,7 +97,7 @@ class W_Class(W_Object):
         return other is self
 
     def _to_string_(self):
-        return "<class %s>" % (api.to_s(self.name))
+        return "<class %s %s>" % (api.to_s(self.name), api.to_s(self.slots))
 
     def _to_repr_(self):
         return self._to_string_()
