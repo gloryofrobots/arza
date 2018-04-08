@@ -69,10 +69,6 @@ def layout_fun(parser, op, node):
     open_statement_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
 
 
-def layout_class(parser, op, node):
-    open_statement_layout(parser, node, LEVELS_CLASS, INDENTS_CLASS)
-
-
 def layout_decorator(parser, op, node):
     open_statement_layout(parser, node, LEVELS_DECORATOR, INDENTS_DECORATOR)
 
@@ -722,6 +718,10 @@ def symbol_operator_name(parser, op, token):
     return nodes.create_name_from_operator(token, name)
 
 # DERIVE
+
+def layout_class(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_CLASS, INDENTS_CLASS)
+
 
 def prefix_class(parser, op, token):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)

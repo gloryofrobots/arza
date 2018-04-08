@@ -1,19 +1,11 @@
 
-class T extends Object =
+class T(Object) =
     fun n() = 42
 
-    fun foldl
-        | (f, acc, []) = acc
-        | (f, acc, hd::tl) = foldl(f, f(hd, acc), tl)
-
-
-    fun foldr
-        | (f, acc, []) = acc
-        | (f, acc, hd::tl) = f(hd, foldr(f, acc, tl))
 
 fun f() =  1
 
 class M =
-    let x = 1
+    x = 1
 
 fun f2() = 13

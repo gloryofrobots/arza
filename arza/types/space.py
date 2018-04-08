@@ -240,8 +240,8 @@ def newemptytable():
 
 
 def istable(value):
-    from arza.types.table import W_AssocArray
-    return isinstance(value, W_AssocArray)
+    from arza.types.table import W_Table
+    return isinstance(value, W_Table)
 
 
 ########################################################

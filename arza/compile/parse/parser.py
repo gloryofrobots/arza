@@ -154,7 +154,7 @@ class ExpressionParser(BaseParser):
 
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
         prefix(self, TT_THROW, None, prefix_throw)
-        prefix(self, TT_CLASS, None, prefix_class, layout=layout_fun)
+        prefix(self, TT_CLASS, None, prefix_class, layout=layout_class)
 
         infix(self, TT_ARROW, None, 10, infix_arrow)
         infix(self, TT_WHEN, None, 10, infix_when)

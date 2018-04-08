@@ -45,7 +45,7 @@ class StdClasses:
 
         self.Tuple = newtype(_s(u"Tuple"))
 
-        self.Dict = newtype(_s(u"Dict"))
+        self.Table = newtype(_s(u"Table"))
 
         self.Function = newtype(_s(u"Function"))
 

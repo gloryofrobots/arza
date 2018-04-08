@@ -9,6 +9,11 @@ class Y(X) =
         self.super().x(x)
         self.{y = y}
 
+
+
+
+
+
 class Pair =
     fun __init__(self, first, second) =
         self.{first = first, second = second}
@@ -21,12 +26,19 @@ class Pair =
     fun sum(self, third, fourth) =
         self.first + self.second + third + fourth
 
+
 fun f1() =
     f2()
 
 fun f2() = 42
 
 fun main() =
+    n = {x=1, y=2}
+
+    affirm::is_equal(true)
+    affirm:is_equal(true)
+
+    print(n.type())
     print(f1())
     X.x(1)
     print(X)

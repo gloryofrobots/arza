@@ -169,7 +169,7 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-class W_AssocArray(W_Root):
+class W_Table(W_Root):
     """
         Dict which supports access by key and by index
     """
@@ -206,7 +206,7 @@ class W_AssocArray(W_Root):
         return self._to_string_()
 
     def _clone_(self):
-        clone = W_AssocArray()
+        clone = W_Table()
         values = self.slot_values
         if values is not None:
             clone.slot_values = api.clone(self.slot_values)
@@ -216,7 +216,7 @@ class W_AssocArray(W_Root):
         return clone
 
     def _type_(self, process):
-        return process.std.classes.AssocArray
+        return process.std.classes.Table
 
     def _at_(self, name):
         idx = self._get_index_(name)
@@ -301,7 +301,7 @@ class W_AssocArray(W_Root):
 
 
 def _create_assoc_array(values, bindings, index):
-    map = W_AssocArray()
+    map = W_Table()
     map.slot_bindings = bindings
     map.slot_values = values
     map.index = index
