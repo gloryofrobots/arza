@@ -21,8 +21,13 @@ class Pair =
     fun sum(self, third, fourth) =
         self.first + self.second + third + fourth
 
+fun f1() =
+    f2()
+
+fun f2() = 42
 
 fun main() =
+    print(f1())
     X.x(1)
     print(X)
     x = X()

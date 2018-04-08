@@ -235,13 +235,8 @@ def _get_variable_index(compiler, code, node, name):
 
     ref = environment.get_reference(compiler.env, name)
     if space.isvoid(ref):
-        names_s = api.to_s(name)
-        # HACK for late binding of internal names in prelude
-
-        if not names_s.startswith(lang_names.PREFIX):
-            # for name in _current_scope(compiler).imports.keys():
-            #     print name
-            return compile_error(compiler, code, node, u"Unreachable variable `%s`" % api.to_s(name))
+        pass
+        # return compile_error(compiler, code, node, u"Unreachable variable `%s`" % api.to_s(name))
     else:
         _declare_static_reference(compiler, ref)
 
@@ -971,7 +966,7 @@ def _compile(compiler, code, ast):
 
 
 def _compile_2(compiler, code, ast):
-    _compile_1(compiler, code, ast)
+    # _compile_1(compiler, code, ast)
     _compile(compiler, code, ast)
 
 

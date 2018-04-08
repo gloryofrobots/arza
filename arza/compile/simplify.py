@@ -8,67 +8,9 @@ from arza.misc import platform
 from arza.compile.parse import nodes, node_type as nt, basic
 
 
-def simplify_error(compiler, code, node, message):
-    from arza.compile.compiler import compile_error
-    return compile_error(compiler, code, node, message)
-
-
-def simplify_type(compiler, code, node):
-    name_node = node_first(node)
-    fields = node_second(node)
-    construct = node_third(node)
-
-    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
-    if is_empty_node(fields):
-        fields_2_arg = nodes.create_empty_list_node(nodes.node_token(node))
-    else:
-        fields_2_arg = fields
-
-    if is_empty_node(construct):
-        construct_3_arg = nodes.create_unit_node(nodes.node_token(node))
-    else:
-        construct_3_arg = construct
-
-    return _generate_type_call(nodes.node_token(node), name_node, name_1_arg, fields_2_arg, construct_3_arg)
-
-
-def _generate_type_call(token, name_node, name_1_arg, fields_2_arg, construct_3_arg):
-    call_node = nodes.create_call_node_s(token, lang_names.TYPE,
-                                         [name_1_arg, fields_2_arg, construct_3_arg])
-    assign_node = nodes.create_assign_node(token, name_node, call_node)
-    return assign_node
-
-
-def collapse_let(node):
-    let_block = node_first(node)
-    in_block = node_second(node)
-    body = plist.concat(let_block, in_block)
-    return body
-
-
-def simplify_let(compiler, code, node):
-    body = collapse_let(node)
-    func = nodes.create_fun_0_node(nodes.node_token(node), nodes.empty_node(), body)
-    return nodes.create_call_node_1(nodes.node_token(node),
-                                    func,
-                                    nodes.create_unit_node(nodes.node_token(node)))
-
-
 def simplify_not(compiler, code, node):
     left = node_first(node)
     return nodes.create_not_call(nodes.node_token(node), left)
-
-
-def simplify_as(compiler, code, node):
-    source = node_first(node)
-    interfaces = node_second(node)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [interfaces, source])
-
-
-def simplify_describe(compiler, code, node):
-    _type = node_first(node)
-    interfaces = node_second(node)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.DESCRIBE, [_type, interfaces])
 
 
 def _random_name(name):
@@ -88,90 +30,6 @@ def _replace_name(node, level, names):
             return nodes.create_name_node(nodes.node_token(node), new_name)
 
     return node
-
-
-def simplify_def_plus(compiler, code, node):
-    super_name = nodes.node_first(node)
-    def_method = nodes.node_second(node)
-    func, signature, method, ast, outers_list = _simplify_def(compiler, code, def_method)
-
-    token = nodes.node_token(node)
-    # f1 = nodes.create_fun_node(token, nodes.empty_node(), method)
-    f1 = method
-    wrapper = nodes.create_fun_1_node(
-        token, nodes.empty_node(),
-        super_name,
-        f1
-    )
-    call_override = nodes.create_call_node_s(token, lang_names.OVERRIDE_HELPER, [func, signature, wrapper])
-    return nodes.create_call_node_s(token, lang_names.OVERRIDE,
-                                    [func, signature, call_override, ast, outers_list])
-
-
-def simplify_def(compiler, code, node):
-    func, signature, method, ast, outers_list = _simplify_def(compiler, code, node)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.SPECIFY,
-                                    [func, signature, method, ast, outers_list])
-
-
-def _simplify_def(compiler, code, node):
-    func = node_first(node)
-    signature = node_second(node)
-    method = node_third(node)
-    pattern = node_fourth(node)
-
-    if node_type(pattern) == nt.NT_WHEN:
-        args = node_first(pattern)
-        guard = node_second(pattern)
-
-        # names occurred in guard must be renamed (real name + random suffix)
-        # and saved in generic function
-
-        arg_names = nodes.find_names(args)
-        guard_names = nodes.find_names(guard)
-        outer_names = plist.diff(guard_names, arg_names)
-        randomized_outer_names = plist.fmap(_random_name, outer_names)
-        pairs = zip(outer_names, randomized_outer_names)
-        new_guard = basic.transform(guard, _replace_name, pairs)
-
-        pattern = nodes.create_when_node(nodes.node_token(pattern), args, new_guard)
-        outers = []
-        for old_name, new_name in pairs:
-            outers.append(nodes.create_tuple_node(
-                nodes.node_token(pattern),
-                [
-                    nodes.create_symbol_node_string(nodes.node_token(pattern), new_name),
-                    nodes.create_name_node(nodes.node_token(pattern), old_name)
-                ]
-            ))
-        outers_list = nodes.create_list_node(nodes.node_token(pattern), outers)
-        #
-        # print "NAMES", arg_names, guard_names, outer_names, randomized_outer_names
-        # print "NEW_GUARD", new_guard
-    else:
-        outers_list = nodes.create_empty_list_node(nodes.node_token(pattern))
-
-    ast = nodes.create_literal_node(nodes.node_token(pattern), pattern)
-    return func, signature, method, ast, outers_list
-
-
-def simplify_interface(compiler, code, node):
-    name_node = node_first(node)
-    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
-
-    generics_2_arg = node_second(node)
-    subs_3_arg = node_third(node)
-
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.INTERFACE,
-                                         [name_1_arg, generics_2_arg, subs_3_arg])
-    return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
-
-
-def simplify_receive(compiler, code, node):
-    branches = node_first(node)
-    fun_node = nodes.create_nameless_fun(node_token(node), branches)
-
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.RECEIVE_HELPER, [fun_node])
 
 
 def simplify_class(compiler, code, node):
@@ -195,51 +53,6 @@ def simplify_class(compiler, code, node):
 
 
 ########################3
-
-def create_infix_lookup(path):
-    result, tail = plist.split(path)
-    if plist.is_empty(tail):
-        return result
-
-    return nodes.create_lookup_node(nodes.node_token(result), create_infix_lookup(tail), result)
-
-
-def simplify_lense(compiler, code, node):
-    """
-    transforms
-    $(d.s1.s2)
-    into
-    arza:lang:lense(d, (source) -> source.s1.s2, (value, source) -> source.{s1.s2 = value})
-    """
-
-    source = node_first(node)
-    setter_path = node_second(node)
-    token = node_token(source)
-    source_name = nodes.create_name_node_s(token, "source")
-    value_name = nodes.create_name_node_s(token, "value")
-
-    ## GETTER
-    getter_path = nodes.create_lookup_node(token, source_name, setter_path)
-    getter_path_list = basic.flatten_infix(getter_path, nt.NT_LOOKUP)
-    getter_path_list = plist.reverse(getter_path_list)
-    getter_body = create_infix_lookup(getter_path_list)
-
-    getter = nodes.create_lambda_node(token, nodes.create_tuple_node(token, [source_name]),
-                                      getter_body)
-
-    ## SETTER
-    # pair = list_node([setter_path, value_name])
-    pair = _create_modify_item(nt.NT_ASSIGN, node_token(setter_path), setter_path, value_name)
-    setter_body = nodes.create_modify_node(token, source_name, list_node([pair]))
-    setter = nodes.create_lambda_node(token, nodes.create_tuple_node(token, [value_name, source_name]),
-                                      setter_body)
-
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.LENSE,
-                                         [source, getter, setter])
-    return call_node
-
-
-###############################
 
 
 def simplify_modify(compiler, code, node):
@@ -372,9 +185,6 @@ def _transform_modify(compiler, node, funcs, source, modifications):
                                  funcs,
                                  put,
                                  tail)
-    # else:
-    #     # ensure symbol
-    #     key = nodes.ensure_symbol_node_from_name(node_token(key), key)
 
     # transform all @ nodes to proper paths
     transformed_bind = nodes.create_lookup_node(node_token(key), source, key)
@@ -448,7 +258,7 @@ def _decorate_type(subj, decorators):
         init = nodes.create_unit_node(nodes.node_token(subj))
 
     token = node_token(subj)
-    dec_arg = nodes.create_tuple_node(token, [fields, init])
+    dec_arg = nodes.create_array_node(token, [fields, init])
 
     decorator_call = _make_decorator_call_chain(dec_arg, decorators)
     temp_name = nodes.create_random_type_decorator_name(token)

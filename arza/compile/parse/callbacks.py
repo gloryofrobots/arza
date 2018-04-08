@@ -289,7 +289,7 @@ def infix_lparen(parser, op, token, left):
         for item in items:
             if nodes.node_type(item) == NT_REST:
                 if len(l) != 0:
-                    seqs.append(nodes.create_list_node(token, l))
+                    seqs.append(nodes.create_array_node(token, l))
                     l = []
                 seq = nodes.node_first(item)
                 if nodes.node_type(seq) == NT_WILDCARD:
@@ -299,7 +299,7 @@ def infix_lparen(parser, op, token, left):
             else:
                 l.append(item)
         if len(l) != 0:
-            seqs.append(nodes.create_list_node(token, l))
+            seqs.append(nodes.create_array_node(token, l))
         body = nodes.create_unpack_call(token, left, list_node(seqs))
     return body
 
@@ -566,7 +566,7 @@ def _parse_func_pattern(parser, arg_terminator):
     else:
         els = _parse_comma_separated_to_one_of(parser.pattern_parser, arg_terminator,
                                                advance_terminator=False)
-        pattern = nodes.create_tuple_node_from_list(curtoken, els)
+        pattern = nodes.create_array_node_from_list(curtoken, els)
     advance_expected(parser, TT_RPAREN)
 
     check_token_types(parser, arg_terminator)
@@ -636,7 +636,7 @@ def _load_module(parser, exp):
 def ensure_tuple(t):
     nt = nodes.node_type(t)
     if nt != NT_ARRAY and nt != NT_UNIT:
-        return nodes.create_tuple_node(get_node_token(t), [t])
+        return nodes.create_array_node(get_node_token(t), [t])
     return t
 
 

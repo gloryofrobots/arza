@@ -361,7 +361,7 @@ def create_fun_0_node(token, name, body):
 def create_fun_1_node(token, name, arg, body):
     return create_fun_node(token, name,
                            create_function_variants(
-                               create_tuple_node(token, [arg]),
+                               create_array_node(token, [arg]),
                                body))
 
 
@@ -499,26 +499,13 @@ def tuple_node_to_list(node):
     return node_first(node)
 
 
-def create_tuple_node(token, elements):
+def create_array_node(token, elements):
     return node_1(nt.NT_ARRAY, token, list_node(elements))
 
 
-def create_tuple_node_from_list(token, elements):
+def create_array_node_from_list(token, elements):
     assert is_list_node(elements)
     return node_1(nt.NT_ARRAY, token, elements)
-
-
-def create_list_node(token, items):
-    return node_1(nt.NT_LIST, token, list_node(items))
-
-
-def create_list_node_from_list(token, items):
-    assert is_list_node(items), items
-    return node_1(nt.NT_LIST, token, items)
-
-
-def create_empty_list_node(token):
-    return node_1(nt.NT_LIST, token, list_node([]))
 
 
 def create_empty_map_node(token):
@@ -527,7 +514,7 @@ def create_empty_map_node(token):
 
 def create_match_fail_node(token, val, idx):
     sym = create_symbol_node_s(token, val)
-    return create_tuple_node(token, [sym, create_temporary_node(token, idx)])
+    return create_array_node(token, [sym, create_temporary_node(token, idx)])
     # return create_call_node_s(token, val, [create_name_node(token, var)])
 
 
