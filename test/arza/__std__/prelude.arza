@@ -78,158 +78,112 @@ prefix (~, ~, 96)
 ////////////////////////////////////////////////////////////
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
+fun [T] =
+    ==(T, y)
+    !=(T, y)
 
-interface Eq(I) =
-    ==(x of I, y)
-    !=(x of I, y)
+    cmp(T, second)
 
-interface Comparable(I) =
-    cmp(first of I, second)
+    <=(T, second)
+    <(T, second)
+    >=(T, second)
+    >(T, second)
+    max(T, second)
+    min(T, second)
 
-interface LessEq(I) is Eq =
-    <=(first of I, second)
-
-interface Ord(I) =
-    use <=(first of I, second)
-    use cmp(first of I, second)
-    <(first of I, second)
-    >=(first of I, second)
-    >(first of I, second)
-    max(first of I, second)
-    min(first of I, second)
-
-interface Num(I) =
-    -(x of I, y)
-    +(x of I, y)
-    *(x of I, y)
-    /(x of I, y)
-    mod(x of I, y)
+    -(T, y)
+    +(T, y)
+    *(T, y)
+    /(T, y)
+    mod(T, y)
     // unary -
-    negate(x of I)
+    negate(T)
 
-interface Pow(I) =
-    **(x of I, y)
+    **(T, y)
 
-interface Str =
     str(Str)
 
-interface Repr(I) is Str =
-    repr(I)
+    repr(T)
 
-interface Len =
     len(Len)
 
-interface IsEmpty(I) =
-    is_empty(I)
+    is_empty(T)
 
-interface Put(I) =
-    put(I, key, value)
+    put(T, key, value)
 
-interface Del(I) =
-    del(I, obj)
+    del(T, obj)
 
-interface At(I) =
-    at(I, key)
-    has(I, key)
+    at(T, key)
+    has(T, key)
 
-interface Coll is (Put, At, Del)
 
-interface Dict(I) is Coll =
-    keys(self of I)
-    values(I)
+    keys(T)
+    values(T)
 
-interface Seq =
     first(Seq)
     rest(Seq)
 
-interface Empty(I) =
-    empty(I)
+    empty(T)
 
-interface Cons(I) =
-    cons(value, I)
+    cons(value, T)
 
-interface Prepend(I) =
-    prepend(I, value)
+    prepend(T, value)
 
-interface Append(I) =
-    append(I, value)
+    append(T, value)
 
-interface Concat(I) =
-    ++(I, other)
+    ++(T, other)
 
-interface Indexed(I) =
-    index_of(I, obj)
+    index_of(T, obj)
 
-interface ToSeq(I) =
-    to_seq(I)
+    to_seq(T)
 
-interface FromSeq(I) =
-    from_seq(I)
+    from_seq(T)
 
-interface Slice(I) =
-    slice (I, first, last)
-    drop(I, count)
-    take(I, count)
-
-interface Bound(I) =
-    lower_bound(I)
-    upper_bound(I)
-
-interface Range(I) =
-    range(I, last)
-    range_by (I, last, step)
-    range_from(I)
-    range_from_by(I, step)
-
-interface Ref(I) =
-    &(I)
-
-interface MutRef(I) =
-    use &(I)
-    :=(I, value)
-
-interface Replace(I) =
-    <- (I, value)
-
-interface Extract(I) =
-    &&(I)
-
-interface Call(I) =
-    call(I, args)
-
-interface Cast(I) =
-    cast(I, valueof to_what)
-
-// Bootstrap interfaces behavior
+    slice (T, first, last)
+    drop(T, count)
+    take(T, count)
 
 
-trait (T) for Record =
-    def index_of (self of T, val) as _datatype:record_index_of
-    def keys(self of T) as _datatype:record_keys
-    def values(self of T) as _datatype:record_values
+    range(T, last)
+    range_by (T, last, step)
+    range_from(T)
+    range_from_by(T, step)
 
-    def put (self of T, k, v) as std_behavior:put
-    def at (self of T, k) as std_behavior:at
-    def del (self of T, el) as std_behavior:del
-    def has (self of T, el) as std_behavior:has
-    def len (self of T) as std_behavior:len
-    def is_empty (self of T) as std_behavior:is_empty
-    def cast(self of T, to_what) as std_behavior:cast
+    &(T)
+    :=(T, value)
+    <- (T, value)
+    &&(T)
+
+    call(T, args)
+
+fun [valueof T]lower_bound(T)
+fun [valueof T]upper_bound(T)
+fun [T, valueof W] cast(T, W)
+
+extend Record with
+    def index_of (self, val) as _datatype:record_index_of
+    def keys(self) as _datatype:record_keys
+    def values(self) as _datatype:record_values
+
+    def put(self, k, v) as std_behavior:put
+    def at (self, k) as std_behavior:at
+    def del (self, el) as std_behavior:del
+    def has (self, el) as std_behavior:has
+    def len (self) as std_behavior:len
+    def is_empty (self) as std_behavior:is_empty
+    def cast(self, to_what) as std_behavior:cast
 
 
-trait (T) for Any =
-//    for [Abstract, Function, Generic, Partial,
-//        Datatype, Bool, Record, Interface, PID, Module] =
+extend Any with
+    def == (self, other) as std_behavior:equal
+    def != (self, other) as  std_behavior:not_equal
 
-    def == (self of T, other) as std_behavior:equal
-    def != (self of T, other) as  std_behavior:not_equal
-
-    def str (self of T) as std_behavior:str
-    def repr (self of T) as std_behavior:repr
+    def str (self) as std_behavior:str
+    def repr (self) as std_behavior:repr
 
 
-def at (self of Map, k) as std_behavior:at
-def at (self of Tuple, el) as std_behavior:at
+def at[Map] (self, k) as std_behavior:at
+def at[Tuple] (self, el) as std_behavior:at
 
 
 ////////////////////////////////////////////////////////////
