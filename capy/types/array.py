@@ -128,6 +128,20 @@ def type_check(t):
     error.affirm_type(t, space.isarray)
 
 
+def equal_with(arr1, arr2, condition):
+    type_check(arr1)
+    type_check(arr2)
+    if api.length_i(arr1) != api.length_i(arr2):
+        return False
+    for i in range(api.length_i(arr1)):
+        el1 = arr1._items[i]
+        el2 = arr2._items[i]
+
+        if not condition(el1, el2):
+            return False
+    return True
+
+
 def empty():
     return W_Array([])
 

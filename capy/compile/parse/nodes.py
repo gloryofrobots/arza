@@ -7,20 +7,29 @@ from capy.misc import strutil
 from capy.builtins import lang_names
 
 
+class W_BaseNode(root.W_Root):
+    pass
+
+
+class W_Node(W_BaseNode):
+    def __init__(self, ntype, token, children):
+        self.ntype = space.newint(ntype)
+        self.token = token
+        if children is not None:
+            for child in children:
+                assert is_node(child), (child.__class__, child)
+            self.children = space.newlist(children)
+        else:
+            self.children = space.newlist([])
+        self.ttypeu = space.newstring(tt.token_type_to_u(tokens.token_type(token)))
+
+    def _to_string_(self):
+        return "<Node %s %s>" % (nt.node_type_to_s(api.to_i(self.ntype)), api.to_s(self.children))
+
+
 def newnode(ntype, token, children):
     assert isinstance(token, tokens.Token)
-    if children is not None:
-        for child in children:
-            assert is_node(child), (child.__class__, child)
-        return space.newarray([
-            space.newint(ntype), token, space.newlist(children),
-            space.newstring(tt.token_type_to_u(tokens.token_type(token)))
-        ])
-    else:
-        return space.newarray([
-            space.newint(ntype), token, space.newlist([]),
-            space.newstring(tt.token_type_to_u(tokens.token_type(token)))
-        ])
+    return W_Node(ntype, token, children)
 
 
 def empty_node():
@@ -38,17 +47,16 @@ def list_node(items):
     return space.newlist(items)
 
 
-# TODO THIS IS SILLY IMPLEMENT IT AS WRAPS
 def is_list_node(node):
     return space.islist(node)
 
 
 def is_single_node(node):
-    return space.isarray(node) and api.length_i(node) == 4
+    return isinstance(node, W_Node)
 
 
 def is_node(node):
-    return space.islist(node) or space.isarray(node) \
+    return space.islist(node) or is_single_node(node) \
            or space.isvoid(node) or is_scope_node(node) or is_int_node(node)
 
 
@@ -122,15 +130,15 @@ def node_5(ntype, token, child1, child2, child3, child4, child5):
 
 
 def node_type(node):
-    return api.to_i(api.at_index(node, 0))
+    return api.to_i(node.ntype)
 
 
 def node_token(node):
-    return api.at_index(node, 1)
+    return node.token
 
 
 def node_children(node):
-    return api.at_index(node, 2)
+    return node.children
 
 
 def node_token_type(node):
@@ -145,10 +153,6 @@ def node_getchild(node, index):
     # if space.isvoid(node_children(node)):
     #     print "~~~~~~~~~~~~~", node.__class__.__name__, node_children(node), node_type(node), node_to_string(node)
     return node_children(node)[index]
-
-
-def node_set_child(node, index, child):
-    node_children(node)[index] = child
 
 
 def node_first(node):
@@ -199,34 +203,8 @@ def node_column(node):
     return tokens.token_column(node_token(node))
 
 
-def list_node_items(n):
-    return node_children(n)[0]
-
-
 def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
-
-
-def is_guarded_pattern(n):
-    return node_type(n) == nt.NT_WHEN
-
-
-def is_equal_pattern(pat1, pat2):
-    if is_single_node(pat1) and is_single_node(pat2):
-        return node_equal(pat1, pat2)
-
-    return api.equal_b(pat1, pat2)
-
-
-def pattern_length(n):
-    ntype = node_type(n)
-    if ntype == nt.NT_WHEN:
-        return array_node_length(node_first(n))
-    return array_node_length(n)
-
-
-def list_node_length(l):
-    return api.length_i(node_first(l))
 
 
 def array_node_length(n):
@@ -236,12 +214,6 @@ def array_node_length(n):
     if node_type(n) != nt.NT_ARRAY:
         assert node_type(n) == nt.NT_ARRAY, nt.node_type_to_s(node_type(n))
     return api.length_i(node_first(n))
-
-
-def int_node_to_int(node):
-    value = strutil.string_to_int(node_value_s(node))
-    num = space.newnumber(value)
-    return num
 
 
 def imported_name_to_s(node):
