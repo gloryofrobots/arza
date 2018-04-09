@@ -20,6 +20,9 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'__neg__', negate, 1)
     api.put_native_method(process, _class, u'__abs__', modulo, 1)
     api.put_native_method(process, _class, u'__le__', le, 2)
+    api.put_native_method(process, _class, u'__lt__', lt, 2)
+    api.put_native_method(process, _class, u'__ge__', ge, 2)
+    api.put_native_method(process, _class, u'__gt__', gt, 2)
     api.put_native_method(process, _class, u'__bnot__', bitnot, 1)
     api.put_native_method(process, _class, u'__bor__', bitor, 2)
     api.put_native_method(process, _class, u'__bxor__', bitxor, 2)
@@ -109,6 +112,33 @@ def le(process, routine):
     error.affirm_type(arg1, space.isnumber)
 
     return number.le(arg0, arg1)
+
+@complete_native_routine
+def ge(process, routine):
+    arg0 = routine.get_arg(0)
+    error.affirm_type(arg0, space.isnumber)
+    arg1 = routine.get_arg(1)
+    error.affirm_type(arg1, space.isnumber)
+
+    return number.ge(arg0, arg1)
+
+@complete_native_routine
+def gt(process, routine):
+    arg0 = routine.get_arg(0)
+    error.affirm_type(arg0, space.isnumber)
+    arg1 = routine.get_arg(1)
+    error.affirm_type(arg1, space.isnumber)
+
+    return number.gt(arg0, arg1)
+
+@complete_native_routine
+def lt(process, routine):
+    arg0 = routine.get_arg(0)
+    error.affirm_type(arg0, space.isnumber)
+    arg1 = routine.get_arg(1)
+    error.affirm_type(arg1, space.isnumber)
+
+    return number.lt(arg0, arg1)
 
 @complete_native_routine
 def bitnot(process, routine):

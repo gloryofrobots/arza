@@ -147,6 +147,10 @@ def node_getchild(node, index):
     return node_children(node)[index]
 
 
+def node_set_child(node, index, child):
+    node_children(node)[index] = child
+
+
 def node_first(node):
     return node_getchild(node, 0)
 
@@ -310,8 +314,6 @@ def _find_names(node, names):
         ntype = node_type(node)
         if ntype == nt.NT_NAME:
             names.append(node_value(node))
-        elif ntype == nt.NT_IMPORTED_NAME:
-            names.append(imported_name_to_string(node))
         elif ntype == nt.NT_SYMBOL:
             return
         else:
@@ -676,4 +678,3 @@ def create_of_node(token, left, right):
 
 def create_modify_node(token, source, items):
     return node_2(nt.NT_MODIFY, token, source, items)
-

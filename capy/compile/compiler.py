@@ -320,9 +320,13 @@ def _get_symbol_name(compiler, name):
 def _get_symbol_name_or_empty(process, name):
     if is_empty_node(name):
         return space.newsymbol(process, u"")
-    else:
+    ntype = node_type(name)
+    if ntype == NT_SYMBOL:
+        return space.newsymbol_s(process, nodes.node_value_s(node_first(name)))
+    elif ntype == NT_NAME:
         return space.newsymbol_s(process, nodes.node_value_s(name))
-
+    else:
+        assert False, "Invalid node"
 
 # *********************************************
 # COMPILERS
@@ -508,6 +512,9 @@ def _compile_ASSIGN(compiler, code, node):
         _declare_local(compiler, symbol)
         _compile(compiler, code, exp)
         _emit_store_name(compiler, code, left)
+    elif ntype == NT_LOOKUP:
+        call = simplify.simplify_put(compiler, code, node)
+        _compile(compiler, code, call)
     else:
         return _compile_destruct(compiler, code, left, exp)
 
@@ -667,7 +674,6 @@ def _compile_LAMBDA(compiler, code, node):
     _compile_func_args_and_body(compiler, code,
                                 nodes.empty_node(), params, body)
 
-
 def _compile_FUN(compiler, code, node):
     namenode = node_first(node)
     funcname = _get_symbol_name_or_empty(compiler.process, namenode)
@@ -691,6 +697,11 @@ def _compile_FUN(compiler, code, node):
     if index is not None:
         funcname_index = _declare_symbol(compiler, funcname)
         code.emit_2(STORE_LOCAL_CONST, index, funcname_index, info(node))
+
+
+def _compile_FUN_ASSIGN(compiler, code, node):
+    ast = simplify.simplify_fun_assign(compiler, code, node)
+    _compile(compiler, code, ast)
 
 
 def _compile_branch(compiler, code, condition, body, endif):
@@ -789,7 +800,7 @@ def _load_module(compiler, code, node):
                 assert False
 
             if not api.contains_b(module, _name):
-            # if not module.can_export(_name):
+                # if not module.can_export(_name):
                 compile_error(compiler, code, node, u"Invalid import name %s. Please, check source module export list"
                               % api.to_u(_name))
             var_names.append((_name, _bind_name))
@@ -851,6 +862,7 @@ def _compile_INCLUDE_HIDING(compiler, code, node):
         need_pop = False if i == last_index else True
         _emit_imported(compiler, code, node, module, var_name, var_name, need_pop)
         i += 1
+
 
 def _compile_FARGS(compiler, code, node):
     code.emit_0(FARGS, info(node))
@@ -1030,6 +1042,8 @@ def _compile_node(compiler, code, node):
 
     elif NT_FUN == ntype:
         _compile_FUN(compiler, code, node)
+    elif NT_FUN_ASSIGN == ntype:
+        _compile_FUN_ASSIGN(compiler, code, node)
     elif NT_LAMBDA == ntype:
         _compile_LAMBDA(compiler, code, node)
 

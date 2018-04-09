@@ -183,7 +183,7 @@ class Token(root.W_Hashable):
     def __init__(self, type, val, pos, line, column, indentation):
         root.W_Hashable.__init__(self)
         assert isinstance(type, int)
-        assert isinstance(val, str), val
+        assert isinstance(val, str), val.__class__.__name__
         assert space.isint(pos)
         assert space.isint(line)
         assert space.isint(column)

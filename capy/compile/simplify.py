@@ -55,6 +55,26 @@ def simplify_class(compiler, code, node):
 ########################3
 
 
+def simplify_put(compiler, code, node):
+    left = node_first(node)
+    source = node_first(left)
+    key = node_second(left)
+    value = node_second(node)
+    func = nodes.create_symbol_node_s(nodes.node_token(node), lang_names.PUT)
+    return nodes.create_lookup_call(nodes.node_token(node), source, func, [key, value])
+
+
+def simplify_fun_assign(compiler, code, node):
+    lookup = node_first(node)
+    name = node_second(lookup)
+    func_body = node_second(node)
+    name = nodes.empty_node()
+    func = nodes.create_fun_node(node_token(node), name, func_body)
+    return nodes.create_assign_node(node_token(node), lookup, func)
+    # func = nodes.create_symbol_node_s(nodes.node_token(node), lang_names.PUT)
+    # return nodes.create_lookup_call(nodes.node_token(node), source, func, [name, node])
+
+
 def simplify_modify(compiler, code, node):
     """
     Complicated transformation

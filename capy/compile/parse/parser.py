@@ -107,6 +107,7 @@ class ExpressionParser(BaseParser):
         BaseParser.__init__(self)
         self.pattern_parser = PatternParser()
         self.name_parser = name_parser_init(BaseParser())
+        self.fun_name_parser = fun_name_parser_init(BaseParser())
         self.map_key_parser = MapKeyParser(self)
         self.modify_key_parser = ModifyKeyParser(self)
 
@@ -114,6 +115,7 @@ class ExpressionParser(BaseParser):
             [
                 self.pattern_parser,
                 self.name_parser,
+                self.fun_name_parser,
                 self.map_key_parser,
                 self.modify_key_parser
             ])
@@ -278,6 +280,12 @@ def int_parser_init(parser):
 
 def name_parser_init(parser):
     literal(parser, TT_NAME, NT_NAME)
+    symbol_nud(parser, TT_OPERATOR, NT_NAME, symbol_operator_name)
+    return parser
+
+def fun_name_parser_init(parser):
+    infix(parser, TT_DOT, NT_LOOKUP, 100, led_infix)
+    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
     symbol_nud(parser, TT_OPERATOR, NT_NAME, symbol_operator_name)
     return parser
 

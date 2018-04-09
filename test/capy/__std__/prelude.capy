@@ -28,3 +28,20 @@ prefix (~, __bnot__, 70)
 //    obj
 
 print = PL
+
+//Object.seq = fun (self):
+
+fun Object.seq(self):
+    self.__seq__()
+
+fun Object.head(self):
+    self.__head__()
+
+fun Object.tail(self):
+    self.__tail__()
+
+fun Object.is_empty(self):
+    self.__is_empty__()
+
+fun Object.len(self):
+    self.__len__()

@@ -24,6 +24,9 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'__ne__', not_equal, 2)
     api.put_native_method(process, _class, u'__str__', to_string, 1)
     api.put_native_method(process, _class, u'__repr__', to_repr, 1)
+    api.put_native_method(process, _class, u'__seq__', _seq, 1)
+    api.put_native_method(process, _class, u'__head__', _head, 1)
+    api.put_native_method(process, _class, u'__tail__', _tail, 1)
 
 
 @complete_native_routine
@@ -37,6 +40,7 @@ def _is(process, routine):
 def _type(process, routine):
     arg0 = routine.get_arg(0)
     return api.get_type(process, arg0)
+
 
 @complete_native_routine
 def _parent(process, routine):
@@ -146,3 +150,24 @@ def to_repr(process, routine):
     arg0 = routine.get_arg(0)
 
     return api.to_repr(arg0)
+
+
+@complete_native_routine
+def _seq(process, routine):
+    arg0 = routine.get_arg(0)
+
+    return api.seq(arg0)
+
+
+@complete_native_routine
+def _head(process, routine):
+    arg0 = routine.get_arg(0)
+
+    return api.head(arg0)
+
+
+@complete_native_routine
+def _tail(process, routine):
+    arg0 = routine.get_arg(0)
+
+    return api.tail(arg0)

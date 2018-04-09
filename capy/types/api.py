@@ -347,8 +347,16 @@ def not_equal(obj, other):
 #     return space.newint(v)
 
 
-def next(obj):
-    return obj._next_()
+def seq(obj):
+    return obj._seq_()
+
+
+def head(obj):
+    return obj._head_()
+
+
+def tail(obj):
+    return obj._tail_()
 
 
 """

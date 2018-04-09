@@ -4,6 +4,34 @@ from capy.misc import platform
 from capy.runtime import error
 
 
+class W_ArraySequence(W_Root):
+    def __init__(self, arr):
+        self.arr = arr
+        self.index = 0
+        self.len = self.arr._length_()
+
+    def _length_(self):
+        if self.index >= self.len:
+            return 0
+
+        return self.len - self.index
+
+    def _head_(self):
+        return self.arr._at_index_(self.index)
+
+    def _type_(self, process):
+        return process.std.classes.Object
+
+    def _tail_(self):
+        if self.index >= self.len:
+            return space.newnil()
+        self.index += 1
+        return self
+
+    def _to_string_(self):
+        return "<ArraySeq (%d, %d)>" % (self.index, self.len)
+
+
 class W_Array(W_Root):
     def __init__(self, items):
         assert isinstance(items, list)
@@ -13,8 +41,8 @@ class W_Array(W_Root):
         for i in self._items:
             yield i
 
-    # def __str__(self):
-    #     return u'W_Vector("%s")' % str(self._items)
+    def _seq_(self):
+        return W_ArraySequence(self)
 
     def _put_(self, k, v):
         from capy.types.space import isint

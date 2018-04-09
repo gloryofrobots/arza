@@ -9,6 +9,9 @@ def presetup(process, module, stdlib):
     import capy.builtins.classes.setup_object
     capy.builtins.classes.setup_object.setup(process, stdlib)
 
+    import capy.builtins.classes.setup_array
+    capy.builtins.classes.setup_array.setup(process, stdlib)
+
     import capy.builtins.classes.setup_class
     capy.builtins.classes.setup_class.setup(process, stdlib)
 

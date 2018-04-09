@@ -32,8 +32,8 @@ def led_infixr(parser, op, token, left):
 
 def prefix_nud_function(parser, op, token):
     exp = expression(parser, op.pbp)
-    sym = nodes.create_symbol_node_s(token, op.prefix_function)
-    lookup = nodes.create_lookup_index_node(token, exp, sym)
+    sym = nodes.create_symbol_node_s(token, api.to_s(op.prefix_function))
+    lookup = nodes.create_lookup_node(token, exp, sym)
     return nodes.create_call_node_0(token, lookup)
 
 
@@ -47,7 +47,7 @@ def led_infix_function(parser, op, token, left):
 def led_infixr_function(parser, op, token, left):
     exp = expression(parser, op.lbp - 1)
     sym = nodes.create_symbol_node_s(token, op.infix_function)
-    lookup = nodes.create_lookup_index_node(token, left, sym)
+    lookup = nodes.create_lookup_node(token, left, sym)
     return nodes.create_call_node_1(token, lookup, exp)
 
 
@@ -496,27 +496,33 @@ def prefix_if(parser, op, token):
     branches = []
 
     cond = expression(parser, 0, TERM_IF_CONDITION)
-    advance_expected_one_of(parser, TERM_IF_CONDITION)
+    advance_expected(parser, TT_COLON)
 
     # TODO CHECK IF HERE LISTNODE REQUIRED
     body = statements(parser, TERM_IF_BODY)
 
     branches.append(list_node([cond, body]))
-    check_token_types(parser, TERM_IF_BODY)
-
-    while parser.token_type == TT_ELIF:
-        advance_expected(parser, TT_ELIF)
-
-        cond = expression(parser, 0, TERM_IF_CONDITION)
-        advance_expected_one_of(parser, TERM_IF_CONDITION)
-
-        body = statements(parser, TERM_IF_BODY)
+    if parser.token_type == TT_ELIF:
         check_token_types(parser, TERM_IF_BODY)
-        branches.append(list_node([cond, body]))
 
-    advance_expected(parser, TT_ELSE)
-    body = statements(parser, [])
-    branches.append(list_node([empty_node(), body]))
+        while parser.token_type == TT_ELIF:
+            advance_expected(parser, TT_ELIF)
+
+            cond = expression(parser, 0, TERM_IF_CONDITION)
+            advance_expected(parser, TT_COLON)
+
+            body = statements(parser, TERM_IF_BODY)
+            check_token_types(parser, TERM_IF_BODY)
+            branches.append(list_node([cond, body]))
+
+    if parser.token_type == TT_ELSE:
+        advance_expected(parser, TT_ELSE)
+        advance_expected(parser, TT_COLON)
+        body = statements(parser, [])
+        branches.append(list_node([empty_node(), body]))
+    else:
+        branches.append(list_node([empty_node(), list_node([nodes.create_nil_node(token)])]))
+
     return node_1(NT_CONDITION, token, list_node(branches))
 
 
@@ -573,15 +579,29 @@ def _parse_func_pattern(parser, arg_terminator):
 
 
 def prefix_fun(parser, op, token):
-    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    check_token_types(parser, [TT_LPAREN, TT_CASE])
+    is_assignment = False
+    if parser.token_type == TT_LPAREN:
+        name = nodes.empty_node()
+    else:
+        name = expression(parser.name_parser, 0)
+        if parser.token_type == TT_DOT:
+            is_assignment = True
+            advance_expected(parser, TT_DOT)
+            symbol_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+            symbol = nodes.create_symbol_node(token, symbol_name)
+            name = nodes.create_lookup_node(token, name, symbol)
+
+    check_token_type(parser, TT_LPAREN)
     signature = _parse_func_pattern(parser, TERM_BLOCK_START)
 
     check_token_type(parser, TT_COLON)
     advance(parser)
     body = statements(parser, [])
     func = nodes.create_function_variants(signature, body)
-    return node_2(NT_FUN, token, name, func)
+    if is_assignment:
+        return node_2(NT_FUN_ASSIGN, token, name, func)
+    else:
+        return node_2(NT_FUN, token, name, func)
 
 
 def prefix_decorator(parser, op, token):

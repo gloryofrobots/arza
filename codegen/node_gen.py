@@ -29,6 +29,7 @@ NODES = [
   "NT_BIND",
 
   "NT_FUN",
+  "NT_FUN_ASSIGN",
   "NT_USE",
   "NT_LAMBDA",
 
