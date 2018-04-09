@@ -20,7 +20,7 @@ class W_ArraySequence(W_Root):
         return self.arr._at_index_(self.index)
 
     def _type_(self, process):
-        return process.std.classes.Object
+        return process.std.classes.ArraySeq
 
     def _tail_(self):
         if self.index >= self.len:

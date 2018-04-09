@@ -265,8 +265,8 @@ class W_Env(W_Root):
         assert space.issymbol(n)
         return self.data._at_(n)
 
-    def _contains_(self, key):
-        return self.data._contains_(key)
+    def _has_(self, key):
+        return self.data._has_(key)
 
     def _to_string_(self):
         return "<Env :%s>" % self.data._to_string_()

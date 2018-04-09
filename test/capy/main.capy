@@ -22,11 +22,11 @@ fun map(seq, acc, fn):
 
 fun main():
 //    test()
+
     a = [1, 2, 3, 4, 5, 6]
     a1 = map(a.seq(), [], fun(x): x + 10)
     affirm.is_equal(a1, [11, 12, 13, 14, 15, 16])
     print(a1)
-//    print (-10 > 0)
 
     __env__()
 

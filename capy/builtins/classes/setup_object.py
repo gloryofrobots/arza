@@ -9,24 +9,23 @@ def setup(process, stdlib):
 
 
 def setup_class(process, _class):
-    api.put_native_method(process, _class, u'type', _type, 1)
-    api.put_native_method(process, _class, u'parent', _parent, 1)
-    api.put_native_method(process, _class, u'__not__', _not, 1)
-    api.put_native_method(process, _class, u'__is__', _is, 2)
-    api.put_native_method(process, _class, u'__len__', length, 1)
-    api.put_native_method(process, _class, u'__is_empty__', is_empty, 1)
-    api.put_native_method(process, _class, u'__put__', put, 3)
-    api.put_native_method(process, _class, u'__put_default__', put_default, 3)
-    api.put_native_method(process, _class, u'__at__', at, 2)
-    api.put_native_method(process, _class, u'__elem__', elem, 2)
-    api.put_native_method(process, _class, u'__del__', delete, 2)
     api.put_native_method(process, _class, u'__eq__', equal, 2)
     api.put_native_method(process, _class, u'__ne__', not_equal, 2)
-    api.put_native_method(process, _class, u'__str__', to_string, 1)
-    api.put_native_method(process, _class, u'__repr__', to_repr, 1)
-    api.put_native_method(process, _class, u'__seq__', _seq, 1)
-    api.put_native_method(process, _class, u'__head__', _head, 1)
-    api.put_native_method(process, _class, u'__tail__', _tail, 1)
+    api.put_native_method(process, _class, u'__not__', _not, 1)
+    api.put_native_method(process, _class, u'__is__', _is, 2)
+
+    api.put_native_method(process, _class, u'type', _type, 1)
+    api.put_native_method(process, _class, u'parent', _parent, 1)
+    api.put_native_method(process, _class, u'len', length, 1)
+    api.put_native_method(process, _class, u'is_empty', is_empty, 1)
+    api.put_native_method(process, _class, u'put', put, 3)
+    api.put_native_method(process, _class, u'put_default', put_default, 3)
+    api.put_native_method(process, _class, u'at', at, 2)
+    api.put_native_method(process, _class, u'has', has, 2)
+    api.put_native_method(process, _class, u'del', delete, 2)
+    api.put_native_method(process, _class, u'str', to_string, 1)
+    api.put_native_method(process, _class, u'repr', to_repr, 1)
+    api.put_native_method(process, _class, u'seq', _seq, 1)
 
 
 @complete_native_routine
@@ -107,11 +106,11 @@ def at(process, routine):
 
 
 @complete_native_routine
-def elem(process, routine):
+def has(process, routine):
     arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    return api.contains(arg0, arg1)
+    return api.has(arg0, arg1)
 
 
 @complete_native_routine
@@ -158,16 +157,3 @@ def _seq(process, routine):
 
     return api.seq(arg0)
 
-
-@complete_native_routine
-def _head(process, routine):
-    arg0 = routine.get_arg(0)
-
-    return api.head(arg0)
-
-
-@complete_native_routine
-def _tail(process, routine):
-    arg0 = routine.get_arg(0)
-
-    return api.tail(arg0)

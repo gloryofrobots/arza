@@ -63,12 +63,12 @@ class Classes:
     def before_load(self, name):
         error.affirm_type(name, space.issymbol)
 
-        assert not api.contains_b(self.classes, name)
+        assert not api.has_b(self.classes, name)
         api.put(self.classes, name, space.newint(0))
 
     def has_module(self, name):
         error.affirm_type(name, space.issymbol)
-        return api.contains_b(self.classes, name)
+        return api.has_b(self.classes, name)
 
     def get_class(self, name):
         error.affirm_type(name, space.issymbol)

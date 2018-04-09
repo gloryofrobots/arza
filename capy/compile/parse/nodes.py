@@ -1,7 +1,7 @@
 from capy.compile.parse import tokens
 from capy.compile.parse import token_type as tt
 from capy.compile.parse import node_type as nt
-from capy.types import space, api, plist
+from capy.types import space, api, plist, root
 from capy.runtime import error
 from capy.misc import strutil
 from capy.builtins import lang_names

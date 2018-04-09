@@ -61,7 +61,7 @@ class W_PList(W_Root):
     #         return space.newnil()
     #     return nth(self, i)
 
-    def _contains_(self, key):
+    def _has_(self, key):
         return contains(self, key)
 
     def _at_index_(self, i):

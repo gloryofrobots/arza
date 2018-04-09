@@ -72,7 +72,7 @@ def elem(process, routine):
 
     arg0 = routine.get_arg(0)
 
-    return api.contains(arg1, arg0)
+    return api.has(arg1, arg0)
 
 
 @complete_native_routine

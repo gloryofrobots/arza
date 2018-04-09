@@ -225,7 +225,7 @@ class W_Table(W_Root):
 
         return self._at_index_(idx)
 
-    def _contains_(self, key):
+    def _has_(self, key):
         idx = self._get_index_(key)
         if platform.is_absent_index(idx):
             return False

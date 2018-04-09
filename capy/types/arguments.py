@@ -31,7 +31,7 @@ class W_Arguments(W_Root):
     def _type_(self, process):
         return process.std.classes.Tuple
 
-    def _contains_(self, obj):
+    def _has_(self, obj):
         i = self._get_index_(obj)
         return platform.is_absent_index(i)
 

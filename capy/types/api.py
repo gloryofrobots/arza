@@ -161,19 +161,19 @@ def contains_index_b(obj, i):
     return False
 
 
-def contains(obj, k):
-    return space.newbool(contains_b(obj, k))
+def has(obj, k):
+    return space.newbool(has_b(obj, k))
 
 
-def contains_b(obj, k):
+def has_b(obj, k):
     assert not space.isvoid(k)
-    v = obj._contains_(k)
+    v = obj._has_(k)
     assert isinstance(v, bool)
     return v
 
 
 def notin(k, obj):
-    return space.newbool(not contains_b(obj, k))
+    return space.newbool(not has_b(obj, k))
 
 
 def put(obj, k, v):

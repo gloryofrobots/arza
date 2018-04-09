@@ -4,7 +4,7 @@ from capy.runtime import error
 
 def find_in_module(process, prelude, name):
     sym = space.newsymbol(process, name)
-    if not api.contains(prelude, sym):
+    if not api.has(prelude, sym):
         error.throw_1(error.Errors.KEY_ERROR, space.newstring(u"Missing internal trait %s in prelude" % name))
     return api.at(prelude, sym)
 
@@ -37,11 +37,13 @@ class StdClasses:
 
         self.String = newtype(_s(u"String"))
 
-        self.List = newtype(_s(u"List"))
-
         self.Array = newtype(_s(u"Array"))
 
-        self.Vector = newtype(_s(u"Vector"))
+        self.Seq = newtype(_s(u"Seq"))
+
+        self.ArraySeq = newtype_2(_s(u"ArraySeq"), self.Seq)
+
+        self.TableSeq = newtype_2(_s(u"TableSeq"), self.Seq)
 
         self.Tuple = newtype(_s(u"Tuple"))
 

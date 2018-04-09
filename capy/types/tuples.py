@@ -55,7 +55,7 @@ class W_Unit(W_Root):
     def _type_(self, process):
         return process.std.classes.Tuple
 
-    def _contains_(self, key):
+    def _has_(self, key):
         return False
 
     def _at_(self, index):
@@ -119,7 +119,7 @@ class W_Tuple(W_Hashable):
     def _clone_(self):
         return W_Tuple(self.elements)
 
-    def _contains_(self, key):
+    def _has_(self, key):
         for item in self.elements:
             if api.equal_b(item, key):
                 return True

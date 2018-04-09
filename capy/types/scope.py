@@ -225,7 +225,7 @@ class W_Scope(W_Root):
         return api.get_index(self.imports, name)
 
     def has_import(self, name):
-        return api.contains_b(self.imports, name)
+        return api.has_b(self.imports, name)
 
     ######################################################
 
@@ -265,7 +265,7 @@ class W_Scope(W_Root):
     ###########################
 
     def has_operator(self, op_name):
-        return api.contains_b(self.__operators, op_name)
+        return api.has_b(self.__operators, op_name)
 
     def add_operators(self, operators):
         for record in operators:
@@ -385,7 +385,6 @@ class W_Scope(W_Root):
         # somewhat dirty hacks here for auto export
         # cant think of anything better unfortunately
         skip_start = lang_names.SKIP_ON_AUTO_EXPORT_START
-        skip_middle = lang_names.SKIP_ON_AUTO_EXPORT_MIDDLE
         syms = []
         keys = self.__locals.keys_array()
 
@@ -393,11 +392,6 @@ class W_Scope(W_Root):
             keyval = key.string
             # avoid exporting _name but enable _name_
             if keyval.startswith_s(skip_start) and not keyval.endswith_s(skip_start):
-                continue
-
-            index_colon = keyval.index_s(skip_middle)
-            # so operators like := will be exported but names arza:lang:foo will not
-            if index_colon > 1:
                 continue
 
             syms.append(key)

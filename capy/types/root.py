@@ -96,7 +96,7 @@ class W_Root:
         # return not_implemented_error(u"_at_", self, key)
         return space.newvoid()
 
-    def _contains_(self, key):
+    def _has_(self, key):
         return not_implemented_error(u"_contains_", self, key)
 
     def _at_index_(self, i):

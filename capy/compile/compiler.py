@@ -799,7 +799,7 @@ def _load_module(compiler, code, node):
             else:
                 assert False
 
-            if not api.contains_b(module, _name):
+            if not api.has_b(module, _name):
                 # if not module.can_export(_name):
                 compile_error(compiler, code, node, u"Invalid import name %s. Please, check source module export list"
                               % api.to_u(_name))

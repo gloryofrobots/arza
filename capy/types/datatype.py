@@ -46,7 +46,7 @@ class W_Record(W_Hashable):
             error.throw_1(error.Errors.KEY_ERROR, name)
         return api.at(self.values, idx)
 
-    def _contains_(self, name):
+    def _has_(self, name):
         if space.isint(name):
             return self._at_index_(api.to_i(name))
 
@@ -207,7 +207,7 @@ class W_RecordType(W_BaseDatatype):
                           api.get_type(process, record))
 
         for f in self.fields:
-            if not api.contains_b(record, f):
+            if not api.has_b(record, f):
                 error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
                               space.newstring(u"Uninitialized record field"),
                               f)
