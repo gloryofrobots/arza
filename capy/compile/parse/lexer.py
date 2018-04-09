@@ -1,0 +1,101 @@
+__author__ = 'gloryofrobots'
+from capy.compile.parse.rply.lexergenerator import LexerGenerator
+from capy.compile.parse import tokens
+from capy.types import space
+
+
+def create_generator(rules):
+    lg = LexerGenerator()
+    for rule in rules:
+        lg.add(rule[1], rule[0])
+    lexer = lg.build()
+    return lexer
+
+
+class UnknownTokenError(Exception):
+    def __init__(self, position):
+        self.position = position
+
+
+class LexerError(Exception):
+    """ Lexer error exception.
+
+        pos:
+            Position in the input line where the error occurred.
+    """
+
+    def __init__(self, msg, pos):
+        self.pos = pos
+        self.mag = msg
+
+
+class Lexer:
+    def __init__(self, rules, skip_whitespace):
+        assert isinstance(rules, list)
+        assert isinstance(skip_whitespace, bool)
+
+        self.lexer = create_generator(rules)
+        self.stream = None
+        self.indentation = None
+
+    def input(self, buf):
+        self.stream = self.lexer.lex(buf)
+
+    def token(self):
+        """ Return the next token (a Token object) found in the
+            input buffer. None is returned if the end of the
+            buffer was reached.
+            In case of a lexing error (the current chunk of the
+            buffer matches no rule), a LexerError is raised with
+            the position of the error.
+        """
+        from capy.compile.parse.rply.lexer import LexingError
+        try:
+            return self._token()
+        except StopIteration:
+            return None
+        except LexingError as e:
+            pos = e.source_pos
+            raise UnknownTokenError(pos.idx)
+
+    def _token(self):
+        t = next(self.stream)
+        # print tokens.token_type_to_str(t.name), t.value
+        _type = t.name
+
+        if _type < 0:
+            # for checking mixing spaces and tabs in one script
+            if _type < -1:
+                self.indentation = _type
+
+            return self._token()
+
+        token = tokens.newtoken(t.name, t.value,
+                                space.newint(t.source_pos.idx),
+                                space.newint(t.source_pos.lineno), space.newint(t.source_pos.colno),
+                                self.indentation)
+
+        return token
+
+    def tokens(self):
+        """ Returns an iterator to the tokens found in the buffer.
+        """
+        while 1:
+            tok = self.token()
+            if tok is None:
+                # ADD FAKE NEWLINE TO SUPPORT ONE LINE SCRIPT FILES
+                yield tokens.newtoken(tokens.TT_NEWLINE, "", space.newint(-1), space.newint(-1), space.newint(1),
+                                      self.indentation)
+                yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(-1), space.newint(-1), space.newint(1),
+                                      self.indentation)
+                break
+            yield tok
+
+
+##
+
+
+def lexer(txt):
+    lx = Lexer(tokens.RULES, False)
+    lx.input(txt)
+    return lx

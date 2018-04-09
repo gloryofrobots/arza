@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
-from arza.types import pmap, space, api
-from arza.runtime.error import ArzaError
+from capy.types import pmap, space, api
+from capy.runtime.error import ArzaError
 import unittest
 
 class PMapTestCase(unittest.TestCase):
