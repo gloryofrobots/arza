@@ -3,7 +3,7 @@
 from capy.types import space
 from capy.runtime import error
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 
 # UGLY DEBUGGING HACKS
