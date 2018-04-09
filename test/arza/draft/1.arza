@@ -13,3 +13,31 @@ cond X
 
 
 
+
+class Pair:
+    fun __init__(self, first, second):
+        self.{first = first, second = second}
+
+    fun __add__(self, other):
+        f = self.first + other.first
+        s = self.second + other.second
+        Pair(f, s)
+
+    fun sum(self, third, fourth):
+        self.first + self.second + third + fourth
+
+class Pair {
+    fun __init__(self, first, second) {
+        self.{first = first, second = second}
+    }
+
+    fun __add__(self, other) {
+        f = self.first + other.first
+        s = self.second + other.second
+        Pair(f, s)
+    }
+
+    fun sum(self, third, fourth) =
+        self.first + self.second + third + fourth
+}
+

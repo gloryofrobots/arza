@@ -10,10 +10,6 @@ class Y(X) =
         self.{y = y}
 
 
-
-
-
-
 class Pair =
     fun __init__(self, first, second) =
         self.{first = first, second = second}
