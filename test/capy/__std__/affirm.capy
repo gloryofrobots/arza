@@ -1,0 +1,146 @@
+
+class AffirmationError(Error):
+    nil
+
+fun fail(error): throw AffirmationError(error)
+
+
+fun is_equal(val1, val2):
+    if val1 != val2: fail([val1, "!=", val2])
+    else: true
+
+fun is_not_equal(val1, val2):
+    if val1 == val2: fail([val1, "==", val2])
+    else: true
+
+//    | (val1 of Float,  val2 of Float) = is_equal_float(val1, val2)
+//    | (val1, val2)  =
+//        if val1 != val2 then
+//            fail([val1, "!=", val2])
+//        else
+//            True
+
+
+
+//fun is_equal_batch(fn, ...calls): _batch(is_equal, fn, calls)
+//
+//fun _batch(checker, fn, calls) =
+//    let calls_list = to_seq(calls)
+//    in seq:foreach(
+//            fun
+//                | ((c1, c2)) = checker(fn(...c1), c2)
+//                | ([c1, c2]) = checker(fn(...c1), c2)
+//            ,
+//            calls_list
+//        )
+//
+//
+//
+//
+//
+//fun is_elem(el, coll) =
+//    if not_elem(el, coll) then
+//        fail([el, "not_elem", coll])
+//    else True
+//
+//
+//fun is_equal_all(...args) =
+//    let
+//        fun _reducer(val1, val2) =
+//           let True = is_equal(val1, val2)
+//           in val2
+//    in
+//        seq:reduce(_reducer, to_seq(args))
+//        True
+//
+//fun is_equal_keys_vals(obj, keys)
+//    | (obj, []) = True
+//    | (obj, (key, value)::xs) =
+//       if obj.[key] != value then
+//            fail([obj, key, "!=", value])
+//       else
+//            is_equal_keys_vals(obj, xs)
+//
+//
+//fun is_equal_to_map(obj, map) =
+//    is_equal_keys_vals(obj, to_seq(map))
+//
+//
+//
+//
+//fun _abs(v) =
+//    if v < 0 then -v
+//    else v
+//
+//
+//fun is_equal_float(val1, val2) =
+//    let fun _eq_f(val1, val2, delta) =
+//            try
+//                 is_true((_abs(val1) - _abs(val2)) < delta)
+//            catch e =
+//                fail([val1, "!=", val2])
+//
+//    in _eq_f(val1, val2, 0.0001)
+//
+//
+//
+//fun is_kindof(val1, val2) =
+//    if not(val1 `kindof` val2) then
+//        fail([val1, "not kindof", val2])
+//    else
+//        True
+//
+//
+//fun is_not_kindof(val1, val2) =
+//    if val1 `kindof` val2 then
+//        fail([val1, "kindof", val2])
+//    else
+//        True
+//
+//
+//fun isnot_same(val1, val2) =
+//    if val1 `is` val2 then fail([val1, "is", val2])
+//    else True
+//
+//
+//fun is_true(val1) = is_equal(val1, True)
+//
+//fun is_false(val1) = is_equal(val1, False)
+//
+////apply needed tuple of arguments
+//// so we need to convert () to ((),)
+//
+//fun _is_throw (fn, args) =
+//    match
+//        try
+//            fn(...args)
+//            Success(True)
+//        catch e = e
+//    | _ of Success = fail(["exception expected", fn])
+//    | err = err
+//
+//
+//fun is_throw(fn, args) =
+//    _is_throw(fn, args)
+//    True
+//
+//
+//fun is_throw_expected(fn, args, exc) =
+//    is_equal(_is_throw(fn, args), exc)
+//
+//fun is_throw_kindof(fn, args, exc) =
+//    kindof(_is_throw(fn, args), exc)
+//
+//
+//fun is_throw_expected_cb(fn, args, cb) =
+//    is_true(cb(_is_throw(fn, args)))
+//
+//
+//fun is_not_throw(fn, args) =
+//        match
+//            try
+//                fn(...args)
+//                Success(True)
+//            catch e = e
+//        | _ of Success =  True
+//        | err = fail(["unexpected exception", fn, err])

@@ -30,6 +30,8 @@ prefix (~, __bnot__, 70)
 print = PL
 
 //Object.seq = fun (self):
+class Error(Object):
+    nil
 
 fun Object.seq(self):
     self.__seq__()
