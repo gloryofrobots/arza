@@ -14,6 +14,9 @@ class W_Object(W_Hashable):
         self.super = _type
         self.slots = slots
 
+    def _contains_(self, key):
+        return self.slots._contains_(key)
+
     def _at_(self, key):
         val = api.lookup(self.slots, key, space.newvoid())
         if space.isvoid(val):

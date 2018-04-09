@@ -1,0 +1,56 @@
+
+class X:
+    fun i(i): i + 1
+    fun x(self, x):
+        self.{_x = x}
+
+class Y(X):
+    fun xy(self, x, y):
+        self.super().x(x)
+        self.{y = y}
+
+
+class Pair:
+    fun __init__(self, first, second):
+        self.{first = first, second = second}
+
+    fun __add__(self, other):
+        f = self.first + other.first
+        s = self.second + other.second
+        Pair(f, s)
+
+    fun sum(self, third, fourth):
+        self.first + self.second + third + fourth
+
+
+fun f1():
+    f2()
+
+fun f2(): 42
+
+fun test():
+    print("RUNNING STATICS TEST")
+    print("-->", X.i(1))
+//    n = {x=1, y=2}
+//    print(n.type())
+//    print(f1())
+//    X.x(1)
+//    print(X)
+//    x = X()
+//    print(X.type())
+//    print(X.parent())
+//    print(x.type())
+//    print(x.parent())
+
+//    print(x.type())
+//    print(Y)
+//    print(Y._x)
+//    print(Y.type())
+//    print(Y.parent())
+//    print(Y.super())
+//    print(1.super())
+//    Y.xy(1,2)
+//    p = Pair(1, 2)
+//    print(p.sum(3, 4))
+//    p.{x = 1}
+//    print(p.x)

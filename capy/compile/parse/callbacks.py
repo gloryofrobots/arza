@@ -66,7 +66,7 @@ def layout_if(parser, op, node):
 
 
 def layout_fun(parser, op, node):
-    open_statement_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
+    open_statement_layout(parser, node, None, INDENTS_FUN)
 
 
 def layout_decorator(parser, op, node):
@@ -528,7 +528,7 @@ def prefix_try(parser, op, token):
 
     if parser.token_type == TT_CATCH:
         pattern = _parse_pattern(parser)
-        advance_expected(parser, TT_ASSIGN)
+        advance_expected(parser, TT_COLON)
         body = statements(parser, TERM_CATCH)
         catches.append(list_node([pattern, body]))
 
@@ -577,7 +577,7 @@ def prefix_fun(parser, op, token):
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     signature = _parse_func_pattern(parser, TERM_BLOCK_START)
 
-    check_token_type(parser, TT_ASSIGN)
+    check_token_type(parser, TT_COLON)
     advance(parser)
     body = statements(parser, [])
     func = nodes.create_function_variants(signature, body)
@@ -732,7 +732,7 @@ def prefix_class(parser, op, token):
     else:
         parent = nodes.empty_node()
 
-    advance_expected(parser, TT_ASSIGN)
+    advance_expected(parser, TT_COLON)
     code = statements(parser, TERM_BLOCK)
     return nodes.node_3(NT_CLASS, token, name, parent, code)
 

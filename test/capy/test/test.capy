@@ -1,0 +1,5 @@
+import test.statics
+
+
+fun test():
+    statics.test()

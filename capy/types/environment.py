@@ -187,7 +187,7 @@ class W_Env(W_Root):
         self.refs = scope.create_references()
         self.temps = scope.create_temporaries()
         self.data = scope.create_env_bindings()
-
+        self.imports = scope.imports
         self.exported_names = scope.exports
         # TODO MAKE TEST FOR CORRECT STATIC REFS SOMEHOW
         # print "--------------------------ENV------------------------------"

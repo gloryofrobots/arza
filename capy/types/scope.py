@@ -206,7 +206,7 @@ class W_Scope(W_Root):
         self.__local_references = ScopeSet()
         self.__operators = space.newemptytable()
         self.__static_references = plist.empty()
-
+        self.imports = space.newemptytable()
         self.functions = space.newemptytable()
         self.arg_count = -1
         self.references = None
@@ -214,7 +214,21 @@ class W_Scope(W_Root):
         self.is_static = True
         self.exports = None
 
+    ###########################
+
+    def add_import(self, name, func):
+        assert space.issymbol(name)
+        assert platform.is_absent_index(self.get_import_index(name))
+        return self.imports.insert(name, func)
+
+    def get_import_index(self, name):
+        return api.get_index(self.imports, name)
+
+    def has_import(self, name):
+        return api.contains_b(self.imports, name)
+
     ######################################################
+
     def add_temporary(self):
         idx = self.__temp_index
         self.__temp_index += 1
