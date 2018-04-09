@@ -7,10 +7,11 @@ from arza.misc.platform import jit
 class W_NativeFunction(W_Callable):
     # _immutable_fields_ = ['_name_', 'arity',  '_function_']
 
-    def __init__(self, name, function, arity):
+    def __init__(self, name, function, arity, is_static):
         self._name_ = name
         self._function_ = function
         self.arity = arity
+        self.is_static = is_static
 
     def _to_string_(self):
         return "fun %s/%d [native code]" % (api.to_s(self._name_), self.arity)

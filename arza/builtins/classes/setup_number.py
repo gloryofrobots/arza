@@ -11,21 +11,21 @@ def setup(process, stdlib):
 
 
 def setup_class(process, _class):
-    api.put_native_function(process, _class, u'__pow__', _pow, 2)
-    api.put_native_function(process, _class, u'__add__', add, 2)
-    api.put_native_function(process, _class, u'__sub__', sub, 2)
-    api.put_native_function(process, _class, u'__mul__', mul, 2)
-    api.put_native_function(process, _class, u'__div__', div, 2)
-    api.put_native_function(process, _class, u'__mod__', mod, 2)
-    api.put_native_function(process, _class, u'__neg__', negate, 1)
-    api.put_native_function(process, _class, u'__abs__', modulo, 1)
-    api.put_native_function(process, _class, u'__le__', le, 2)
-    api.put_native_function(process, _class, u'__bnot__', bitnot, 1)
-    api.put_native_function(process, _class, u'__bor__', bitor, 2)
-    api.put_native_function(process, _class, u'__bxor__', bitxor, 2)
-    api.put_native_function(process, _class, u'__band__', bitand, 2)
-    api.put_native_function(process, _class, u'__blsh__', lshift, 2)
-    api.put_native_function(process, _class, u'__brsh__', rshift, 2)
+    api.put_native_method(process, _class, u'__pow__', _pow, 2)
+    api.put_native_method(process, _class, u'__add__', add, 2)
+    api.put_native_method(process, _class, u'__sub__', sub, 2)
+    api.put_native_method(process, _class, u'__mul__', mul, 2)
+    api.put_native_method(process, _class, u'__div__', div, 2)
+    api.put_native_method(process, _class, u'__mod__', mod, 2)
+    api.put_native_method(process, _class, u'__neg__', negate, 1)
+    api.put_native_method(process, _class, u'__abs__', modulo, 1)
+    api.put_native_method(process, _class, u'__le__', le, 2)
+    api.put_native_method(process, _class, u'__bnot__', bitnot, 1)
+    api.put_native_method(process, _class, u'__bor__', bitor, 2)
+    api.put_native_method(process, _class, u'__bxor__', bitxor, 2)
+    api.put_native_method(process, _class, u'__band__', bitand, 2)
+    api.put_native_method(process, _class, u'__blsh__', lshift, 2)
+    api.put_native_method(process, _class, u'__brsh__', rshift, 2)
 
 @complete_native_routine
 def _pow(process, routine):

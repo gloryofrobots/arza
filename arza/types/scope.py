@@ -211,6 +211,7 @@ class W_Scope(W_Root):
         self.arg_count = -1
         self.references = None
         self.is_variadic = None
+        self.is_static = True
         self.exports = None
 
     ######################################################
@@ -326,9 +327,10 @@ class W_Scope(W_Root):
     def add_scope_function_name(self, name):
         self.fn_name_index = self.add_scope_local(name)
 
-    def declare_scope_arguments(self, args_count, is_varargs):
+    def declare_scope_arguments(self, args_count, is_static, is_varargs):
         self.arg_count = args_count
         self.is_variadic = is_varargs
+        self.is_static = is_static
 
     def add_scope_local(self, local):
         assert space.issymbol(local)

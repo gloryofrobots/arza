@@ -6,11 +6,11 @@ from arza.runtime.routine.routine import complete_native_routine
 
 def setup(process, stdlib):
     _file = stdlib.classes.File
-    api.put_native_function(process, _file, u'write', _write, 2)
+    api.put_native_method(process, _file, u'write', _write, 2)
     _io = stdlib.classes.IO
-    api.put_native_function(process, _io, u'stdin', _stdin, 0)
-    api.put_native_function(process, _io, u'stdout', _stdout, 0)
-    api.put_native_function(process, _io, u'stderr', _stderr, 0)
+    api.put_native_method(process, _io, u'stdin', _stdin, 0)
+    api.put_native_method(process, _io, u'stdout', _stdout, 0)
+    api.put_native_method(process, _io, u'stderr', _stderr, 0)
 
 
 @complete_native_routine

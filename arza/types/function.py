@@ -24,6 +24,7 @@ class W_Function(W_Callable):
         scope_info = bytecode.scope
         self.arity = scope_info.arg_count
         self.is_variadic = scope_info.is_variadic
+        self.is_static = scope_info.is_static
         self.env = env
 
     def _to_string_(self):

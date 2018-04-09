@@ -24,7 +24,7 @@ class W_Array(W_Root):
         try:
             self._items[i] = v
         except IndexError:
-            return error.throw_2(error.Errors.INDEX_ERROR, space.newstring(u"Invalid index"))
+            return error.throw_2(error.Errors.INDEX_ERROR, space.newstring(u"Invalid index"), k)
 
         return self
 
@@ -68,9 +68,7 @@ class W_Array(W_Root):
         data = [v._to_string_() for v in self._items]
         repr = ", ".join(data)
 
-        if self._length_() == 1:
-            return "Array(%s,)" % repr
-        return "Array(%s)" % repr
+        return "[%s]" % repr
 
     def _to_repr_(self):
         return self._to_string_()

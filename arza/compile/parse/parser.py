@@ -330,6 +330,7 @@ def init_parser_literals(parser):
     literal(parser, TT_FALSE, NT_FALSE)
     literal(parser, TT_MULTI_STR, NT_MULTI_STR)
     literal(parser, TT_NAME, NT_NAME)
+    literal(parser, TT_SELF, NT_NAME)
     literal(parser, TT_WILDCARD, NT_WILDCARD)
     return parser
 

@@ -25,6 +25,9 @@ class Stack:
     def get(self, index):
         return self.data[index]
 
+    def get_from_top(self, distance):
+        return self.data[self.top_index() - distance]
+
     def top_index(self):
         return self.pointer() - 1
 

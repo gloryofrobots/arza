@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 from arza.compile.code.opcode import *
 from arza.compile.parse import parser
+from arza.compile.parse import token_type as tt
 from arza.compile import simplify
 from arza.compile.parse import nodes
 from arza.compile.parse.nodes import (node_type, imported_name_to_s,
@@ -70,8 +71,8 @@ def _previous_scope(compiler):
     return compiler.scopes[-2]
 
 
-def _declare_arguments(compiler, args_count, varargs):
-    _current_scope(compiler).declare_scope_arguments(args_count, varargs)
+def _declare_arguments(compiler, args_count, static, varargs):
+    _current_scope(compiler).declare_scope_arguments(args_count, static, varargs)
 
 
 def _declare_reference(compiler, symbol):
@@ -611,15 +612,22 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
     funccode = newcode(compiler)
 
     if node_type(params) == NT_UNIT:
-        _declare_arguments(compiler, 0, False)
+        _declare_arguments(compiler, 0, True, False)
     else:
         args = node_first(params)
         length = len(args)
-        funccode.emit_0(FARGS, codeinfo_unknown())
 
+        funccode.emit_0(FARGS, codeinfo_unknown())
         last_param = args[length - 1]
         is_variadic = True if node_type(last_param) == NT_REST else False
-        _declare_arguments(compiler, length, is_variadic)
+
+        is_static = True
+        if length > 0:
+            first_param = args[0]
+            if nodes.node_token_type(first_param) == tt.TT_SELF:
+                is_static = False
+
+        _declare_arguments(compiler, length, is_static, is_variadic)
         _compile_destruct_unpack_seq(compiler, funccode, params)
 
     # if not api.isempty(funcname):
@@ -898,10 +906,10 @@ def _compile_LOOKUP(compiler, code, node):
 
 def _compile_CALL_METHOD(compiler, code, node):
     func = node_first(node)
-    lookup = node_first(func)
+    obj = node_first(func)
     sym = node_second(func)
 
-    _compile(compiler, code, lookup)
+    _compile(compiler, code, obj)
     _emit_dup(code)
     _compile(compiler, code, sym)
     code.emit_0(LOOKUP, info(node))
@@ -1085,7 +1093,7 @@ def newcode(compiler):
 def _compile_ast(compiler, ast, ast_scope):
     code = newcode(compiler)
     _enter_scope(compiler)
-    _declare_arguments(compiler, 0, False)
+    _declare_arguments(compiler, 0, True, False)
     _compile_2(compiler, code, ast)
     scope = _current_scope(compiler)
     final_scope = scope.finalize(_previous_scope(compiler), ast_scope)

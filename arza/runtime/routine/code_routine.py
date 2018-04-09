@@ -190,11 +190,19 @@ class CodeRoutine(BaseRoutine):
                 stack.push(tupl)
             # *************************************
             elif METHOD_CALL == tag:
-                args = stack.pop_n_array(arg1)
-                func = stack.pop()
+                func = stack.get_from_top(arg1)
+                if not func.is_static:
+                    args = stack.pop_n_array(arg1)
+                    func = stack.pop()
+                else:
+                    args = stack.pop_n_array(arg1-1)
+                    stack.pop()
+                    func = stack.pop()
+
                 res = api.call(process, func, args)
                 if res is not None:
                     stack.push(res)
+
             # *************************************
             elif CALL == tag:
                 func = stack.pop()

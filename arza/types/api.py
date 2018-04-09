@@ -3,7 +3,7 @@
 from arza.types import space
 from arza.runtime import error
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 
 # UGLY DEBUGGING HACKS
@@ -377,3 +377,7 @@ def put_symbol(process, obj, k, v):
 
 def put_native_function(process, obj, name, func, arity):
     put_symbol(process, obj, name, space.newnativefunc(space.newsymbol(process, name), func, arity))
+
+
+def put_native_method(process, obj, name, func, arity):
+    put_symbol(process, obj, name, space.newnativemethod(space.newsymbol(process, name), func, arity))

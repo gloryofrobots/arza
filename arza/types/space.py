@@ -196,10 +196,17 @@ def newfuncsource(name, bytecode):
     return obj
 
 
+def newnativemethod(name, function, arity):
+    from arza.types.native_function import W_NativeFunction
+    assert issymbol(name)
+    obj = W_NativeFunction(name, function, arity, False)
+    return obj
+
+
 def newnativefunc(name, function, arity):
     from arza.types.native_function import W_NativeFunction
     assert issymbol(name)
-    obj = W_NativeFunction(name, function, arity)
+    obj = W_NativeFunction(name, function, arity, True)
     return obj
 
 

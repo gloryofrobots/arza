@@ -9,21 +9,21 @@ def setup(process, stdlib):
 
 
 def setup_class(process, _class):
-    api.put_native_function(process, _class, u'type', _type, 1)
-    api.put_native_function(process, _class, u'parent', _parent, 1)
-    api.put_native_function(process, _class, u'__not__', _not, 1)
-    api.put_native_function(process, _class, u'__is__', _is, 2)
-    api.put_native_function(process, _class, u'__len__', length, 1)
-    api.put_native_function(process, _class, u'__is_empty__', is_empty, 1)
-    api.put_native_function(process, _class, u'__put__', put, 3)
-    api.put_native_function(process, _class, u'__put_default__', put_default, 3)
-    api.put_native_function(process, _class, u'__at__', at, 2)
-    api.put_native_function(process, _class, u'__elem__', elem, 2)
-    api.put_native_function(process, _class, u'__del__', delete, 2)
-    api.put_native_function(process, _class, u'__eq__', equal, 2)
-    api.put_native_function(process, _class, u'__ne__', not_equal, 2)
-    api.put_native_function(process, _class, u'__str__', to_string, 1)
-    api.put_native_function(process, _class, u'__repr__', to_repr, 1)
+    api.put_native_method(process, _class, u'type', _type, 1)
+    api.put_native_method(process, _class, u'parent', _parent, 1)
+    api.put_native_method(process, _class, u'__not__', _not, 1)
+    api.put_native_method(process, _class, u'__is__', _is, 2)
+    api.put_native_method(process, _class, u'__len__', length, 1)
+    api.put_native_method(process, _class, u'__is_empty__', is_empty, 1)
+    api.put_native_method(process, _class, u'__put__', put, 3)
+    api.put_native_method(process, _class, u'__put_default__', put_default, 3)
+    api.put_native_method(process, _class, u'__at__', at, 2)
+    api.put_native_method(process, _class, u'__elem__', elem, 2)
+    api.put_native_method(process, _class, u'__del__', delete, 2)
+    api.put_native_method(process, _class, u'__eq__', equal, 2)
+    api.put_native_method(process, _class, u'__ne__', not_equal, 2)
+    api.put_native_method(process, _class, u'__str__', to_string, 1)
+    api.put_native_method(process, _class, u'__repr__', to_repr, 1)
 
 
 @complete_native_routine
