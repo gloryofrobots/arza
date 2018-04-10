@@ -759,6 +759,31 @@ def _compile_TRY(compiler, code, node):
         _compile(compiler, code, finallynode)
 
 
+def _compile_match(compiler, code, node, patterns, error_code):
+    from capy.compile.match_compiler.transform import transform
+    from capy.compile.parse.nodes import create_goto_node
+    temp_idx = _declare_temporary(compiler)
+    code.emit_1(STORE_TEMPORARY, temp_idx, codeinfo_unknown())
+
+    endmatch = code.prealocate_label()
+
+    graph = transform(compiler, code, node, patterns, create_goto_node(endmatch), temp_idx)
+    _compile(compiler, code, graph)
+
+    # Allocate error in case of no match
+    err_node = nodes.create_match_fail_node(nodes.node_token(node), str(error_code), temp_idx)
+    _compile(compiler, code, err_node)
+    code.emit_0(THROW, info(node))
+
+    code.emit_1(LABEL, endmatch, codeinfo_unknown())
+
+
+def _compile_MATCH(compiler, code, node):
+    exp = node_first(node)
+    patterns = node_second(node)
+    _compile(compiler, code, exp)
+    _compile_match(compiler, code, node, patterns, error.Errors.MATCH_ERROR)
+
 ############################
 # IMPORT
 #############################

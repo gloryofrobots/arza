@@ -77,6 +77,8 @@ NODES = [
 
   "NT_END_EXPR",
   "NT_END",
+
+  "NT_CONS",
 ]
 
 
