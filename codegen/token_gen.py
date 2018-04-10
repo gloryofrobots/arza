@@ -87,6 +87,28 @@ TOKENS = [
   ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK_NAME", "`"),
   ("TT_BACKTICK_OPERATOR", "`"),
+
+  ("TT_LT", "<"),
+  ("TT_GT", ">"),
+  ("TT_GE", ">="),
+  ("TT_LE", "<="),
+  ("TT_EQ", "=="),
+  ("TT_NE", "!="),
+
+  ("TT_BOR", "|"),
+  ("TT_BNOT", "~"),
+  ("TT_BAND", "&"),
+  ("TT_BXOR", "^"),
+  ("TT_BRSH", ">>"),
+  ("TT_BLSH", "<<"),
+
+  ("TT_ADD", "+"),
+  ("TT_SUB", "+"),
+  ("TT_MUL", "*"),
+  ("TT_DIV", "/"),
+  ("TT_POW", "**"),
+  ("TT_NEG", "-"),
+
   ("TT_UNKNOWN", None)
 ]
 

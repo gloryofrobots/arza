@@ -130,6 +130,7 @@ RULES = [
     (keyword('infixl'), TT_INFIXL),
     (keyword('infixr'), TT_INFIXR),
     (keyword('prefix'), TT_PREFIX),
+    (keyword('case'), TT_CASE),
 
     (keyword('_'), TT_WILDCARD),
 
@@ -166,12 +167,11 @@ RULES = [
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
     # commented below to prevent x=-1 in maps treated as operator =-
     # (token('[=][%s]+' % operator_char), TT_OPERATOR),
-    (token('[%s][|]+' % operator_char), TT_OPERATOR),
-    (token('[|][%s]+' % operator_char), TT_OPERATOR),
+    # (token('[%s][|]+' % operator_char), TT_OPERATOR),
+    # (token('[|][%s]+' % operator_char), TT_OPERATOR),
     # (token('[%s][:]+' % operator_char), TT_OPERATOR),
     # (token('[:][%s]+' % operator_char), TT_OPERATOR),
 
-    (token('\|'), TT_CASE),
     (token('='), TT_ASSIGN),
 
     # that can catch op

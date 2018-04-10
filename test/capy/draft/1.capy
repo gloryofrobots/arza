@@ -1,0 +1,129 @@
+fun map(seq, fn) =
+    cond seq
+        if [] then seq.empty()
+        if [0] = x
+
+cond X
+     if [0] == 1, [1] == #c, [1..] == [1,2,3] then
+     if #ccc then
+     if of Map then
+     if [0] of Map then
+     if [#ccc] as c of Int and c == 1 then
+     if [#ccc] of Int == 1 then
+
+
+
+
+class Pair:
+    fun __init__(self, first, second):
+        self.{first = first, second = second}
+
+    fun __add__(self, other):
+        f = self.first + other.first
+        s = self.second + other.second
+        Pair(f, s)
+
+    fun sum(self, third, fourth):
+        self.first + self.second + third + fourth
+
+
+class Pair {
+    fun __init__(self, first, second) {
+        self.{first = first, second = second}
+    }
+
+    fun __add__(self, other) {
+        f = self.first + other.first
+        s = self.second + other.second
+        Pair(f, s)
+    }
+
+    fun sum(self, third, fourth) =
+        self.first + self.second + third + fourth
+}
+
+fun map(seq, acc, fn):
+    try:
+        x = 1
+        y = 2
+    catch e:
+        1 + 1 + 2
+        2 + 3 - 9
+    finally:
+        3 + 1 + 2
+        4 - 1
+
+
+    if seq.is_empty():
+        acc
+    elif X(1,2,3):
+        1 + 2 + 3
+
+    if seq.is_empty():
+        acc
+    elif X(1,2,3):
+        1 + 2 + 3
+    else:
+        head = seq.head()
+        tail = seq.tail()
+        val = fn(head)
+        acc = acc.append(val)
+        map(tail, acc, fn)
+
+
+fun map(seq, acc, fn) {
+    try {
+        x = 1
+        y = 2
+    catch e
+        1 + 1 + 2
+        2 + 3 - 9
+    finally
+        3 + 1 + 2
+        4 - 1
+    }
+
+    try {
+        x = 1
+        y = 2
+    catch e
+        case e {
+            of {1, 2, 5}
+                print(1)
+            of {1, 2, 4}
+                print(2)
+            of _
+                1 + 1 + 2
+                2 + 3 - 9
+        }
+    finally
+        3 + 1 + 2
+        4 - 1
+    }
+
+    match x {
+        case 1 then 1
+        case 1 then 2
+
+    }
+
+    if seq.is_empty() {
+        acc
+    elif X(1,2,3)
+        1 + 2 + 3
+    }
+
+
+    if seq.is_empty() {
+        acc
+    elif X(1,2,3)
+        1 + 2 + 3
+    else
+        head = seq.head()
+        tail = seq.tail()
+        val = fn(head)
+        acc = acc.append(val)
+        map(tail, acc, fn)
+   }
+}
+
