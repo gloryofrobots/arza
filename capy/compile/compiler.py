@@ -659,7 +659,8 @@ def is_simple_pattern(pattern, allow_unit):
     ntype = node_type(pattern)
     if ntype == NT_ARRAY:
         for child in node_first(pattern):
-            if node_type(child) != NT_NAME:
+            ctype = node_type(child)
+            if ctype != NT_NAME:
                 return False
         return True
     elif ntype == NT_UNIT and allow_unit is True:

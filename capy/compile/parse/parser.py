@@ -220,8 +220,8 @@ class PatternParser(BaseParser):
         infix(self, TT_OF, NT_OF, 10, led_infix)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
-        infix(self, TT_AS, None, 15, infix_bind)
-        infix(self, TT_DOUBLE_DOT, NT_CONS, 60, led_infixr)
+        # infix(self, TT_AS, None, 15, infix_bind)
+        # infix(self, TT_DOUBLE_DOT, NT_CONS, 60, led_infixr)
 
         symbol(self, TT_WHEN)
         symbol(self, TT_CASE)
@@ -231,7 +231,7 @@ class PatternParser(BaseParser):
         symbol(self, TT_ASSIGN)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-        literal(self, TT_DOUBLE_COLON, NT_EMPTY)
+        # literal(self, TT_DOUBLE_COLON, NT_EMPTY)
         init_parser_literals(self)
 
 
