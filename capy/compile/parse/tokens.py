@@ -81,7 +81,8 @@ multi_string_literal = '"{3}([\s\S]*?"{3})'
 
 RULES = [
     (token('\n'), TT_NEWLINE),
-    (token('[ ]*\.\.\.'), TT_ELLIPSIS),
+    (token('[ ]*\.\.\.'), TT_TRIPLE_DOT),
+    (token('\.\.'), TT_DOUBLE_DOT),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('[ ]+'), -2),
     (token('[\t]+'), -3),
@@ -166,9 +167,8 @@ RULES = [
     (token('\)'), TT_RPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
-    (token('\.[\.]+'), TT_OPERATOR),
+    # (token('\.[\.]+'), TT_OPERATOR),
     (token('\.'), TT_DOT),
-    (token('@@'), TT_DOUBLE_AT),
     (token('@'), TT_AT_SIGN),
     (token('::'), TT_DOUBLE_COLON),
     (token('[:^:][%s]+' % operator_char), TT_OPERATOR),

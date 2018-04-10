@@ -6,26 +6,26 @@ from capy.builtins.classes.setup_object import _true, _self
 
 
 def setup(process, stdlib):
-    _class = stdlib.classes.Seq
+    _class = stdlib.classes.Iter
     setup_class(process, _class)
 
 
 def setup_class(process, _class):
-    api.put_native_method(process, _class, u'head', _head, 1)
-    api.put_native_method(process, _class, u'tail', _tail, 1)
-    api.put_native_method(process, _class, u'is_seq', _true, 1)
-    api.put_native_method(process, _class, u'seq', _self, 1)
+    api.put_native_method(process, _class, u'value', _value, 1)
+    api.put_native_method(process, _class, u'next', _next, 1)
+    api.put_native_method(process, _class, u'is_iter', _true, 1)
+    api.put_native_method(process, _class, u'iter', _self, 1)
 
 
 @complete_native_routine
-def _head(process, routine):
+def _value(process, routine):
     arg0 = routine.get_arg(0)
 
-    return api.head(arg0)
+    return api.value(arg0)
 
 
 @complete_native_routine
-def _tail(process, routine):
+def _next(process, routine):
     arg0 = routine.get_arg(0)
 
-    return api.tail(arg0)
+    return api.next(arg0)

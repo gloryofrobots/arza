@@ -11,5 +11,8 @@ class W_Nil(W_UniqueType):
     def _to_string_(self):
         return 'Nil'
 
+    def _type_(self, process):
+        return process.std.classes.Object
+
     def _to_repr_(self):
         return self._to_string_()

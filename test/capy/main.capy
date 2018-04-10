@@ -1,39 +1,28 @@
 //include test (test)
 import affirm
 
-class X:
-    nil
 
-//fun X.f(x,y): x + y
-
-//X.f = fun(x,y): x + y
 
 fun map(seq, acc, fn):
-    match seq.seq():
-    as nil = acc
-    as hd::tail =
-       acc.append(fn(hd))
-       map(tail, acc, fn)
+    if seq.is_empty():
+        acc
+    else:
+        val = seq.value()
+        acc.append(fn(val))
+        map(seq.next(), acc, fn)
+
 
 
 fun main():
     a = [1, 2, 3, 4, 5, 6]
-    a1 = map(a.seq(), [], fun(x): x + 10)
+    a1 = map(a.iter(), [], fun(x): x + 10)
     affirm.is_equal(a1, [11, 12, 13, 14, 15, 16])
+//
+//    print(
+//        match [1,2,3]
+//            as [1, ..rest]: rest
+//    )
 
-    print(
-        match [1,2,3]:
-        as [1, ...rest] = rest
-    )
-    print(
-        match [1,2,3].seq():
-        as x::xs = [x, xs]
-    )
-
-    print(
-        match [1,2,3].seq():
-        as n::ns = [n, ns]
-    )
 //    test()
     __env__()
 

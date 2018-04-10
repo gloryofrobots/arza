@@ -4,11 +4,17 @@ from capy.misc import platform
 from capy.runtime import error
 
 
-class W_ArraySequence(W_Root):
+class W_ArrayIter(W_Root):
     def __init__(self, arr):
         self.arr = arr
         self.index = 0
         self.len = self.arr._length_()
+        self.empty = False
+
+    def _is_empty_(self):
+        if self.index >= self.len:
+            return True
+        return False
 
     def _length_(self):
         if self.index >= self.len:
@@ -16,25 +22,26 @@ class W_ArraySequence(W_Root):
 
         return self.len - self.index
 
-    def _head_(self):
+    def _value_(self):
+        if self.index >= self.len:
+            return self
+
         return self.arr._at_index_(self.index)
+
+    def _next_(self):
+        if self.index >= self.len:
+            return space.newnil()
+        self.index += 1
+        return self
 
     def _equal_(self, other):
         if self is other:
-            return True
-        elif space.isnil(other) and self._is_empty_():
             return True
 
         return False
 
     def _type_(self, process):
-        return process.std.classes.ArraySeq
-
-    def _tail_(self):
-        if self.index >= self.len:
-            return space.newnil()
-        self.index += 1
-        return self
+        return process.std.classes.ArrayIter
 
     def _to_string_(self):
         return "<ArraySeq (%d, %d)>" % (self.index, self.len)
@@ -49,8 +56,8 @@ class W_Array(W_Root):
         for i in self._items:
             yield i
 
-    def _seq_(self):
-        return W_ArraySequence(self)
+    def _iter_(self):
+        return W_ArrayIter(self)
 
     def _put_(self, k, v):
         from capy.types.space import isint

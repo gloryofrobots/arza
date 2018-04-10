@@ -12,8 +12,8 @@ def presetup(process, module, stdlib):
     import capy.builtins.classes.setup_array
     capy.builtins.classes.setup_array.setup(process, stdlib)
 
-    import capy.builtins.classes.setup_seq
-    capy.builtins.classes.setup_seq.setup(process, stdlib)
+    import capy.builtins.classes.setup_iter
+    capy.builtins.classes.setup_iter.setup(process, stdlib)
 
     import capy.builtins.classes.setup_class
     capy.builtins.classes.setup_class.setup(process, stdlib)
@@ -37,9 +37,9 @@ def setup_classes(module, classes):
     api.put(module, classes.Symbol.name, classes.Symbol)
     api.put(module, classes.String.name, classes.String)
     api.put(module, classes.Array.name, classes.Array)
-    api.put(module, classes.Seq.name, classes.Seq)
-    api.put(module, classes.ArraySeq.name, classes.ArraySeq)
-    api.put(module, classes.TableSeq.name, classes.TableSeq)
+    api.put(module, classes.Iter.name, classes.Iter)
+    api.put(module, classes.ArrayIter.name, classes.ArrayIter)
+    api.put(module, classes.TableIter.name, classes.TableIter)
     api.put(module, classes.Table.name, classes.Table)
     api.put(module, classes.Function.name, classes.Function)
 

@@ -325,7 +325,7 @@ def infix_lparen(parser, op, token, left):
                 items.append(nodes.create_name_node_s(parser.token, hole_arg(index)))
                 advance(parser)
             else:
-                if parser.token_type == TT_ELLIPSIS:
+                if parser.token_type == TT_TRIPLE_DOT:
                     unpack_call = True
 
                 e = expression(parser, 0)
@@ -664,7 +664,7 @@ def _parse_pattern(parser):
     pattern = expression(parser.pattern_parser, 0, TERM_PATTERN)
     if parser.token_type == TT_WHEN:
         advance(parser)
-        guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
+        guard = expression(parser.guard_parser, 0, TERM_GUARD)
         pattern = node_2(NT_WHEN, get_node_token(guard), pattern, guard)
 
     return pattern
@@ -693,7 +693,6 @@ def _parse_match_branches(parser, token, levels, indents):
 
 def prefix_match(parser, op, token):
     exp = free_expression(parser, 0, TERM_CASE)
-    advance_expected(parser, TT_COLON)
     open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_MATCH)
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
@@ -703,7 +702,7 @@ def prefix_match(parser, op, token):
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
         pattern = _parse_pattern(parser)
-        advance_expected(parser, TT_ASSIGN)
+        advance_expected(parser, TT_COLON)
         body = statements(parser, TERM_CASE)
 
         branches.append(list_node([pattern, body]))

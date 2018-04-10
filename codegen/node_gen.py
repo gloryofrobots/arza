@@ -66,6 +66,7 @@ NODES = [
   "NT_TAIL",
   "NT_DROP",
   "NT_RANGE",
+  "NT_EMPTY",
 
   "NT_OF",
   "NT_AS",

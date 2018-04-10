@@ -149,7 +149,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_SHARP, None, prefix_sharp)
 
         # TODO DELETE IT, BAD PARSER COMPOSITION. EXPRESSIONS DOES NOT NEED THEM
-        prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
+        prefix(self, TT_DOUBLE_DOT, NT_REST, prefix_nud, 70)
         prefix(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
 
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
@@ -215,13 +215,13 @@ class PatternParser(BaseParser):
         prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
         prefix(self, TT_LCURLY, None, prefix_lcurly_pattern, layout=layout_lcurly)
         prefix(self, TT_SHARP, None, prefix_sharp)
-        prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
+        prefix(self, TT_DOUBLE_DOT, NT_REST, prefix_nud, 70)
 
         infix(self, TT_OF, NT_OF, 10, led_infix)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
         infix(self, TT_AS, None, 15, infix_bind)
-        infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
+        infix(self, TT_DOUBLE_DOT, NT_CONS, 60, led_infixr)
 
         symbol(self, TT_WHEN)
         symbol(self, TT_CASE)
@@ -231,6 +231,7 @@ class PatternParser(BaseParser):
         symbol(self, TT_ASSIGN)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
+        literal(self, TT_DOUBLE_COLON, NT_EMPTY)
         init_parser_literals(self)
 
 
@@ -245,7 +246,7 @@ class FunSignatureParser(BaseParser):
 
         prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
         prefix(self, TT_LCURLY, None, prefix_lcurly_pattern, layout=layout_lcurly)
-        prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
+        prefix(self, TT_DOUBLE_DOT, NT_REST, prefix_nud, 70)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
         init_parser_literals(self)

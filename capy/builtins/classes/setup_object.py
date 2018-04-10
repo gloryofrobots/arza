@@ -26,7 +26,7 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'del', delete, 2)
     api.put_native_method(process, _class, u'str', to_string, 1)
     api.put_native_method(process, _class, u'repr', to_repr, 1)
-    api.put_native_method(process, _class, u'seq', _seq, 1)
+    api.put_native_method(process, _class, u'iter', _iter, 1)
 
 
 @complete_native_routine
@@ -167,10 +167,10 @@ def to_repr(process, routine):
 
 
 @complete_native_routine
-def _seq(process, routine):
+def _iter(process, routine):
     arg0 = routine.get_arg(0)
 
-    return api.seq(arg0)
+    return api.iter(arg0)
 
 
 @complete_native_routine
@@ -178,4 +178,4 @@ def _kindof(process, routine):
     arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    return api.kindof(arg0, arg1)
+    return api.is_instance(process, arg0, arg1)

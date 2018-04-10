@@ -62,7 +62,6 @@ TOKENS = [
   ("TT_INFIXR", "infixr"),
   ("TT_PREFIX", "prefix"),
 
-  ("TT_ELLIPSIS", "..."),
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),
   ("TT_ARROW", "->"),
@@ -85,9 +84,10 @@ TOKENS = [
 
   ("TT_LSQUARE", "["),
   ("TT_RSQUARE", "]"),
-  ("TT_DOT", "."),
   ("TT_COLON", ":"),
   ("TT_DOUBLE_COLON", "::"),
+  ("TT_DOT", "."),
+  ("TT_TRIPLE_DOT", "..."),
   ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK_NAME", "`"),
   ("TT_BACKTICK_OPERATOR", "`"),

@@ -104,6 +104,7 @@ def _transform_is_map(history, head, variables):
 
 
 def _transform_is_not_empty(history, head, variables):
+    print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_call(nodes.node_token(arg_node),
                                 create_is_empty_call(nodes.node_token(arg_node), arg_node),
@@ -114,6 +115,7 @@ def _transform_is_not_empty(history, head, variables):
 
 
 def _transform_is_empty(history, head, variables):
+    print "******************************************************************************************"
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_call(nodes.node_token(arg_node),
                                 create_is_empty_call(nodes.node_token(arg_node), arg_node),

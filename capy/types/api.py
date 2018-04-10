@@ -231,12 +231,12 @@ def get_type(process, obj):
     return obj._type_(process)
 
 
-def kindof(process, obj, trait):
+def is_instance(process, obj, trait):
     assert not space.islist(trait)
-    return space.newbool(kindof_b(process, obj, trait))
+    return space.newbool(is_instance_b(process, obj, trait))
 
 
-def kindof_b(process, obj, kind):
+def is_instance_b(process, obj, kind):
     if not space.isclass(kind):
         return error.throw_3(error.Errors.TYPE_ERROR, obj, kind, space.newstring(u"Expecting class"))
     t = get_type(process, obj)
@@ -292,16 +292,16 @@ def not_equal(obj, other):
 #     return space.newint(v)
 
 
-def seq(obj):
-    return obj._seq_()
+def iter(obj):
+    return obj._iter_()
 
 
-def head(obj):
-    return obj._head_()
+def value(obj):
+    return obj._value_()
 
 
-def tail(obj):
-    return obj._tail_()
+def next(obj):
+    return obj._next_()
 
 
 """

@@ -201,7 +201,7 @@ def __isnot(process, routine):
 def __kindof(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
-    return api.kindof(process, left, right)
+    return api.is_instance(process, left, right)
 
 
 @complete_native_routine

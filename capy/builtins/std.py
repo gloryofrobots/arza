@@ -39,11 +39,11 @@ class StdClasses:
 
         self.Array = newtype(_s(u"Array"))
 
-        self.Seq = newtype(_s(u"Seq"))
+        self.Iter = newtype(_s(u"Seq"))
 
-        self.ArraySeq = newtype_2(_s(u"ArraySeq"), self.Seq)
+        self.ArrayIter = newtype_2(_s(u"ArrayIter"), self.Iter)
 
-        self.TableSeq = newtype_2(_s(u"TableSeq"), self.Seq)
+        self.TableIter = newtype_2(_s(u"TableIter"), self.Iter)
 
         self.Tuple = newtype(_s(u"Tuple"))
 

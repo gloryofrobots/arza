@@ -82,6 +82,11 @@ def _process_unit(state, pattern, patterns, path):
     return patterns
 
 
+def _process_empty(state, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["is_empty", _create_path_node(nodes.node_token(pattern), path)])
+    return patterns
+
+
 def _process_cons(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_seq",
                                       _create_path_node(nodes.node_token(pattern), path)])
@@ -206,7 +211,6 @@ def _process_of(state, pattern, patterns, path):
     return patterns
 
 
-
 def _process_when_no_else(state, pattern, patterns, path):
     pat = node_first(pattern)
     guard = node_second(pattern)
@@ -229,6 +233,8 @@ def _process_pattern(state, pattern, patterns, path):
 
     if ntype == NT_UNIT:
         return _process_unit(state, pattern, patterns, path)
+    elif ntype == NT_EMPTY:
+        return _process_empty(state, pattern, patterns, path)
     elif ntype == NT_ARRAY:
         return _process_array(state, pattern, patterns, path)
     elif ntype == NT_MAP:
