@@ -346,12 +346,12 @@ fun extends((supertype, fields, _init), parent) =
     let
         new_init =
             match _init
-            | () = _datatype:get_init(parent)
-            | fn = fn
+                | () = _datatype:get_init(parent)
+                | fn = fn
         new_super =
             match supertype
-            | type Abstract = Record
-            | _ = supertype
+                | type Abstract = Record
+                | _ = supertype
     in
         (new_super, _datatype:get_fields(parent) ++ fields, new_init)
 

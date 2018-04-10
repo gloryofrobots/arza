@@ -68,3 +68,4 @@ fun coro(fn) =
                 chan1(...args)
     in
         _coro
+

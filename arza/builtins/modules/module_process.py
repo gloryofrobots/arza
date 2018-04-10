@@ -48,6 +48,8 @@ def start(process, routine):
 def __process(process, routine):
     fn = routine.get_arg(0)
     args = routine.get_arg(1)
+    if not space.istuple(args):
+        args = space.newtuple([args])
     return process.scheduler.spawn(fn, args)
 
 

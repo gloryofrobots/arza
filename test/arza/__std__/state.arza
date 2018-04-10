@@ -1,0 +1,42 @@
+import io
+type State(pid)
+
+trait (T) for State=
+//    def at(s of T, key) =
+//        s ! (#at, key, self())
+//        receive
+//            (#at, pid, val) when pid == s.pid =
+//                val
+
+//    def get(s of T) =
+//        s ! (#set, val)
+//
+    def &({pid} of T) =
+        pid ! (#get, self())
+        receive (#get, val)  =
+            val
+
+    def :=({pid} of T, val) =
+        pid ! (#set, val)
+
+
+
+fun _loop(state) =
+    receive
+        | (#set, new_state) = _loop(new_state)
+
+        | (#get, pid) =
+            pid ! (#get, state)
+            _loop(state)
+
+//        | (#at, pid, key) =
+//            pid ! (#at, self(), state.[key])
+//            _loop(state)
+
+//        | (#put, key, val) = _loop(state.{(key)=val})
+
+
+fun new(state) =
+    let pid = spawn(_loop, state)
+    State(pid)
+

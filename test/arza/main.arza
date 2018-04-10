@@ -2,17 +2,15 @@ import io
 import affirm
 import seq
 import list
-include tests (run as test)
-//include tests:test_dispatch:test_inheritance:test_type (test as test)
-
+import state
+//include tests (run as test)
+//
 fun main() =
-//    io:print(signatures(put))
-//    io:print(supertype(Lense))
-//    io:print(l1 `kindof` Lense)
-//    io:print(l1 `kindof` Record)
-//    io:print(Lense `kindof` Record)
-//    io:print(Lense `kindof` Abstract)
-//    io:print(Lense `kindof` Datatype)
-    test()
+//    test()
+    let s = state:new({x=1, y=2})
+    io:print(&s)
+    s:=10
+    io:print(&s)
     #endprogram
+
 

@@ -6,3 +6,21 @@ def seq:map[List](self, fn)
    | [], fn = empty(self)
    | x::xs, fn = fn(x) :: map(xs, fn)
 
+
+
+fun remove_creature(game, {id}) =
+    io:print("REMOVE")
+    game.{
+        creatures = del(@, id)
+    }
+
+fun main() =
+    let
+        g1 = Goblin(#Grogdo)
+        g2 = Goblin(#Captra)
+        game = Game()
+            |> add_creature(_, g2)
+            |> add_creature(_, g1)
+            |> remove_creature(_, g2)
+    in
+        io:print(game)
