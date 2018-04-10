@@ -2,20 +2,19 @@
 import affirm
 
 
-
 fun map(seq, acc, fn):
-    if seq.is_empty():
+    it = seq.iter()
+    if it == nil:
         acc
     else:
-        val = seq.value()
+        val = it.value()
         acc.append(fn(val))
-        map(seq.next(), acc, fn)
-
+        map(it, acc, fn)
 
 
 fun main():
     a = [1, 2, 3, 4, 5, 6]
-    a1 = map(a.iter(), [], fun(x): x + 10)
+    a1 = map(a, [], fun(x): x + 10)
     affirm.is_equal(a1, [11, 12, 13, 14, 15, 16])
 //
 //    print(

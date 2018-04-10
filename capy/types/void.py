@@ -9,7 +9,7 @@ class W_Void(W_UniqueType):
 
 class W_Nil(W_UniqueType):
     def _to_string_(self):
-        return 'Nil'
+        return 'nil'
 
     def _type_(self, process):
         return process.std.classes.Object

@@ -144,6 +144,7 @@ class W_Root:
         return not_implemented_error(u"_next_", self)
 
     def _equal_(self, other):
+        # return self is other
         return not_implemented_error(u"_equal_", self, other)
 
     def _hash_(self):

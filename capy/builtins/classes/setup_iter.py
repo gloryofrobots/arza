@@ -14,7 +14,6 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'value', _value, 1)
     api.put_native_method(process, _class, u'next', _next, 1)
     api.put_native_method(process, _class, u'is_iter', _true, 1)
-    api.put_native_method(process, _class, u'iter', _self, 1)
 
 
 @complete_native_routine

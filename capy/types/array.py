@@ -9,12 +9,13 @@ class W_ArrayIter(W_Root):
         self.arr = arr
         self.index = 0
         self.len = self.arr._length_()
-        self.empty = False
+        if self.len == 0:
+            self.finished = True
+        else:
+            self.finished = False
 
     def _is_empty_(self):
-        if self.index >= self.len:
-            return True
-        return False
+        return self.finished
 
     def _length_(self):
         if self.index >= self.len:
@@ -23,28 +24,32 @@ class W_ArrayIter(W_Root):
         return self.len - self.index
 
     def _value_(self):
-        if self.index >= self.len:
+        if self.finished:
             return self
 
         return self.arr._at_index_(self.index)
 
     def _next_(self):
-        if self.index >= self.len:
+        if self.finished:
             return space.newnil()
+
         self.index += 1
+        if self.index >= self.len:
+            self.finished = True
+            return space.newnil()
         return self
 
-    def _equal_(self, other):
-        if self is other:
-            return True
+    def _iter_(self):
+        return self._next_()
 
-        return False
+    def _equal_(self, other):
+        return self is other
 
     def _type_(self, process):
         return process.std.classes.ArrayIter
 
     def _to_string_(self):
-        return "<ArraySeq (%d, %d)>" % (self.index, self.len)
+        return "<iter (%d, %d)>" % (self.index, self.len)
 
 
 class W_Array(W_Root):

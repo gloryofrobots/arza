@@ -9,7 +9,7 @@ class W_Boolean(W_UniqueType):
 
 class W_True(W_Boolean):
     def _to_string_(self):
-        return 'True'
+        return 'true'
 
     def _to_repr_(self):
         return self._to_string_()
@@ -23,13 +23,10 @@ class W_True(W_Boolean):
     def _hash_(self):
         return 1
 
-    def __str__(self):
-        return '_True_'
-
 
 class W_False(W_Boolean):
     def _to_string_(self):
-        return 'False'
+        return 'false'
 
     def _to_repr_(self):
         return self._to_string_()
@@ -43,5 +40,3 @@ class W_False(W_Boolean):
     def _hash_(self):
         return 0
 
-    def __str__(self):
-        return '_False_'
