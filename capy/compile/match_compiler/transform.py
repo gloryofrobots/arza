@@ -1,9 +1,3 @@
-from arza.compile.parse.parser import *
-from arza.types import plist
-from arza.compile.parse.nodes import *
-from arza.compile.parse import nodes
-from arza.types import space, api
-from arza.misc import platform, strutil
 from match_process import *
 from transform_state import *
 
@@ -102,7 +96,7 @@ def transform_body(func, methods, history, node, head, tail, variables):
 def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_call(nodes.node_token(arg_node),
-                                create_is_dict_call(nodes.node_token(arg_node), arg_node),
+                                create_is_table_call(nodes.node_token(arg_node), arg_node),
                                 create_true_node(nodes.node_token(arg_node)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -139,20 +133,11 @@ def _transform_is_seq(history, head, variables):
     return arg_node, condition, prefixes + prefixes1, variables
 
 
-def _transform_is_indexed(history, head, variables):
+
+def _transform_is_array(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_call(nodes.node_token(arg_node),
-                                create_is_indexed_call(nodes.node_token(arg_node), arg_node),
-                                create_true_node(nodes.node_token(arg_node)))
-
-    condition, prefixes1 = _history_get_condition(history, _condition)
-    return arg_node, condition, prefixes + prefixes1, variables
-
-
-def _transform_is_tuple(history, head, variables):
-    arg_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_call(nodes.node_token(arg_node),
-                                create_is_tuple_call(nodes.node_token(arg_node), arg_node),
+                                create_is_array_call(nodes.node_token(arg_node), arg_node),
                                 create_true_node(nodes.node_token(arg_node)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -206,14 +191,6 @@ def _transform_kindof(history, head, variables):
     return left, condition, prefixes + prefixes1, variables
 
 
-def _transform_is_implemented(history, head, variables):
-    left, prefixes = _history_get_var(history, head[1])
-    right = head[2]
-    _condition = create_is_implemented_call(nodes.node_token(left), left, right)
-    condition, prefixes1 = _history_get_condition(history, _condition)
-    return left, condition, prefixes + prefixes1, variables
-
-
 def _transform_is(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
@@ -225,7 +202,7 @@ def _transform_is(history, head, variables):
 # THIS function creates in chain for maps like if x in $$ and y in $$ and z in $$
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
-    in_node = create_elem_has(nodes.node_token(map_node),
+    in_node = create_has_call(nodes.node_token(map_node),
                                map_node,
                                create_symbol_node(nodes.node_token(map_node),
                                                   create_name_node_s(
@@ -247,7 +224,7 @@ def _transform_map(history, head, variables):
 def _transform_in(history, head, variables):
     right, prefixes = _history_get_var(history, head[1])
     left = head[2]
-    _condition = create_elem_has(nodes.node_token(left), left, right)
+    _condition = create_has_call(nodes.node_token(left), left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
@@ -287,8 +264,7 @@ def _skip_transform(history, head, variables):
 TRANSFORM_DISPATCH = {
     "is_empty": _transform_is_empty,
     "is_not_empty": _transform_is_not_empty,
-    "is_indexed": _transform_is_indexed,
-    "is_tuple": _transform_is_tuple,
+    "is_array": _transform_is_array,
     "is_seq": _transform_is_seq,
     "is_map": _transform_is_map,
     "length": _transform_length,
@@ -300,7 +276,6 @@ TRANSFORM_DISPATCH = {
     "is": _transform_is,
     "in": _transform_in,
     "kindof": _transform_kindof,
-    "is_implemented": _transform_is_implemented,
     "list": _skip_transform,
     "when": _transform_when,
     "when_dummy": _skip_transform,

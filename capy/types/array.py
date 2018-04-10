@@ -19,6 +19,14 @@ class W_ArraySequence(W_Root):
     def _head_(self):
         return self.arr._at_index_(self.index)
 
+    def _equal_(self, other):
+        if self is other:
+            return True
+        elif space.isnil(other) and self._is_empty_():
+            return True
+
+        return False
+
     def _type_(self, process):
         return process.std.classes.ArraySeq
 
@@ -68,7 +76,9 @@ class W_Array(W_Root):
     def _at_(self, index):
         from capy.types.space import newvoid, isint
         from capy.types import api
-        assert isint(index), (index.__class__.__name__, api.to_s(index))
+        if not isint(index):
+            return newvoid()
+        # assert isint(index), (index.__class__.__name__, api.to_s(index))
         try:
             el = self._items[api.to_i(index)]
         except KeyError:

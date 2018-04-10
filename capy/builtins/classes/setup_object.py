@@ -14,6 +14,7 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'__not__', _not, 1)
     api.put_native_method(process, _class, u'__is__', _is, 2)
 
+    api.put_native_method(process, _class, u'kindof', _kindof, 2)
     api.put_native_method(process, _class, u'type', _type, 1)
     api.put_native_method(process, _class, u'parent', _parent, 1)
     api.put_native_method(process, _class, u'len', length, 1)
@@ -26,6 +27,20 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'str', to_string, 1)
     api.put_native_method(process, _class, u'repr', to_repr, 1)
     api.put_native_method(process, _class, u'seq', _seq, 1)
+
+
+@complete_native_routine
+def _false(process, routine):
+    return space.newbool(False)
+
+
+@complete_native_routine
+def _true(process, routine):
+    return space.newbool(True)
+
+@complete_native_routine
+def _self(process, routine):
+    return routine.get_arg(0)
 
 
 @complete_native_routine
@@ -157,3 +172,10 @@ def _seq(process, routine):
 
     return api.seq(arg0)
 
+
+@complete_native_routine
+def _kindof(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+
+    return api.kindof(arg0, arg1)

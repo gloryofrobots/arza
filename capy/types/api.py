@@ -129,14 +129,15 @@ def lookup(obj, k, default):
 
 
 def lookup_symbol(process, obj, k):
-    if space.isobject(obj):
-        val = at(obj, k)
-        return val
+    if not space.isvaluetype(obj):
+        val = lookup(obj, k, space.newvoid())
+        if not space.isvoid(val):
+            return val
 
     _type = get_type(process, obj)
     val = _type.lookup_symbol(k)
     if space.isvoid(val):
-        return error.throw_2(error.Errors.KEY_ERROR, k, obj)
+        return error.throw_2(error.Errors.KEY_ERROR, obj, k)
     return val
 
 
@@ -230,72 +231,16 @@ def get_type(process, obj):
     return obj._type_(process)
 
 
-def traits(process, obj):
-    b = get_type(process, obj)
-    return b.traits
-
-
-def is_implemented(process, typ, iface):
-    # TODO REMOVE IT AFTER YOU FINISH REMOVING node_juxtaposition_list
-    assert not space.islist(typ)
-    return space.newbool(is_implemented_b(process, typ, iface))
-
-
-def is_implemented_b(process, typ, iface):
-    if not space.isinterface(iface):
-        return error.throw_2(error.Errors.TYPE_ERROR, iface, space.newstring(u"Expecting interface"))
-    if not space.isdatatype(typ):
-        return error.throw_2(error.Errors.TYPE_ERROR, typ, space.newstring(u"Expecting datatype"))
-
-    return typ.is_interface_implemented(iface)
-
-
 def kindof(process, obj, trait):
     assert not space.islist(trait)
     return space.newbool(kindof_b(process, obj, trait))
 
 
 def kindof_b(process, obj, kind):
-    if space.isinterface(kind):
-        if space.isinterface(obj):
-            return equal_b(obj, kind)
-        return interface_b(process, obj, kind)
-    elif space.isdatatype(kind):
-        return typeof_b(process, obj, kind)
-    else:
-        return error.throw_3(error.Errors.TYPE_ERROR, obj, kind, space.newstring(u"Wrong kindof argument"))
-
-
-def interface_b(process, obj, iface):
-    error.affirm_type(iface, space.isinterface, u"<Interface>")
-    if space.issingletondatatype(obj):
-        result = obj.is_interface_implemented(iface)
-        if result:
-            return result
-
-    obj_type = get_type(process, obj)
-    if obj_type.is_interface_implemented(iface):
-        return True
-
-    return False
-
-
-def typeof(process, obj, _type):
-    return typeof_b(process, obj, _type)
-
-
-def typeof_b(process, obj, _type):
-    if not space.isdatatype(_type):
-        return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
-
-    # if Nothing kindof Nothing
-    if space.issingletondatatype(obj) and space.isuserdatatype(_type):
-        if equal_b(obj, _type):
-            return True
-
-    obj_type = get_type(process, obj)
-    return equal_b(obj_type, _type)
-
+    if not space.isclass(kind):
+        return error.throw_3(error.Errors.TYPE_ERROR, obj, kind, space.newstring(u"Expecting class"))
+    t = get_type(process, obj)
+    return equal_b(t, kind)
 
 """
 basic

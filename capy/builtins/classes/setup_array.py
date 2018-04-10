@@ -1,6 +1,7 @@
 from capy.types import api, space, array
 from capy.runtime import error
 from capy.runtime.routine.routine import complete_native_routine
+from capy.builtins.classes.setup_object import _true
 
 
 def setup(process, stdlib):
@@ -17,6 +18,7 @@ def setup_class(process, _class):
     api.put_native_method(process, _class, u'concat', concat, 2)
     api.put_native_method(process, _class, u'append', append, 2)
     api.put_native_method(process, _class, u'prepend', prepend, 2)
+    api.put_native_method(process, _class, u'is_array', _true, 1)
 
 
 @complete_native_routine
@@ -26,38 +28,33 @@ def _empty(process, routine):
 
 @complete_native_routine
 def slice(process, routine):
-    arg2 = routine.get_arg(2)
-
-    arg1 = api.to_i(routine.get_arg(1))
-
     arg0 = api.to_i(routine.get_arg(0))
+    arg1 = api.to_i(routine.get_arg(1))
+    arg2 = routine.get_arg(2)
 
     return array.slice(arg0, arg1, arg2)
 
 
 @complete_native_routine
 def take(process, routine):
-    arg1 = routine.get_arg(1)
-
-    arg0 = api.to_i(routine.get_arg(0))
+    arg0 = routine.get_arg(0)
+    arg1 = api.to_i(routine.get_arg(1))
 
     return array.take(arg0, arg1)
 
 
 @complete_native_routine
 def drop(process, routine):
-    arg1 = routine.get_arg(1)
-
-    arg0 = api.to_i(routine.get_arg(0))
+    arg0 = routine.get_arg(0)
+    arg1 = api.to_i(routine.get_arg(1))
 
     return array.drop(arg0, arg1)
 
 
 @complete_native_routine
 def get_index(process, routine):
-    arg1 = routine.get_arg(1)
-
     arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
 
     return api.get_index(arg0, arg1)
 

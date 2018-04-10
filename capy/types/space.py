@@ -363,6 +363,7 @@ def isobject(_obj):
     return isinstance(_obj, W_Object)
 
 
+
 ########################################################
 
 def isoperator(w):

@@ -88,49 +88,58 @@ RULES = [
     (token('//[^\n]*'), -1),
     (token('/\*[^\*\/]*\*/'), -1),
 
+    (keyword('true'), TT_TRUE),
+    (keyword('false'), TT_FALSE),
+    (keyword('nil'), TT_NIL),
+
+
     (keyword('if'), TT_IF),
     (keyword('elif'), TT_ELIF),
     (keyword('else'), TT_ELSE),
-
     (keyword('then'), TT_THEN),
-    (keyword('of'), TT_OF),
-    (keyword('fun'), TT_FUN),
-    (keyword('and'), TT_AND),
-    (keyword('or'), TT_OR),
-    (keyword('not'), TT_NOT),
-    (keyword('nil'), TT_NIL),
-    (keyword('true'), TT_TRUE),
-    (keyword('false'), TT_FALSE),
+    (keyword('when'), TT_WHEN),
+
+    (keyword('as'), TT_CASE),
+    (keyword('match'), TT_MATCH),
+
     # (keyword('nil'), TT_NIL),
-    (keyword('throw'), TT_THROW),
+
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),
     (keyword('finally'), TT_FINALLY),
-    (keyword('self'), TT_SELF),
+    (keyword('throw'), TT_THROW),
+
     # (keyword('module'), TT_MODULE),
 
-    (keyword('use'), TT_USE),
-    (keyword('class'), TT_CLASS),
-    (keyword('extends'), TT_EXTENDS),
     (keyword('for'), TT_FOR),
+    (keyword('while'), TT_WHILE),
+    (keyword('continue'), TT_CONTINUE),
+    (keyword('break'), TT_BREAK),
 
+    (keyword('extends'), TT_EXTENDS),
+    (keyword('class'), TT_CLASS),
+    (keyword('fun'), TT_FUN),
+    (keyword('self'), TT_SELF),
 
+    (keyword('use'), TT_USE),
     (keyword('import'), TT_IMPORT),
     (keyword('include'), TT_INCLUDE),
     (keyword('from'), TT_FROM),
     (keyword('hiding'), TT_HIDING),
 
     (keyword('of'), TT_OF),
-    (keyword('as'), TT_AS),
+
+    (keyword('and'), TT_AND),
+    (keyword('or'), TT_OR),
+    (keyword('not'), TT_NOT),
     (keyword('is'), TT_IS),
+
     (keyword('let'), TT_LET),
-    (keyword('when'), TT_WHEN),
     (keyword('in'), TT_IN),
 
     (keyword('infixl'), TT_INFIXL),
     (keyword('infixr'), TT_INFIXR),
     (keyword('prefix'), TT_PREFIX),
-    (keyword('case'), TT_CASE),
 
     (keyword('_'), TT_WILDCARD),
 

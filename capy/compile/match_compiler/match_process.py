@@ -11,7 +11,8 @@ def _create_path_node(token, path):
     if plist.is_empty(tail):
         return head
 
-    return create_lookup_node(token, _create_path_node(token, tail), head)
+    obj = _create_path_node(token, tail)
+    return create_lookup_node(token, obj, head)
 
 
 ###################################################################################
@@ -35,7 +36,7 @@ def add_path(node, path):
     return plist.cons(node, path)
 
 
-def _process_tuple(state, pattern, patterns, path):
+def _process_array(state, pattern, patterns, path):
     children = node_first(pattern)
     count = api.length(children)
     count_i = api.to_i(count)
@@ -44,7 +45,7 @@ def _process_tuple(state, pattern, patterns, path):
 
     last_index = count_i - 1
 
-    patterns = add_pattern(patterns, ["is_tuple", _create_path_node(nodes.node_token(pattern), path)])
+    patterns = add_pattern(patterns, ["is_array", _create_path_node(nodes.node_token(pattern), path)])
 
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:
@@ -57,7 +58,7 @@ def _process_tuple(state, pattern, patterns, path):
         for i, child in enumerate(children[0:last_index]):
             # TODO MOVE TO PARSER
             if node_type(child) == NT_REST:
-                return transform_error(state, child, u'Invalid use of ... in tuple pattern')
+                return transform_error(state, child, u'Invalid use of ... in array pattern')
 
             patterns = _process_pattern(state, child, patterns,
                                         add_path(create_int_node(nodes.node_token(child), i), path))
@@ -93,53 +94,6 @@ def _process_cons(state, pattern, patterns, path):
 
     tail_path = add_path(create_tail_node(nodes.node_token(tail)), path)
     patterns = _process_pattern(state, tail, patterns, tail_path)
-    return patterns
-
-
-def _process_list(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["is_seq", _create_path_node(nodes.node_token(pattern), path)])
-
-    children = node_first(pattern)
-    count = api.length(children)
-    count_i = api.to_i(count)
-    # list_length will not be calculated, we need this node for branch merge checker
-    # so [a,b] and [a,b,c] didn`t cause the error
-    patterns = add_pattern(patterns, ["list", _create_path_node(nodes.node_token(pattern), path), count])
-
-    if count_i == 0:
-        return add_pattern(patterns, ["is_empty", _create_path_node(nodes.node_token(pattern), path)])
-
-    # first process all args except last which might be ...rest param
-    last_index = count_i - 1
-    cur_path = path
-    if last_index > 0:
-        for i, child in enumerate(children[0:last_index]):
-            if node_type(child) == NT_REST:
-                return transform_error(state, child, u'Invalid use of Rest')
-
-            patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(nodes.node_token(pattern), cur_path)])
-
-            child_path = add_path(create_head_node(nodes.node_token(child)), cur_path)
-            cur_slice = create_tail_node(nodes.node_token(child))
-            cur_path = add_path(cur_slice, cur_path)
-            patterns = _process_pattern(state, child, patterns, child_path)
-
-    last_child = children[last_index]
-    if node_type(last_child) == NT_REST:
-        last_child = node_first(last_child)
-        child_path = cur_path
-        patterns = _process_pattern(state, last_child, patterns, child_path)
-    else:
-        patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(nodes.node_token(pattern), cur_path)])
-        child_path = add_path(create_head_node(nodes.node_token(last_child)), cur_path)
-        # process child
-        patterns = _process_pattern(state, last_child, patterns, child_path)
-
-        # Ensure that list is empty
-        # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
-        last_slice = create_tail_node(nodes.node_token(last_child))
-        last_path = add_path(last_slice, cur_path)
-        return add_pattern(patterns, ["is_empty", _create_path_node(nodes.node_token(pattern), last_path)])
     return patterns
 
 
@@ -231,14 +185,7 @@ def _process_name(state, pattern, patterns, path):
     return patterns
 
 
-def _process_type(state, pattern, patterns, path):
-    name = nodes.node_first(pattern)
-    patterns = add_pattern(patterns, ["equal",
-                                      _create_path_node(nodes.node_token(pattern), path), name])
-    return patterns
-
-
-def _process_interface(state, pattern, patterns, path):
+def _process_class(state, pattern, patterns, path):
     name = nodes.node_first(pattern)
     patterns = add_pattern(patterns, ["equal",
                                       _create_path_node(nodes.node_token(pattern), path), name])
@@ -282,6 +229,8 @@ def _process_pattern(state, pattern, patterns, path):
 
     if ntype == NT_UNIT:
         return _process_unit(state, pattern, patterns, path)
+    elif ntype == NT_ARRAY:
+        return _process_array(state, pattern, patterns, path)
     elif ntype == NT_MAP:
         return _process_map(state, pattern, patterns, path)
     elif ntype == NT_BIND:
@@ -296,7 +245,7 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_wildcard(state, pattern, patterns, path)
     elif ntype == NT_WHEN:
         return _process_when_no_else(state, pattern, patterns, path)
-    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_STR, NT_CHAR, NT_SYMBOL, NT_MULTI_STR]:
+    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_STR, NT_CHAR, NT_SYMBOL, NT_MULTI_STR, NT_NIL]:
         return _process_literal(state, pattern, patterns, path)
     else:
         transform_error(state, pattern, u"Invalid pattern syntax")

@@ -127,3 +127,31 @@ fun map(seq, acc, fn) {
    }
 }
 
+fun foldl {
+    as (f, acc, []) = acc
+    as (f, acc, hd::tl) = foldl(f, f(hd, acc), tl)
+}
+
+fun foldl
+    as (f, acc, []): acc
+    as (f, acc, hd..tl): foldl(f, f(hd, acc), tl)
+
+
+    match x {
+        as 1 = 1
+        as 1 = 2
+    }
+
+
+
+x[1..-1]
+x.range(1, -1)
+x[1..-1..2]
+x.range_by(1, -1, 2)
+
+x[5..]
+x.take(5)
+x[..5]
+x.drop(5)
+
+x[..-1]

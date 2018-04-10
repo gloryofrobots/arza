@@ -1,13 +1,3 @@
-//include test (test)
-import affirm
-
-class X:
-    nil
-
-//fun X.f(x,y): x + y
-
-//X.f = fun(x,y): x + y
-
 fun map(seq, acc, fn):
     match seq.seq():
     as nil = acc
@@ -30,11 +20,4 @@ fun main():
         as x::xs = [x, xs]
     )
 
-    print(
-        match [1,2,3].seq():
-        as n::ns = [n, ns]
-    )
-//    test()
-    __env__()
 
-//PL(__env__())

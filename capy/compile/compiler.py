@@ -900,7 +900,7 @@ def _compile_AS(compiler, code, node):
 
 def _emit_TAIL(compiler, code, node):
     token = nodes.node_token(node)
-    sym = nodes.create_symbol_node(token, lang_names.REST)
+    sym = nodes.create_symbol_node_s(token, lang_names.TAIL)
     lookup = nodes.create_lookup_node(token, node, sym)
     call = nodes.create_call_node_0(token, lookup)
     _compile(compiler, code, call)
@@ -908,7 +908,7 @@ def _emit_TAIL(compiler, code, node):
 
 def _emit_HEAD(compiler, code, node):
     token = nodes.node_token(node)
-    sym = nodes.create_symbol_node(token, lang_names.FIRST)
+    sym = nodes.create_symbol_node_s(token, lang_names.HEAD)
     lookup = nodes.create_lookup_node(token, node, sym)
     call = nodes.create_call_node_0(token, lookup)
     _compile(compiler, code, call)
@@ -917,7 +917,7 @@ def _emit_HEAD(compiler, code, node):
 def _emit_DROP(compiler, code, node, drop):
     count = node_first(drop)
     token = nodes.node_token(node)
-    sym = nodes.create_symbol_node(token, lang_names.DROP)
+    sym = nodes.create_symbol_node_s(token, lang_names.DROP)
     lookup = nodes.create_lookup_node(token, node, sym)
     call = nodes.create_call_node_1(token, lookup, count)
     _compile(compiler, code, call)
@@ -1093,6 +1093,8 @@ def _compile_node(compiler, code, node):
     elif NT_CALL == ntype:
         _compile_CALL(compiler, code, node)
 
+    elif NT_MATCH == ntype:
+        _compile_MATCH(compiler, code, node)
     elif NT_ARRAY == ntype:
         _compile_ARRAY(compiler, code, node)
     elif NT_UNIT == ntype:

@@ -9,15 +9,20 @@ TOKENS = [
   ("TT_OPERATOR", None),
   ("TT_VOID", None),
   ("TT_NIL", None),
+  ("TT_TRUE", "true"),
+  ("TT_FALSE", "false"),
   ("TT_SELF", None),
 
   ("TT_FUN", "fun"),
 
+  ("TT_RECEIVE", "case"),
+  ("TT_MATCH", "case"),
   ("TT_CASE", "case"),
 
+  ("TT_WHILE", "while"),
+  ("TT_FOR", "for"),
   ("TT_BREAK", "break"),
   ("TT_CONTINUE", "continue"),
-  ("TT_WHILE", "while"),
 
   ("TT_CLASS", "class"),
   ("TT_EXTENDS", "extends"),
@@ -25,30 +30,30 @@ TOKENS = [
   ("TT_IF", "if"),
   ("TT_ELIF", "elif"),
   ("TT_ELSE", "else"),
-
   ("TT_THEN", "then"),
   ("TT_WHEN", "when"),
 
-  ("TT_OF", "of"),
-  ("TT_LET", "let"),
-  ("TT_IN", "in"),
-  ("TT_IS", "is"),
-  ("TT_AS", "as"),
-  ("TT_NOT", "not"),
-  ("TT_AND", "and"),
-  ("TT_OR", "or"),
-  ("TT_TRUE", "true"),
-  ("TT_FALSE", "false"),
   ("TT_TRY", "try"),
   ("TT_THROW", "throw"),
   ("TT_CATCH", "catch"),
   ("TT_FINALLY", "finally"),
+
+  ("TT_LET", "let"),
+
+  ("TT_OF", "of"),
+  ("TT_IN", "in"),
+  ("TT_IS", "is"),
+  ("TT_AS", "as"),
+
+  ("TT_NOT", "not"),
+  ("TT_AND", "and"),
+  ("TT_OR", "or"),
+
   ("TT_IMPORT", "import"),
   ("TT_INCLUDE", "include"),
   ("TT_FROM", "from"),
   ("TT_HIDING", "hiding"),
   ("TT_USE", "use"),
-  ("TT_FOR", "for"),
 
   ("TT_END_EXPR", ";"),
   ("TT_NEWLINE", "(newline)"),
@@ -56,7 +61,6 @@ TOKENS = [
   ("TT_INFIXL", "infixl"),
   ("TT_INFIXR", "infixr"),
   ("TT_PREFIX", "prefix"),
-
 
   ("TT_ELLIPSIS", "..."),
   ("TT_WILDCARD", "_"),

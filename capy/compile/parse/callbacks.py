@@ -61,6 +61,15 @@ def led_assign(parser, op, token, left):
 def layout_try(parser, op, node):
     open_statement_layout(parser, node, LEVELS_TRY, INDENTS_TRY)
 
+
+def layout_match(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
+
+
+def layout_receive(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
+
+
 def layout_if(parser, op, node):
     open_statement_layout(parser, node, LEVELS_IF, INDENTS_IF)
 
@@ -253,18 +262,74 @@ def infix_lparen_pattern(parser, op, token, left):
     return node_2(NT_OF, token, right, left)
 
 
+# def infix_lparen(parser, op, token, left):
+#     unpack_call = False
+#     items = []
+#     index = 0
+#
+#     if parser.token_type != TT_RPAREN:
+#         while True:
+#             if parser.token_type == TT_ELLIPSIS:
+#                 unpack_call = True
+#
+#             e = expression(parser, 0)
+#             items.append(e)
+#
+#             if parser.token_type != TT_COMMA:
+#                 break
+#
+#             advance_expected(parser, TT_COMMA)
+#             index += 1
+#
+#     advance_expected(parser, TT_RPAREN)
+#     # END PARSING
+#     # CREATING CALL NODE
+#     # UNPACKING IS A SYNTACTIC SUGAR for apply function
+#     # f(x, y, z, ...a, ...b, y) =  apply(f, [x, y, z] ++ to_seq(a)  ++ to_seq(b) ++ [x])
+#     if unpack_call is False:
+#         body = node_2(NT_CALL, token, left, list_node(items))
+#     else:
+#         seqs = []
+#         l = []
+#         for item in items:
+#             if nodes.node_type(item) == NT_REST:
+#                 if len(l) != 0:
+#                     seqs.append(nodes.create_array_node(token, l))
+#                     l = []
+#                 seq = nodes.node_first(item)
+#                 if nodes.node_type(seq) == NT_WILDCARD:
+#                     seq = nodes.create_fargs_node(nodes.node_token(seq))
+#
+#                 seqs.append(seq)
+#             else:
+#                 l.append(item)
+#         if len(l) != 0:
+#             seqs.append(nodes.create_array_node(token, l))
+#         body = nodes.create_unpack_call(token, left, list_node(seqs))
+#     return body
+
+def hole_arg(index):
+    return lang_names.HOLE_PREFIX + str(index)
+
+
 def infix_lparen(parser, op, token, left):
     unpack_call = False
     items = []
+    holes = []
     index = 0
 
     if parser.token_type != TT_RPAREN:
         while True:
-            if parser.token_type == TT_ELLIPSIS:
-                unpack_call = True
+            if parser.token_type == TT_WILDCARD:
+                holes.append(index)
+                items.append(nodes.create_name_node_s(parser.token, hole_arg(index)))
+                advance(parser)
+            else:
+                if parser.token_type == TT_ELLIPSIS:
+                    unpack_call = True
 
-            e = expression(parser, 0)
-            items.append(e)
+                e = expression(parser, 0)
+                items.append(e)
 
             if parser.token_type != TT_COMMA:
                 break
@@ -297,7 +362,17 @@ def infix_lparen(parser, op, token, left):
         if len(l) != 0:
             seqs.append(nodes.create_array_node(token, l))
         body = nodes.create_unpack_call(token, left, list_node(seqs))
-    return body
+
+    if len(holes) == 0:
+        return body
+
+    sig = nodes.create_array_node(
+        token,
+        [nodes.create_name_node_s(token, hole_arg(hole)) for hole in holes]
+    )
+
+    func = nodes.create_lambda_node(token, sig, body)
+    return func
 
 
 def infix_lsquare(parser, op, token, left):
@@ -526,15 +601,53 @@ def prefix_if(parser, op, token):
     return node_1(NT_CONDITION, token, list_node(branches))
 
 
+# def prefix_try(parser, op, token):
+#     trybody = statements(parser, TERM_TRY)
+#     catches = []
+#
+#     advance_expected(parser, TT_CATCH)
+#
+#     if parser.token_type == TT_CATCH:
+#         pattern = _parse_pattern(parser)
+#         advance_expected(parser, TT_COLON)
+#         body = statements(parser, TERM_CATCH)
+#         catches.append(list_node([pattern, body]))
+#
+#     if parser.token_type == TT_FINALLY:
+#         advance_expected(parser, TT_FINALLY)
+#         finallybody = statements(parser, [])
+#     else:
+#         finallybody = empty_node()
+#
+#     return node_3(NT_TRY, token, trybody, list_node(catches), finallybody)
+#
+#
+# def _parse_pattern(parser):
+#     pattern = expression(parser.pattern_parser, 0, TERM_BLOCK_START)
+#     return pattern
+
+def prefix_throw(parser, op, token):
+    exp = expression(parser, 0)
+    return node_1(NT_THROW, token, exp)
+
+
 def prefix_try(parser, op, token):
     trybody = statements(parser, TERM_TRY)
     catches = []
 
     advance_expected(parser, TT_CATCH)
 
-    if parser.token_type == TT_CATCH:
+    if parser.token_type == TT_CASE:
+        status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH, indentation_tokens=INDENTS_TRY)
+        while parser.token_type == TT_CASE:
+            advance_expected(parser, TT_CASE)
+            pattern = _parse_pattern(parser)
+            advance_expected(parser, TT_ASSIGN)
+            body = statements(parser, TERM_CATCH_CASE)
+            catches.append(list_node([pattern, body]))
+    else:
         pattern = _parse_pattern(parser)
-        advance_expected(parser, TT_COLON)
+        advance_expected(parser, TT_ASSIGN)
         body = statements(parser, TERM_CATCH)
         catches.append(list_node([pattern, body]))
 
@@ -548,14 +661,86 @@ def prefix_try(parser, op, token):
 
 
 def _parse_pattern(parser):
-    pattern = expression(parser.pattern_parser, 0, TERM_BLOCK_START)
+    pattern = expression(parser.pattern_parser, 0, TERM_PATTERN)
+    if parser.token_type == TT_WHEN:
+        advance(parser)
+        guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
+        pattern = node_2(NT_WHEN, get_node_token(guard), pattern, guard)
+
     return pattern
 
 
-def prefix_throw(parser, op, token):
-    exp = expression(parser, 0)
-    return node_1(NT_THROW, token, exp)
+def _parse_match_branches(parser, token, levels, indents):
+    open_offside_layout(parser, parser.token, levels, indents)
+    check_token_type(parser, TT_CASE)
+    pattern_parser = parser.pattern_parser
+    branches = []
 
+    # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
+    while pattern_parser.token_type == TT_CASE:
+        advance_expected(pattern_parser, TT_CASE)
+        pattern = _parse_pattern(parser)
+        advance_expected(parser, TT_ASSIGN)
+        body = statements(parser, TERM_CASE)
+
+        branches.append(list_node([pattern, body]))
+
+    if len(branches) == 0:
+        parse_error(parser, u"Expected one or more patterns", token)
+
+    return list_node(branches)
+
+
+def prefix_match(parser, op, token):
+    exp = free_expression(parser, 0, TERM_CASE)
+    advance_expected(parser, TT_COLON)
+    open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_MATCH)
+    check_token_type(parser, TT_CASE)
+    pattern_parser = parser.pattern_parser
+    branches = []
+
+    # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
+    while pattern_parser.token_type == TT_CASE:
+        advance_expected(pattern_parser, TT_CASE)
+        pattern = _parse_pattern(parser)
+        advance_expected(parser, TT_ASSIGN)
+        body = statements(parser, TERM_CASE)
+
+        branches.append(list_node([pattern, body]))
+
+    if len(branches) == 0:
+        parse_error(parser, u"Expected one or more patterns", token)
+
+    return node_2(NT_MATCH, token, exp, list_node(branches))
+
+
+# def _parse_receive_branch(parser):
+#     pattern = _parse_pattern(parser)
+#     pattern = nodes.create_array_node(parser.token, [pattern])
+#     advance_expected(parser, TT_ASSIGN)
+#     body = statements(parser, TERM_CASE)
+#     return list_node([pattern, body])
+
+
+# def prefix_receive(parser, op, token):
+#     branches = []
+#     if parser.token_type != TT_CASE:
+#         branch = _parse_receive_branch(parser)
+#         branches.append(branch)
+#     else:
+#         open_offside_layout(parser, parser.token, LEVELS_RECEIVE, INDENTS_RECEIVE)
+#         check_token_type(parser, TT_CASE)
+#
+#         # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
+#         while parser.token_type == TT_CASE:
+#             advance_expected(parser, TT_CASE)
+#             branch = _parse_receive_branch(parser)
+#             branches.append(branch)
+#
+#     if len(branches) == 0:
+#         parse_error(parser, u"Expected one or more patterns", token)
+#
+#     return node_1(NT_RECEIVE, token, list_node(branches))
 
 # FUNCTION STUFF################################
 
@@ -566,7 +751,7 @@ def _parse_func_pattern(parser, arg_terminator):
     if parser.token_type == TT_RPAREN:
         pattern = nodes.create_unit_node(curtoken)
     else:
-        els = _parse_comma_separated_to_one_of(parser.pattern_parser, arg_terminator,
+        els = _parse_comma_separated_to_one_of(parser.fun_signature_parser, arg_terminator,
                                                advance_terminator=False)
         pattern = nodes.create_array_node_from_list(curtoken, els)
     advance_expected(parser, TT_RPAREN)
@@ -737,6 +922,7 @@ def symbol_operator_name(parser, op, token):
     name = itself(parser, op, token)
     return nodes.create_name_from_operator(token, name)
 
+
 # DERIVE
 
 def layout_class(parser, op, node):
@@ -755,6 +941,7 @@ def prefix_class(parser, op, token):
     advance_expected(parser, TT_COLON)
     code = statements(parser, TERM_BLOCK)
     return nodes.node_3(NT_CLASS, token, name, parent, code)
+
 
 # OPERATORS
 

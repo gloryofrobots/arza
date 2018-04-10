@@ -105,6 +105,13 @@ def node_equal(node1, node2):
     return plist.equal_with(node_children(node1), node_children(node2), node_equal)
 
 
+def is_equal_pattern(pat1, pat2):
+    if is_single_node(pat1) and is_single_node(pat2):
+        return node_equal(pat1, pat2)
+
+    return api.equal_b(pat1, pat2)
+
+
 def node_0(ntype, token):
     return newnode(ntype, token, None)
 
@@ -570,8 +577,12 @@ def create_is_call(token, left, right):
     return create_lookup_call_s(token, left, lang_names.IS, [right])
 
 
-def create_elem_call(token, left, right):
-    return create_lookup_call_s(token, left, lang_names.ELEM, [right])
+def create_has_call(token, left, right):
+    return create_lookup_call_s(token, left, lang_names.HAS, [right])
+
+
+def create_at_call(token, left, right):
+    return create_lookup_call_s(token, left, lang_names.AT, [right])
 
 
 def create_len_call(token, val):

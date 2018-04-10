@@ -59,6 +59,7 @@ NT_AND = 56
 NT_OR = 57
 NT_END_EXPR = 58
 NT_END = 59
+NT_CONS = 60
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_NIL", "NT_VOID", "NT_INT", "NT_FLOAT", "NT_STR", "NT_MULTI_STR",
                "NT_CHAR", "NT_WILDCARD", "NT_NAME", "NT_TEMPORARY", "NT_SYMBOL", "NT_CLASS", "NT_MAP", "NT_ARRAY",
@@ -67,7 +68,7 @@ __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_NIL", "NT_VOID", "NT_INT", 
                "NT_IMPORT_HIDING", "NT_INCLUDE", "NT_INCLUDE_HIDING", "NT_EXPORT", "NT_LOAD", "NT_EXTEND", "NT_MODIFY",
                "NT_THROW", "NT_REST", "NT_ASSIGN", "NT_ASSIGN_FORCE", "NT_CALL", "NT_JUXTAPOSITION", "NT_UNDEFINE",
                "NT_LOOKUP", "NT_HEAD", "NT_TAIL", "NT_DROP", "NT_RANGE", "NT_OF", "NT_AS", "NT_LET", "NT_NOT", "NT_AND",
-               "NT_OR", "NT_END_EXPR", "NT_END", ]
+               "NT_OR", "NT_END_EXPR", "NT_END", "NT_CONS", ]
 
 
 def node_type_to_s(ntype):
