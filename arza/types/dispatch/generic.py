@@ -88,8 +88,13 @@ class W_Generic(W_Hashable):
         #     res = self.hot_path.apply(process, args)
         #     if res is not None:
         #         return res
+        if len(self.dispatch_indexes) == 0:
+            return error.throw_2(error.Errors.METHOD_INVOKE_ERROR,
+                                 space.newstring(u"Generic defined without interfaces"),
+                                 self)
+
         _types = []
-        for i in range(len(args)):
+        for i in self.dispatch_indexes:
             arg = args[i]
             cache_mask = self.cache_mask[i]
             if cache_mask == 0:
