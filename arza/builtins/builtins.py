@@ -58,12 +58,18 @@ def postsetup(process):
     create_lang_names(process)
 
 
+def poststdload(process):
+    pass
+
+
 def create_lang_names(process):
     from arza.builtins import lang_names
     prelude = process.modules.prelude
     exports = prelude.exports()
     lang_prefix = space.newsymbol_s(process, lang_names.PREFIX)
     for name in exports:
+        if name.string.startswith_s(lang_names.PREFIX):
+            continue
         new_name = symbol.concat_2(process, lang_prefix, name)
         val = api.at(prelude, name)
         api.put(prelude, new_name, val)

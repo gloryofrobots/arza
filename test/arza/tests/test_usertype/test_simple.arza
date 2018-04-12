@@ -1,8 +1,8 @@
 import affirm
 
 interface =
-    add(self, a)
-    val(self)
+    add(this, a)
+    val(this)
 
 type Zero
 type Vec2(p1, p2)
@@ -12,33 +12,33 @@ type Nil
 
 
 trait(T) for Point2 =
-    def add (self of T, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
-    def add (self of T, i of Int) = Point2(self.x + i, self.y + i)
-    def add (self of T, v of Vec2) = add(Vec2(self, self), v)
+    def add (this of T, p2 of Point2) = Point2(this.x + p2.x, this.y + p2.y)
+    def add (this of T, i of Int) = Point2(this.x + i, this.y + i)
+    def add (this of T, v of Vec2) = add(Vec2(this, this), v)
 
-    def == (self of T, other of Point2) =
-            self.x == other.x and self.y == other.y
+    def == (this of T, other of Point2) =
+            this.x == other.x and this.y == other.y
 
-    def != (self of T, other of Point2) = not (self == other)
+    def != (this of T, other of Point2) = not (this == other)
 
 
 trait(T) for Vec2 =
-    def add (self of T, v of Vec2) =
+    def add (this of T, v of Vec2) =
         Vec2(
-            add(self.p1, v.p1),
-            add(self.p2, v.p2)
+            add(this.p1, v.p1),
+            add(this.p2, v.p2)
         )
 
-    def add(self of T, i of Int) = Vec2 (add(self.p1, i), add(self.p2, i))
-    def add(self of T, p of Point2) = Vec2 (add(self.p1, p), add(self.p2, p))
+    def add(this of T, i of Int) = Vec2 (add(this.p1, i), add(this.p2, i))
+    def add(this of T, p of Point2) = Vec2 (add(this.p1, p), add(this.p2, p))
 
-    def == (self of T, other of Vec2) = (self.p1 == other.p1) and (self.p2 == other.p2)
+    def == (this of T, other of Vec2) = (this.p1 == other.p1) and (this.p2 == other.p2)
 
-    def != (self of T, other) = not (self == other)
+    def != (this of T, other) = not (this == other)
 
 
-def val(self of Some) = self.val
-def val(self of Nil) = self
+def val(this of Some) = this.val
+def val(this of Nil) = this
 
 
 fun test () =

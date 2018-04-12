@@ -116,7 +116,7 @@ def at(obj, k):
     v = obj._at_(k)
     assert v is not None
     if space.isvoid(v):
-        return error.throw_2(error.Errors.KEY_ERROR, k, obj)
+        return error.throw_2(error.Errors.KEY_ERROR, obj, k)
     return v
 
 

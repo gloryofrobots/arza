@@ -90,11 +90,11 @@ type ABC()
 @init_field_with(0, #c, (x, y) -> x ++ y)
 @add_field(#b)
 type AB(a)
-    init (self, a) = self.{a=a}
+    init (ab, a) = ab.{a=a}
 
 type Sum(v)
-    init (self, x, y) =
-        self.{v = x + y}
+    init (sum, x, y) =
+        sum.{v = x + y}
 
 @extends(Sum)
 type Sum2

@@ -6,24 +6,25 @@ import std
 trait TMap(M) for Map =
     instance std:TEq(M)
 
-    def put (self of M, k, v) as std_behavior:put
-    def del (self of M, el) as std_behavior:del
-    def has (self of M, el) as std_behavior:has
-    def is_empty (self of M) as std_behavior:is_empty
+    def put (m of M, k, v) as std_behavior:put
+    def del (m of M, el) as std_behavior:del
+    def has (m of M, el) as std_behavior:has
+    def is_empty (m of M) as std_behavior:is_empty
+    def len (m of M) as std_behavior:len
 
-    def repr(self of M) = str(self)
+    def repr(m of M) = str(m)
 
-    def str(self of M) =
+    def str(m of M) =
         let fun _joiner((fst, snd)) =
                 str(fst) ++ "=" ++ repr(snd)
         in "{"
-                ++ string:join_with(", ", to_seq(self), _joiner) ++
+                ++ string:join_with(", ", to_seq(m), _joiner) ++
            "}"
 
-    def to_seq(self of M) = _map:to_list(self)
+    def to_seq(m of M) = _map:to_list(m)
 
-    def keys(self of M) = seq:map(at(_, 0), to_seq(self))
-    def values(self of M) = seq:map(at(_, 1), to_seq(self))
+    def keys(m of M) = seq:map(at(_, 0), to_seq(m))
+    def values(m of M) = seq:map(at(_, 1), to_seq(m))
 --------------------------------------------------
 
-describe Map as (Eq, Repr, Coll, Dict, ToSeq)
+describe Map as (Eq, Len, Repr, Coll, Dict, ToSeq)

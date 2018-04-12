@@ -76,7 +76,7 @@ def affirm_type(obj, condition, expected=None):
         if expected:
             expected_str = u"expected %s" % expected
         else:
-            expected_str = u""
+            expected_str = u"got %s" % obj.__class__.__name__
         return throw_2(Errors.TYPE_ERROR, space.safe_w(obj),
                        space.newstring(u"Wrong object type %s" % expected_str))
     return True

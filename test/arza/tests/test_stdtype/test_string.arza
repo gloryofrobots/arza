@@ -25,7 +25,7 @@ fun test () =
     affirm:is_equal(string:join("<><>", ["x", "y", "1", "Z", "V"]), "x<><>y<><>1<><>Z<><>V")
 
     affirm:is_equal(
-        string:join_cast("---", [1,2, ["1", 2,3,4], (1,2,"ABC")]),
+        string:join("---", [1,2, ["1", 2,3,4], (1,2,"ABC")]),
         """1---2---[1, 2, 3, 4]---(1, 2, ABC)"""
     )
 

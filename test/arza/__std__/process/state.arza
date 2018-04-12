@@ -1,0 +1,100 @@
+import process
+import decor
+
+type State(pid)
+
+type StateError is Error
+
+fun pid(s) = asrecord(s).pid
+
+fun exit(s) =
+    process:kill(pid(s), 0)
+
+fun is_valid(s) =
+    not process:is_finished(pid(s))
+
+fun __ensure_process(s) =
+    if not is_valid(s) then
+        throw StateError("Process inactive")
+    else
+        s
+
+let ensure1 = decor:call_first(_, 1, __ensure_process)
+let ensure2 = decor:call_first(_, 2, __ensure_process)
+let ensure3 = decor:call_first(_, 3, __ensure_process)
+
+trait (T) for State =
+    @ensure3
+    def put(s of T, key, value) =
+        pid(s) ! (#put, key, value)
+        s
+
+    @ensure2
+    def at(s of T, key) =
+        pid(s) ! (#at, self(), key)
+        receive (#at, val) = val
+
+    @ensure1
+    def &(s of T) =
+        pid(s) ! (#get, self())
+        receive (#get, val) = val
+
+    @ensure2
+    def := (s of T, val) =
+        pid(s) ! (#set, val)
+        s
+
+    @ensure2
+    def del(s of T, el) =
+        pid(s) ! (#del, el)
+        s
+
+    @ensure2
+    def has(s of T, el) =
+        pid(s) ! (#has, self(), el)
+        receive (#has, val) = val
+
+    @ensure1
+    def arza:lang:len (s of T) =
+        pid(s) ! (#len, self())
+        receive (#len, val) = val
+
+    @ensure2
+    def ==(s of T, data) = &s == data
+
+    @ensure1
+    def arza:lang:is_empty(s of T) = len(s) > 0
+
+
+fun _loop(data) =
+    receive
+        | (#set, new_data) =
+            _loop(new_data)
+
+        | (#get, pid) =
+            pid ! (#get, data)
+            _loop(data)
+
+        | (#at, pid, key) =
+            pid ! (#at, data.[key])
+            _loop(data)
+
+        | (#has, pid, key) =
+            pid ! (#has, data `has` key)
+            _loop(data)
+
+        | (#len, pid) =
+            pid ! (#len, len(data))
+            _loop(data)
+
+        | (#put, key, val) = _loop(data.{(key)=val})
+
+        | (#del, key) = _loop(del(data, key))
+////        | msg = throw (#InvalidMessage, msg)
+
+fun new(data) =
+    let pid = spawn(_loop, data)
+    State(pid)
+
+
+

@@ -1,16 +1,18 @@
+//TODO
+//arza:lang to arza
+//DEAL with self and self()
+
+//include tests:test_examples (test)
 import io
 import affirm
 import seq
 import list
-import state
-//include tests (run as test)
-//
+include tests (run as test)
+
 fun main() =
-//    test()
-    let s = state:new({x=1, y=2})
-    io:print(&s)
-    s:=10
-    io:print(&s)
+    test()
     #endprogram
+
+
 
 

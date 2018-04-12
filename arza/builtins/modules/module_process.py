@@ -24,6 +24,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'send', send_message, 2)
     api.put_native_function(process, _module, u'push', push, 2)
     api.put_native_function(process, _module, u'pause', pause, 1)
+    api.put_native_function(process, _module, u'kill', kill, 2)
     api.put_native_function(process, _module, u'resume', resume, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     _module.export_all()
@@ -171,4 +172,11 @@ def get_active_processes(process, routine):
 def pause(process, routine):
     pid = routine.get_arg(0)
     pid.process.pause()
+    return space.newunit()
+
+@complete_native_routine
+def kill(process, routine):
+    pid = routine.get_arg(0)
+    arg = routine.get_arg(1)
+    pid.process.exit(arg)
     return space.newunit()

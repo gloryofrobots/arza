@@ -111,6 +111,18 @@ fun length(l) =
     foldl((_, acc) -> acc + 1, 0, l)
 
 
+// check if seq has length greater then l
+fun has_min_length(l, coll) when l > 0 =
+    fun _length_gt
+        | (step, []) when step < l = False
+        | (step, coll) when step == l = True
+        | (step, x::xs) =
+            _length_gt(step+1, xs)
+
+
+    _length_gt(0, coll)
+
+
 fun last (x::xs) =
     let fun _last
             | (_, x::xs) = _last(x, xs)

@@ -8,11 +8,11 @@ fun get_branch(l of Lense) =
     in getter(source)
 
 fun __unpack(l) =
-    match downcast(l)
+    match asrecord(l)
         | {source, getter, setter} as result = result
 
 trait (L) for Lense =
-    def &(l of L) = downcast(l).source
+    def &(l of L) = asrecord(l).source
     def &&(l of L) = get_branch(l)
 
     def <-(l of L, value) =

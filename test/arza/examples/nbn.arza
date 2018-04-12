@@ -32,7 +32,7 @@ fun nbn_1() =
             "\n",
             seq:map(
                 fun (n) =
-                    string:join_cast(
+                    string:join(
                        " ",
                        seq:map(
                             g -> _loop(n, g),
@@ -49,7 +49,7 @@ fun nbn_2 () =
         "\n",
         seq:map(
             fun(n) =
-                string:join_cast(
+                string:join(
                    " ",
                    seq:map(
                         (fun (g) =

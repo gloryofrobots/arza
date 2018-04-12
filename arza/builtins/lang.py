@@ -9,6 +9,7 @@ from arza.misc import fs
 from arza.compile import compiler
 
 from arza.builtins import lang_names
+import random
 
 
 def put_lang_func(process, module, name, func, arity):
@@ -53,6 +54,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, u"interfaces", __interfaces, 1)
     put_lang_func(process, module, u"vector", __vector, -1)
     put_lang_func(process, module, u"array", __array, -1)
+    put_lang_func(process, module, u"randi", __randi, 2)
     put_lang_func(process, module, u"__dispatch", __newdispatch, 2)
     put_lang_func(process, module, u"__register", __newregister, 3)
 
@@ -128,6 +130,12 @@ def __vector(process, routine):
     args = routine._args.to_l()
     return space.newpvector(args)
 
+@complete_native_routine
+def __randi(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+    i = random.randint(api.to_i(arg0), api.to_i(arg1))
+    return space.newint(i)
 
 @complete_native_routine
 def __array(process, routine):

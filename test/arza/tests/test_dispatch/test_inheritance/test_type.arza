@@ -12,17 +12,17 @@ type Vec()
 
 type Vec2 is Vec
     (x, y)
-    init(self, x, y) =
-        self.{x=x, y=y}
+    init(v, x, y) =
+        v.{x=x, y=y}
 
 type Vec3 is Vec
     (...Vec2, z)
-    init (self, x, y, z) =
-        super(Vec2, self, x, y).{z=z}
+    init (vec, x, y, z) =
+        super(Vec2, vec, x, y).{z=z}
 
 type Vec3Float is Vec3
-    init (self, x of Float, y of Float, z of Float) =
-        super(Vec3, self, x, y, z)
+    init (vec, x of Float, y of Float, z of Float) =
+        super(Vec3, vec, x, y, z)
 
 def size(v of Vec) = _size(v)
 def _size(v of Vec) = throw NotImplementedError(#_size)

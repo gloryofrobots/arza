@@ -211,6 +211,7 @@ def _make_signature(process, gf, types, method, pattern, outers):
 
 
 def specify(process, gf, types, method, pattern, outers):
+    error.affirm_type(gf, space.isgeneric)
     sig = _make_signature(process, gf, types, method, pattern, outers)
     gf.add_signature(process, sig)
     # for index, _type in zip(gf.dispatch_indexes, _types):

@@ -7,37 +7,37 @@ import std
 trait TArray(A) for Array =
     instance std:TEq(A)
 
-    def at (self of A, k) as std_behavior:at
-    def put (self of A, k, v) as std_behavior:put
-    def del (self of A, el) as std_behavior:del
-    def has (self of A, el) as std_behavior:has
-    def is_empty (self of A) as std_behavior:is_empty
-    def len (self of A) as std_behavior:len
+    def at (a of A, k) as std_behavior:at
+    def put (a of A, k, v) as std_behavior:put
+    def del (a of A, el) as std_behavior:del
+    def has (a of A, el) as std_behavior:has
+    def is_empty (a of A) as std_behavior:is_empty
+    def len (a of A) as std_behavior:len
 
     def ++ (a1 of A, a2 of A) as _array:concat
 
-    def prepend(self of A, v) as _array:prepend
-    def append(self of A, v) as _array:append
+    def prepend(a of A, v) as _array:prepend
+    def append(a of A, v) as _array:append
 
-    def slice(self of A, first, last) as _array:slice
-    def drop(self of A, x) as _array:drop
-    def take(self of A, x) as _array:take
+    def slice(a of A, first, last) as _array:slice
+    def drop(a of A, x) as _array:drop
+    def take(a of A, x) as _array:take
 
-    def index_of(self of A, el) as _array:index_of
+    def index_of(a of A, el) as _array:index_of
 
-    def repr(self of A) =
-        if len(self) == 1 then
-            "Array(" ++ repr(at(self, 0)) ++ ",)"
+    def repr(a of A) =
+        if len(a) == 1 then
+            "Array(" ++ repr(at(a, 0)) ++ ",)"
         else
-            "Array(" ++ string:join_with(", ", to_seq(self), repr) ++ ")"
+            "Array(" ++ string:join_with(", ", to_seq(a), repr) ++ ")"
 
-    def str(self of A) =
-        if len(self) == 1 then
-            "Array(" ++ str(at(self, 0)) ++ ",)"
+    def str(a of A) =
+        if len(a) == 1 then
+            "Array(" ++ str(at(a, 0)) ++ ",)"
         else
-            "Array(" ++ string:join_with(", ", to_seq(self), str) ++ ")"
+            "Array(" ++ string:join_with(", ", to_seq(a), str) ++ ")"
 
-//    def cast(Seq, self of A) = to_seq(self)
+//    def cast(Seq, a of A) = to_seq(a)
 --------------------------------------------------
 
 type ArraySeq (arr, index, dest)
@@ -45,7 +45,7 @@ type ArraySeqEmpty (dest)
 
 trait TArraySeq(A) for ArraySeq =
 
-    def to_seq(self of A) = self
+    def to_seq(a of A) = a
 
     def first({arr, index} of A) = arr.[index]
 
@@ -61,7 +61,7 @@ trait TArraySeq(A) for ArraySeq =
 
     def is_empty({arr, index} of A) = index >= len(arr)
 
-    def empty(self of A) = ArraySeqEmpty(self.dest)
+    def empty(a of A) = ArraySeqEmpty(a.dest)
 
     def len({arr, index} of A) =
         let
@@ -79,29 +79,29 @@ describe ArraySeq as (Seq, Len, Empty)
 --------------------------------------------------
 
 trait TArraySeqEmpty(A) for ArraySeqEmpty =
-    def to_seq(self of A) = self
-    def first(self of A) = throw EmptySeqError("ArraySequence is empty")
+    def to_seq(a of A) = a
+    def first(a of A) = throw EmptySeqError("ArraySequence is empty")
 
-    def rest(self of A) =
+    def rest(a of A) =
         throw EmptySeqError("ArraySequence is empty")
 
-    def empty(self of A) = self
+    def empty(a of A) = a
 
-    def is_empty(self of A) = True
+    def is_empty(a of A) = True
 
-    def len(self of A) = 0
+    def len(a of A) = 0
 
-    def cons(v, self of A) =
-        prepend(self.dest, v)
-        self
+    def cons(v, a of A) =
+        prepend(a.dest, v)
+        a
 
-    def from_seq(self of A) = self.dest
+    def from_seq(a of A) = a.dest
 
 describe ArraySeqEmpty as (Seq, Len)
 
 --------------------------------------------------
 
-def to_seq(self of Array) = ArraySeq(self, 0, array())
+def to_seq(a of Array) = ArraySeq(a, 0, array())
 
 fun map (f, arr of Array) =
     let

@@ -6,25 +6,25 @@ prefix(++-+*++, ++-+*++, 70)
 infixl (+--, +--, 50)
 
 interface =
-    ++-+*++(self)
+    ++-+*++(this)
     +--(v1, v2)
 
 type X(x)
 
-def types:test_method_1(a1 of X, a2 of X, self of X) = a1.x + a2.x + self.x
-def types:test_method_2(a1, self of X, a2) = a1.x + a2.x + self.x
-def types:test_method_3(self of X, a1, a2) = a1.x + a2.x + self.x
-def types:test_method_4(self of X) = self.x
+def types:test_method_1(a1 of X, a2 of X, this of X) = a1.x + a2.x + this.x
+def types:test_method_2(a1, this of X, a2) = a1.x + a2.x + this.x
+def types:test_method_3(this of X, a1, a2) = a1.x + a2.x + this.x
+def types:test_method_4(this of X) = this.x
 
 def +--(x1 of X, x2 of X) = x1.x + x2.x
 
-def ++-+*++(self of stuff:TestType) = self.val
+def ++-+*++(this of stuff:TestType) = this.val
 
 trait (T) for stuff:TestType =
-    def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self of T) = a1.val + a2.val + self.val
-    def types:test_method_2(a1, self of T, a2) = a1.val + a2.val + self.val
-    def types:test_method_3(self of T, a1, a2) = a1.val + a2.val + self.val
-    def types:test_method_4(self of T) = self.val
+    def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, this of T) = a1.val + a2.val + this.val
+    def types:test_method_2(a1, this of T, a2) = a1.val + a2.val + this.val
+    def types:test_method_3(this of T, a1, a2) = a1.val + a2.val + this.val
+    def types:test_method_4(this of T) = this.val
 
 fun test () =
     let

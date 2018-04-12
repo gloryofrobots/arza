@@ -5,24 +5,24 @@ type Nil
 type Some(val)
 
 interface =
-    eq(self, other)
+    eq(this, other)
 
 trait(T) for L =
-    def len(self of T) = len(self.l)
+    def len(this of T) = len(this.l)
 
-    def is_empty(self of T) = is_empty(self.l)
+    def is_empty(this of T) = is_empty(this.l)
 
-    def first(self of T) = self
+    def first(this of T) = this
 
-    def rest(self of T) = self
-
-
-def eq (self of Some, val of Some) = val == Nil
-def eq (self of Some, _) = False
+    def rest(this of T) = this
 
 
-def eq (self of Nil, {val} of Some) = val == Nil
-def eq (self of Nil, _ of Nil) = True
+def eq (this of Some, val of Some) = val == Nil
+def eq (this of Some, _) = False
+
+
+def eq (this of Nil, {val} of Some) = val == Nil
+def eq (this of Nil, _ of Nil) = True
 
 
 fun test () =

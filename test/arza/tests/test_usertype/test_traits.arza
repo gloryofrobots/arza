@@ -54,16 +54,16 @@ def ne(v1 of Val2, v2) = v1.v != v2.v
 instance TOrder(Val, Val)
 instance TMaxMin(Val, Val)
 
-def cmp(self of Val, other of Val) =
-    if self.v == other.v then EQ
-    elif self.v <= other.v then LT
+def cmp(this of Val, other of Val) =
+    if this.v == other.v then EQ
+    elif this.v <= other.v then LT
     else GT
 
 instance TOrder(Val2, Val2)
 instance TCmp(Val2, Val2)
 instance TMaxMin(Val2, Val2)
 
-def+(_) le(self of Val2, other of Val2) = self.v <= other.v
+def+(_) le(this of Val2, other of Val2) = this.v <= other.v
 
 fun test () =
     let

@@ -11,19 +11,19 @@ interface Listable(I) =
 
 trait(T) for [T1, T2] =
     //Seq iface
-    def first(self of T) = first(to_list(self))
-    def rest(self of T) = rest(to_list(self))
+    def first(this of T) = first(to_list(this))
+    def rest(this of T) = rest(to_list(this))
 
     //not enough for Slice
-    def drop(self of T, count) = seq:drop(count, to_list(self))
-    def take(self of T, count) = seq:take(count, to_list(self))
+    def drop(this of T, count) = seq:drop(count, to_list(this))
+    def take(this of T, count) = seq:take(count, to_list(this))
 
 
-def to_list(self of T1) = [self.v1, self.v2]
+def to_list(this of T1) = [this.v1, this.v2]
 
 trait(T) for T2 =
-    def to_list(self of T) = [self.v1, self.v2]
-    def slice(self of T, _from, _to) = slice(to_list(self), _from, _to)
+    def to_list(this of T) = [this.v1, this.v2]
+    def slice(this of T, _from, _to) = slice(to_list(this), _from, _to)
 
 describe (T1, T2) as (Listable, Seq)
 describe T2 as Slice

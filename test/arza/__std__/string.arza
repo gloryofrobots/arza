@@ -9,22 +9,22 @@ trait __TStringEq(T) for [String, Char, Symbol] =
 
 
 trait __TString(S) for String =
-    def at (self of S, k) as std_behavior:at
-    def put (self of S, k, v) as std_behavior:put
-    def del (self of S, el) as std_behavior:del
-    def has (self of S, el) as std_behavior:has
-    def is_empty (self of S) as std_behavior:is_empty
-    def len (self of S) as std_behavior:len
+    def at (s of S, k) as std_behavior:at
+    def put (s of S, k, v) as std_behavior:put
+    def del (s of S, el) as std_behavior:del
+    def has (s of S, el) as std_behavior:has
+    def is_empty (s of S) as std_behavior:is_empty
+    def len (s of S) as std_behavior:len
 
-    def append(self of S, v) as _string:append
-    def prepend(self of S, v) as _string:prepend
-    def to_seq(self of S) as _string:to_list
-    def slice(self of S, _from, _to) as _string:slice
-    def drop(self of S, x) as _string:drop
-    def take(self of S, x) as _string:take
+    def append(s of S, v) as _string:append
+    def prepend(s of S, v) as _string:prepend
+    def to_seq(s of S) as _string:to_list
+    def slice(s of S, _from, _to) as _string:slice
+    def drop(s of S, x) as _string:drop
+    def take(s of S, x) as _string:take
 
-    def cons (value of Char, self of S) = _string:append(self, value)
-    def empty(self of S) = ""
+    def cons (value of Char, s of S) = _string:append(s, value)
+    def empty(s of S) = ""
 
 
 def ++ (s1 of String, s2 of String) = _string:concat(s1, s2)
@@ -43,6 +43,7 @@ describe String as (Eq, Repr,
        Len, Coll,
        Prepend, Append, Concat, Cons,
        ToSeq, Slice, Empty)
+
 
 
 fun concat (str1 of String, str2 of String) =
@@ -68,11 +69,14 @@ fun joiner(_sep, _func) =
             _func(s)
     )
 
-fun join(_str, _coll) =
+fun join_strict(_str, _coll) =
     let _seq = to_seq(_coll)
     in seq:foldl(joiner(_str, identity), "", _seq)
 
-fun join_cast(_str, _coll) =
+fun all(...args) =
+    join("", args)
+
+fun join(_str, _coll) =
     let _seq = to_seq(_coll)
     in seq:foldl(joiner(_str, str), "", _seq)
 

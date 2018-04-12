@@ -61,43 +61,43 @@ fun replicate(count, hasent) =
 ---------------------------------------------------
 
 trait TList(T) for List =
-    def != (self of T, other) as std_behavior:not_equal
-    def ==(self of T, other) = seq:equal(self, other)
+    def != (l of T, other) as std_behavior:not_equal
+    def ==(l of T, other) = seq:equal(l, other)
 
-    def put (self of T, k, v) as std_behavior:put
-    def at (self of T, k) as std_behavior:at
-    def del (self of T, k) as std_behavior:del
-    def has (self of T, el) as std_behavior:has
+    def put (l of T, k, v) as std_behavior:put
+    def at (l of T, k) as std_behavior:at
+    def del (l of T, k) as std_behavior:del
+    def has (l of T, el) as std_behavior:has
 
 
-    def repr(self of T) =
-        "[" ++ string:join_with(", ", self, repr) ++ "]"
+    def repr(l of T) =
+        "[" ++ string:join_with(", ", l, repr) ++ "]"
 
-    def str(self of T) =
-        "[" ++ string:join_with(", ", self, str) ++ "]"
+    def str(l of T) =
+        "[" ++ string:join_with(", ", l, str) ++ "]"
 
-    def first(self of T) = _list:head(self)
+    def first(l of T) = _list:head(l)
 
-    def rest(self of T) = _list:tail(self)
+    def rest(l of T) = _list:tail(l)
 
-    def cons(value, self of T) = _list:cons(value, self)
+    def cons(value, l of T) = _list:cons(value, l)
 
-    def to_seq(self of T) = self
-    def from_seq(self of T) = self
+    def to_seq(l of T) = l
+    def from_seq(l of T) = l
 
-    def len(self of T) = _list:length(self)
+    def len(l of T) = _list:length(l)
 
-    def is_empty(self of T) = _list:is_empty(self)
+    def is_empty(l of T) = _list:is_empty(l)
 
-    def empty(self of T) = []
+    def empty(l of T) = []
 
-    def slice(self of T, first, last) as _list:slice
+    def slice(l of T, first, last) as _list:slice
 
-    def drop(self of T, count) as _list:drop
+    def drop(l of T, count) as _list:drop
 
-    def take(self of T, count) as _list:take
+    def take(l of T, count) as _list:take
 
-    def append(self of T, val) = seq:append(val, self)
+    def append(l of T, val) = seq:append(val, l)
 --------------------------------------------------
 
 def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)

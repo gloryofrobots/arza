@@ -9,25 +9,25 @@ import seq
 
 
 trait TCoro(C) for Coroutine =
-    def is_empty(self of C) as std_behavior:is_empty
+    def is_empty(co of C) as std_behavior:is_empty
 
-    def len(self of C) = throw NotImplementedError ("Coroutine can't define len")
+    def len(co of C) = throw NotImplementedError ("Coroutine can't define len")
 
-    def first(self of C) =
-        if not is_empty(self) then
-            self ()
+    def first(co of C) =
+        if not is_empty(co) then
+            co ()
         else
             throw FiberFlowError("Coroutine is closed")
 
-    def rest(self of C) =
-        if not is_empty(self) then
-            self
+    def rest(co of C) =
+        if not is_empty(co) then
+            co
         else
             []
 
-    def to_seq(self of C) = self
-    def from_seq(self of C) = self
-    def empty(self of C) = []
+    def to_seq(co of C) = co
+    def from_seq(co of C) = co
+    def empty(co of C) = []
 
 describe Coroutine as (Len, ToSeq, Seq, Empty)
 
@@ -52,15 +52,15 @@ fun ref(v) =
     Reference(co)
 
 trait TReference(R) for Reference =
-    def repr(self of R) = str(self)
+    def repr(r of R) = str(r)
 
-    def &(self of R) = self.val(#Read)
+    def &(r of R) = r.val(#Read)
 
-    def :=(self of R, value) = self.val((#Write, value))
+    def :=(r of R, value) = r.val((#Write, value))
 
-    def ==(self of R, other) = self.val == other.val
+    def ==(r of R, other) = r.val == other.val
 
-    def str(self of R) = "Var"
+    def str(r of R) = "Var"
 
 describe Reference as (Repr, Ref)
 ///////////////////////////////////////////////////////

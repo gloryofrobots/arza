@@ -75,6 +75,7 @@ prefix (~, ~, 96)
 // infix . : -> 100
 
 
+
 ////////////////////////////////////////////////////////////
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -135,7 +136,7 @@ interface At(I) =
 interface Coll is (Put, At, Del)
 
 interface Dict(I) is Coll =
-    keys(self of I)
+    keys(d of I)
     values(I)
 
 interface Seq =
@@ -204,32 +205,34 @@ interface Cast(I) =
 
 
 trait (T) for Record =
-    def index_of (self of T, val) as _datatype:record_index_of
-    def keys(self of T) as _datatype:record_keys
-    def values(self of T) as _datatype:record_values
+    def index_of (this of T, val) as _datatype:record_index_of
+    def keys(this of T) as _datatype:record_keys
+    def values(this of T) as _datatype:record_values
 
-    def put (self of T, k, v) as std_behavior:put
-    def at (self of T, k) as std_behavior:at
-    def del (self of T, el) as std_behavior:del
-    def has (self of T, el) as std_behavior:has
-    def len (self of T) as std_behavior:len
-    def is_empty (self of T) as std_behavior:is_empty
-    def cast(self of T, to_what) as std_behavior:cast
+    def put (this of T, k, v) as std_behavior:put
+    def at (this of T, k) as std_behavior:at
+    def del (this of T, el) as std_behavior:del
+    def has (this of T, el) as std_behavior:has
+    def len (this of T) as std_behavior:len
+    def is_empty (this of T) as std_behavior:is_empty
+    def cast(this of T, to_what) as std_behavior:cast
+
+    def != (this of T, other) = not (this == other)
+    def repr(this of T) = str(this)
 
 
 trait (T) for Any =
-//    for [Abstract, Function, Generic, Partial,
-//        Datatype, Bool, Record, Interface, PID, Module] =
 
-    def == (self of T, other) as std_behavior:equal
-    def != (self of T, other) as  std_behavior:not_equal
+    def == (this of T, other) as std_behavior:equal
+    def != (this of T, other) as std_behavior:not_equal
 
-    def str (self of T) as std_behavior:str
-    def repr (self of T) as std_behavior:repr
+    def str (this of T) as std_behavior:str
+    def repr (this of T) as std_behavior:repr
 
 
-def at (self of Map, k) as std_behavior:at
-def at (self of Tuple, el) as std_behavior:at
+def at (this of Module, k) as std_behavior:at
+def at (this of Map, k) as std_behavior:at
+def at (this of Tuple, el) as std_behavior:at
 
 
 ////////////////////////////////////////////////////////////
@@ -329,7 +332,7 @@ fun dec(x) = x - 1
 
 fun last(coll) = at(coll, len(coll) - 1)
 
-fun downcast(any) = any as Record
+fun asrecord(any) = any as Record
 
 let
     fst = at(_, 0)
@@ -409,3 +412,4 @@ fun __receive__(fn) =
                     fn(msg)
     in
         _loop()
+

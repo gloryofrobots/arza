@@ -10,7 +10,7 @@ if api.DEBUG_MODE:
 else:
     PRELUDE_FILE = u"prelude"
 
-STD_MODULES = [u"std", u"tuple",
+STD_MODULES = [u"std", u"tuple", u"io",
                u"lense", u"list",
                u"string", u"generics",
                u"seq", u"coro",
@@ -70,6 +70,7 @@ class Scheduler:
             if err is not None:
                 return process, err
 
+        builtins.poststdload(process)
         print "INITIALIZED"
         return process, None
 

@@ -1,5 +1,6 @@
 import affirm
 import process
+import process:state
 
 
 fun test_simple() =
@@ -63,6 +64,26 @@ fun test_coro() =
         test1()
         test2()
 
+fun test_state() =
+    let s = state:new({x=1, y=2})
+    s:={x=10, y=20}
+    affirm:is_equal(&s, {x=10, y=20})
+    s.{x=1, z=30}
+    affirm:is_equal(&s, {x=1, y=20, z=30})
+    put(s, #z, 3)
+    affirm:is_equal(s.z, 3)
+    affirm:is_equal(len(s), 3)
+    put(s, #a, 4)
+    affirm:is_true(s `has` #a)
+    affirm:is_true(s `has` #x)
+    affirm:is_true(s `has` #z)
+    affirm:is_false(s `has` #b)
+    s:=[]
+    affirm:is_equal(len(s), 0)
+    s:=(1,2,3,4)
+    affirm:is_equal(len(s), 4)
+    affirm:is_equal(&s, (1,2,3,4))
+    #endprogram
 
 fun test() =
     test_coro()

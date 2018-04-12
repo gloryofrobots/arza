@@ -4,15 +4,15 @@ import arza:lang:_datatype as datatype
 
 
 trait TEq(T) =
-    def == (self of T, other) as std_behavior:equal
-    def != (self of T, other) as  std_behavior:not_equal
+    def == (this of T, other) as std_behavior:equal
+    def != (this of T, other) as  std_behavior:not_equal
 
 trait TStr(T) =
-    def str (self of T) as std_behavior:str
-    def repr (self of T) as std_behavior:repr
+    def str (this of T) as std_behavior:str
+    def repr (this of T) as std_behavior:repr
 
 trait TRepr(T) =
-    def repr (self of T) = str(self)
+    def repr (this of T) = str(this)
 
 trait TOrder(T1, T2) =
     def < (x of T1, y of T2) = cmp(x, y) == LT
