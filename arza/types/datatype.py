@@ -201,20 +201,6 @@ def _can_implement(_type, interface):
     return True
 
 
-class W_NativeDatatype(W_BaseDatatype):
-    def __init__(self, name, supertype):
-        W_BaseDatatype.__init__(self, name, supertype, plist.empty())
-
-    def _type_(self, process):
-        return process.std.types.Datatype
-
-    def _to_string_(self):
-        return "<native type %s>" % (api.to_s(self.name))
-
-    def _to_repr_(self):
-        return self._to_string_()
-
-
 class W_AbstractType(W_BaseDatatype):
     def __init__(self, name, supertype):
         W_BaseDatatype.__init__(self, name, supertype, plist.empty())
@@ -390,12 +376,15 @@ def _derive(process, t, interfaces, strictmode):
         t.register_interface(interface)
 
 
-def newnativedatatype(name, supertype):
-    return W_NativeDatatype(name, supertype)
-
-
 def newabstractdatatype(name, supertype):
     return W_AbstractType(name, supertype)
+
+
+def newrecordtype(name, supertype, fields):
+    if space.isrecordtype(supertype):
+        fields = plist.concat(supertype.fields, fields)
+
+    return W_RecordType(name, supertype, fields, None)
 
 
 def newtype(process, name, supertype, fields, initializer):

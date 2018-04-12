@@ -185,7 +185,8 @@ fun test_match() =
 
     //////////////////////////////////////////////////////
 
-    affirm:is_equal(
+    let err = MatchError(42)
+    in affirm:is_equal(
             try
                 (match 42
                     | 23 = #first
@@ -195,7 +196,7 @@ fun test_match() =
             finally
                 [exc, exc, exc]
             ,
-            [(#MatchError, 42), (#MatchError, 42), (#MatchError, 42)]
+            [err, err, err]
       )
 
     let

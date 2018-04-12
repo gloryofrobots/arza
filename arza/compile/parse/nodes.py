@@ -521,10 +521,10 @@ def create_empty_map_node(token):
     return node_1(nt.NT_MAP, token, list_node([]))
 
 
-def create_match_fail_node(token, val, idx):
-    sym = create_symbol_node_s(token, val)
-    return create_tuple_node(token, [sym, create_temporary_node(token, idx)])
-    # return create_call_node_s(token, val, [create_name_node(token, var)])
+def create_match_fail_node(token, err, idx):
+    # sym = create_symbol_node_s(token, err)
+    # return create_tuple_node(token, [sym, create_temporary_node(token, idx)])
+    return create_call_node_s(token, err, [create_temporary_node(token, idx)])
 
 
 def create_if_node(token, branches):

@@ -145,7 +145,7 @@ class Errors:
     FIBER_FLOW_ERROR = u"FiberFlowError"
     NOT_IMPLEMENTED_ERROR = u"NotImplementedError"
     MATCH_ERROR = u"MatchError"
-    FUNCTION_MATCH_ERROR = u"FunctionArgumentsMatchError"
+    FUNCTION_MATCH_ERROR = u"FunctionMatchError"
     EXCEPTION_MATCH_ERROR = u"ExceptionMatchError"
     EXPORT_ERROR = u"ExportError"
     IMPLEMENTATION_ERROR = u"ImplementationError"

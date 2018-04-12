@@ -2,18 +2,16 @@
 //arza:lang to arza
 
 //include tests:test_examples (test)
+//include tests:test_fun (test)
 import io
 import affirm
 import seq
 import list
-//include tests (run as test)
+include tests (run as test)
 
-fun f
-    | 1 = 1
 
 fun main() =
-//    test()
-    f(2)
+    test()
     #endprogram
 
 

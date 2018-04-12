@@ -468,13 +468,6 @@ def newabstractdatatype(name, supertype):
     return datatype
 
 
-def newnativedatatype(name, supertype):
-    from arza.types.datatype import newnativedatatype
-    assert issymbol(name)
-    datatype = newnativedatatype(name, supertype)
-    return datatype
-
-
 def isdatatype(w):
     from arza.types.datatype import W_BaseDatatype
     return isinstance(w, W_BaseDatatype)
