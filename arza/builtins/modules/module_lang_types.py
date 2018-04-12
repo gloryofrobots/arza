@@ -2,7 +2,8 @@ from arza.types import space, api
 
 
 def setup(process, stdlib):
-    name = space.newsymbol(process, u'arza:lang:_types')
+    from arza.builtins import lang_names
+    name = lang_names.get_lang_symbol(process, u"_types")
     _module = space.newemptyenv(name)
     setup_types(_module, stdlib.types)
     _module.export_all()

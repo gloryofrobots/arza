@@ -226,7 +226,7 @@ def simplify_lense(compiler, code, node):
     transforms
     $(d.s1.s2)
     into
-    arza:lang:lense(d, (source) -> source.s1.s2, (value, source) -> source.{s1.s2 = value})
+    arza:lense(d, (source) -> source.s1.s2, (value, source) -> source.{s1.s2 = value})
     """
 
     source = node_first(node)

@@ -1,4 +1,4 @@
-include arza:lang:_coro (spawn, is_complete, is_initialised,
+include arza:_coro (spawn, is_complete, is_initialised,
                             is_terminated, is_active, is_passive,
                             is_finished)
 import tuple

@@ -1,17 +1,17 @@
-import arza:lang:_std_behavior as std_behavior
+import arza:_std as std_behavior
 
-import arza:lang:_datatype
-include arza:lang:_datatype(supertype)
+import arza:_datatype
+include arza:_datatype(supertype)
 
-import arza:lang:_process
+import arza:_process
 
-include arza:lang:_types (Any, Abstract, Record, Number, Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+include arza:_types (Any, Abstract, Record, Number, Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                               Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
                               Module, Array, AssocArray, PID)
 
 
-include arza:lang:_bit (bitand, bitor, bitxor, bitnot, lshift, rshift)
-include arza:lang:_number (abs)
+include arza:_bit (bitand, bitor, bitxor, bitnot, lshift, rshift)
+include arza:_number (abs)
 
 
 """
@@ -63,7 +63,7 @@ infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
 // use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
-prefix (-, arza:lang:negate, 55)
+prefix (-, arza:negate, 55)
 // infix :: -> 60
 infixl (**, **, 60)
 // prefix # -> 70

@@ -1,4 +1,4 @@
-import arza:lang:_map
+import arza:_map
 import string
 import seq
 import std

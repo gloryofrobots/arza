@@ -1,2 +1,2 @@
-include arza:lang:_generic (get_method, get_types)
+include arza:_generic (get_method, get_types)
 def at (g of Generic, t) as get_method

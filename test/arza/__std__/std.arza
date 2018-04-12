@@ -1,6 +1,6 @@
-import arza:lang:_number
-import arza:lang:_std_behavior as std_behavior
-import arza:lang:_datatype as datatype
+import arza:_number
+import arza:_std as std_behavior
+import arza:_datatype as datatype
 
 
 trait TEq(T) =

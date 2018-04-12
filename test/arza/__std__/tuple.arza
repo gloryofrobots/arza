@@ -1,4 +1,4 @@
-import arza:lang:_tuple
+import arza:_tuple
 import string
 import std
 import io

@@ -1,5 +1,6 @@
-
-PREFIX = "arza:lang:"
+from arza.types import space
+PREFIX = "arza:"
+PREFIXU = u"arza:"
 
 NOT = PREFIX + "not"
 HAS = PREFIX + "has"
@@ -75,3 +76,12 @@ SVALUEOF = "VALUEOF"
 
 SKIP_ON_AUTO_EXPORT_START = "_"
 SKIP_ON_AUTO_EXPORT_MIDDLE = ":"
+
+
+def get_lang_symbol(process, suffix):
+    assert isinstance(suffix, unicode)
+    name = PREFIXU + suffix
+    return space.newsymbol(process, name)
+
+
+

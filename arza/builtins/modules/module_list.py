@@ -4,7 +4,8 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_list')
+    from arza.builtins import lang_names
+    _module_name = lang_names.get_lang_symbol(process, u"_list")
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'length', length, 1)
     api.put_native_function(process, _module, u'to_tuple', to_tuple, 1)

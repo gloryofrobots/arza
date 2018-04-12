@@ -1,4 +1,4 @@
-include arza:lang:_io (write, stdout)
+include arza:_io (write, stdout)
 import seq
 import string
 

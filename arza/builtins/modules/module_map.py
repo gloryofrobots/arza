@@ -4,7 +4,8 @@ from arza.runtime import error
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_map')
+    from arza.builtins import lang_names
+    _module_name = lang_names.get_lang_symbol(process, u"_map")
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'to_list', _to_list, 1)
 

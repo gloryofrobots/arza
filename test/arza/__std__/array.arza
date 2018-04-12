@@ -1,4 +1,4 @@
-import arza:lang:_array
+import arza:_array
 import string
 import io
 import std

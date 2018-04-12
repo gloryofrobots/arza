@@ -430,7 +430,7 @@ class W_Scope(W_Root):
                     continue
 
                 index_colon = keyval.index_s(skip_middle)
-                # so operators like := will be exported but names arza:lang:foo will not
+                # so operators like := will be exported but names arza:foo will not
                 if index_colon > 1:
                     continue
 

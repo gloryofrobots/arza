@@ -55,7 +55,7 @@ trait (T) for State =
         receive (#has, val) = val
 
     @ensure1
-    def arza:lang:len (s of T) =
+    def arza:len (s of T) =
         pid(s) ! (#len, self())
         receive (#len, val) = val
 
@@ -63,7 +63,7 @@ trait (T) for State =
     def ==(s of T, data) = &s == data
 
     @ensure1
-    def arza:lang:is_empty(s of T) = len(s) > 0
+    def arza:is_empty(s of T) = len(s) > 0
 
 
 fun _loop(data) =

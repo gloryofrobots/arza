@@ -19,7 +19,7 @@ fun faster(v1, v2) = v1.speed > v2.speed
 
 def race_winner(c1 of Car, c2 of Car)
     | (c1, c2) when faster(c1, c2)  = c1
-    | (c1, c2) when arza:lang:at(c1, #speed) < c2.speed = c2
+    | (c1, c2) when arza:at(c1, #speed) < c2.speed = c2
     | (c1, c2) when c1.speed == c2.speed = c1
 
 

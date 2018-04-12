@@ -60,9 +60,9 @@ There are no working REPL at the moment
   - [Loading order](#loading-order)
 
 ### Syntax overview
-Arza syntax very similar to F# light syntax where indentation 
-used as statement and expression delimiter but instead of using simple 
-dedents and indents like in Python, Arza uses code layouts 
+Arza syntax very similar to F# light syntax where indentation
+used as statement and expression delimiter but instead of using simple
+dedents and indents like in Python, Arza uses code layouts
 to determine block borders
 
 ```
@@ -70,8 +70,8 @@ to determine block borders
 fun f(x) =
     1
     2
-         
-// layout begins straight after = token 
+
+// layout begins straight after = token
 fun f(x) = 1
            2
 
@@ -118,21 +118,21 @@ If you do not like to use indentation aware syntax at all, you can
 enclose any block in ( and )
 
 You can enclose in ( and ) almost any syntax construct and use  free code layout
-without worrying about whitespaces. 
+without worrying about whitespaces.
 
 ```
-(fun f() = 
+(fun f() =
         1
  +
   2 + 3)
-  
+
 (interface Map
     fun put
         (key, value, @map)
  fun at
      (key,
       @map)
-) 
+)
 ```
 
 If you need to use nested statements inside such free layout you must enclose each of them in ()
@@ -211,7 +211,7 @@ fun f(x,y) =
 
 Arza provides predicate multiple dispatch for polymorphism. This concept is comperativly rare in languge design.
 In recent years more limited approach was implemented in Julia language.
-Arza generic functions could be specialized for any arguments and also for simple predicate expressions. 
+Arza generic functions could be specialized for any arguments and also for simple predicate expressions.
 Essentially, they resemble pattern matching functions in Erlang
 but with posiibility to define clauses at different places in code.
 Most novative concept in Arza is that programmer can define interfaces along side generic functions.
@@ -224,19 +224,19 @@ interface CargoRobot =
 
     // here type must me used as second arguments
     fun recharge(amount, @robot)
-    
+
 // Now declaring Cargo interface
 interface Cargo
     // this function has been already declared in CargoRobot interface
     // but Cargo types must be used as second arguments instead of first
     use move_cargo(robot, @cargo)
 
-// Interfaces do not create namespaces. 
+// Interfaces do not create namespaces.
 
-fun move(robot, cargo) = 
+fun move(robot, cargo) =
     move_cargo(robot, cargo)
     recharge(100, robot)
-    
+
 // Now define some types
 type BaseRobot = (model)
 
@@ -250,20 +250,20 @@ type Cargo(type, weight, moved)
 // defining methods
 
 def move_cargo(robot of RobotActual, cargo of Cargo) =
-    // data is imutable this is operator for creating shared copies 
+    // data is imutable this is operator for creating shared copies
     // there are no return statement
     // last expression returns automatically
     io:print("moving cargo")
 
-    
+
     //returning tuple with moved cargo and slightly exosted robot
-    (cargo.{moved = True}, 
+    (cargo.{moved = True},
         // I will implement shortcut for persistent -= operation in future
         robot.{battery=robot.battery-10})
-    
-    
 
-def recharge(r of Robot) = 
+
+
+def recharge(r of Robot) =
     r.{battery=100}
 
 //Some more examples
@@ -415,7 +415,7 @@ infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
 // use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
-prefix (-, arza:lang:negate, 55)
+prefix (-, arza:negate, 55)
 // infix :: -> 60
 infixl (**, **, 60)
 // prefix # -> 70
@@ -472,7 +472,7 @@ let
 // Function expression in arza has three possible forms
 //
 // Simple
-fun <name> `(`[arg_pattern]`)` [ when  <value_expression>]= <code_block> 
+fun <name> `(`[arg_pattern]`)` [ when  <value_expression>]= <code_block>
 
 fun any(p, l) =
     disjunction(map(p, l))
@@ -651,7 +651,7 @@ let
 let
     t = (1,2,3)
     v = t.0 + t.1
-    
+
 // calculating index or field
 let v = t.[0] + t.[2-1]
 
@@ -711,12 +711,12 @@ let
     v = add_to_1(1, 2)
     v = add_to_1(1)(2)
     s = add_to_3_and_4(1)
-    
+
 // Also there are two operators in prelude responsible for creating curried functions
 // prefix
-fun &(func) = arza:lang:curry(func)
+fun &(func) = arza:curry(func)
 // infix
-fun ..(f, g) = arza:lang:curry(f)(g)
+fun ..(f, g) = arza:curry(f)(g)
 let
    n = seq:map(&`+`(2), [1,2,3])
    // n = [3, 4, 5]
@@ -757,10 +757,10 @@ let
           >> &seq:map(triple >> square)
 
     // l1 = [9, 9, 81, 225, 441]
-    
+
     // Using _ holes to create partial application
     l2 = l |> seq:filter(even, _)
-    
+
     put_at_1 = put(1, _, _)
     m1 = put_at_1(42, {})
 ```
@@ -777,7 +777,7 @@ else <code_block>
 
 fun f() =
     // si
-    if something() then 
+    if something() then
         anything()
     elif something_else() == True then
         // series of expressions inside ()
