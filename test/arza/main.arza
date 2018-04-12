@@ -6,10 +6,14 @@ import io
 import affirm
 import seq
 import list
-include tests (run as test)
+//include tests (run as test)
+
+fun f
+    | 1 = 1
 
 fun main() =
-    test()
+//    test()
+    f(2)
     #endprogram
 
 
