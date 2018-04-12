@@ -87,6 +87,12 @@ def simplify_as(compiler, code, node):
     return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [source, interfaces])
 
 
+def simplify_of(compiler, code, node):
+    source = node_first(node)
+    _type = node_second(node)
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.KINDOF, [source, _type])
+
+
 def simplify_describe(compiler, code, node):
     _type = node_first(node)
     interfaces = node_second(node)

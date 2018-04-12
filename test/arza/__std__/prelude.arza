@@ -247,7 +247,7 @@ type Some (val)
 type None
 
 // Various Errors
-//type Error(args)
+type MessageMatchError is Error
 type ImportError is Error
 type RuntimeError is Error
 type TypeError is Error
@@ -269,15 +269,11 @@ type CompileError is Error
 type ParseError is Error
 type UnpackSequenceError is Error
 type FiberFlowError is Error
-//type MatchError is Error
-//type FunctionMatchError is Error
-//type ExceptionMatchError is Error
 type ExportError is Error
 type ImplementationError is Error
 type ConstraintError is Error
 type EmptySeqError is Error
 type OverflowError is Error
-type MessageMatchError is Error
 type RangeError is Error
 type CoroutineEmpty is Error
 

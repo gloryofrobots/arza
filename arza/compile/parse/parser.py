@@ -173,6 +173,7 @@ class ExpressionParser(BaseParser):
 
         infix(self, TT_OF, NT_OF, 15, led_infix)
         infix(self, TT_AS, NT_AS, 20, led_infix)
+        infix(self, TT_OF, NT_OF, 20, led_infix)
         infix(self, TT_OR, NT_OR, 25, led_infix)
         infix(self, TT_AND, NT_AND, 30, led_infix)
         infix(self, TT_BACKTICK_NAME, None, 35, infix_backtick_name)

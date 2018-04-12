@@ -1044,6 +1044,11 @@ def _compile_AS(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
+def _compile_OF(compiler, code, node):
+    simplified = simplify.simplify_of(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+
 def _compile_LET(compiler, code, node):
     simplified = simplify.simplify_let(compiler, code, node)
     _compile(compiler, code, simplified)
@@ -1303,6 +1308,8 @@ def _compile_node(compiler, code, node):
         _compile_CONS(compiler, code, node)
     elif NT_AS == ntype:
         _compile_AS(compiler, code, node)
+    elif NT_OF == ntype:
+        _compile_OF(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
     elif NT_DESCRIBE == ntype:
