@@ -1357,12 +1357,6 @@ def prefix_interface_valueof(parser, op, token):
     return node_1(NT_TUPLE, token, list_node([sym, name]))
 
 
-def prefix_interface_generic(parser, op, token):
-    name = itself(parser, op, token)
-    items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-    args = node_1(NT_LIST, token, items)
-    return node_2(NT_GENERIC, token, name, args)
-
 
 def prefix_interface_fun(parser, op, token):
     name = itself(parser, op, token)
@@ -1411,10 +1405,6 @@ def infix_interface_of(parser, op, token, left):
 
 
 def stmt_interface(parser, op, token):
-    if parser.token_type == TT_ASSIGN:
-        advance_expected(parser, TT_ASSIGN)
-        return statements(parser.interface_parser.generic_parser, TERM_BLOCK)
-
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
 
     if parser.token_type == TT_LPAREN:

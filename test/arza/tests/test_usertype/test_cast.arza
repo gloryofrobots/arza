@@ -8,7 +8,7 @@ def cast(r of Robot, interface Seq) = [r as Int]
 
 def cast(r of Robot, interface Str) = "Robot"
 
-def at(s of Robot, #battery_power) =
+def at(s of Robot, el) when el == #battery_power  =
     (s as Record).battery_power + 1
 
 

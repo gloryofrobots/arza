@@ -357,9 +357,6 @@ class TraitSignatureParser(BaseParser):
         literal(self, TT_NAME, NT_NAME)
 
 
-# two parser mechanics intermingled here, one for interface with name
-# and other for (interface = ) statement
-
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -367,7 +364,6 @@ class InterfaceParser(BaseParser):
         prefix(self, TT_OPERATOR, NT_NAME, prefix_interface_fun)
 
         prefix(self, TT_USE, None, prefix_interface_use)
-        self.generic_parser = InterfaceGenericParser()
         self.function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
@@ -375,7 +371,6 @@ class InterfaceParser(BaseParser):
         symbol(self, TT_RPAREN)
         self.add_subparsers([
             self.function_parser,
-            self.generic_parser,
             self.name_parser
         ])
 
@@ -390,30 +385,6 @@ class InterfaceFunctionParser(BaseParser):
         # literal(self, TT_WILDCARD, NT_WILDCARD)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-
-def interface_generic_signature_parser_init(parser):
-    prefix(parser, TT_VALUEOF, None, prefix_interface_valueof)
-    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
-    literal(parser, TT_WILDCARD, NT_WILDCARD)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
-    return parser
-
-
-# interface = statement
-class InterfaceGenericParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.generic_signature_parser = interface_generic_signature_parser_init(BaseParser())
-        self.name_parser = name_parser_init(BaseParser())
-
-        prefix(self, TT_NAME, NT_NAME, prefix_interface_generic)
-        prefix(self, TT_OPERATOR, NT_NAME, prefix_interface_generic)
-        symbol(self, TT_RPAREN)
-
-        self.add_subparsers([
-            self.name_parser,
-            self.generic_signature_parser,
-        ])
 
 
 class ModifyKeyParser(BaseParser):

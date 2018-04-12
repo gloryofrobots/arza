@@ -61,8 +61,12 @@ def interface(name, generics, sub_interfaces):
     result = plist.empty()
     for record in generics:
         error.affirm_type(record, space.istuple)
-        error.affirm_type(api.at_index(record, 0), space.isgeneric)
-        error.affirm_type(api.at_index(record, 1), space.isint)
+        gf = api.at_index(record, 0)
+        index = api.at_index(record, 1)
+        error.affirm_type(gf, space.isgeneric)
+        error.affirm_type(index, space.isint)
+
+        gf.register_dispatch_index(api.to_i(index))
 
         result = plist.cons(record, result)
 

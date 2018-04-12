@@ -4,9 +4,9 @@ type Asteroid(health)
 type Spaceship(health, fire_power)
 
 
-interface =
-    collide_with(body1, body2)
-    damage(body1, amount)
+interface Entity(I) =
+    collide_with(body1 of I, body2 of I)
+    damage(body1 of I, amount)
 
 interface Body(I) =
     use damage(body of I, amount)

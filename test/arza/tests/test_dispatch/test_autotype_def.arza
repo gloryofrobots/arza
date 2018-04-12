@@ -3,8 +3,8 @@ import affirm
 import generics
 
 
-interface =
-    f (x, y, z)
+interface F =
+    f (x of F, y of F, z of F)
 
 type T
 

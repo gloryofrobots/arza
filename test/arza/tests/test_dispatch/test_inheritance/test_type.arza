@@ -1,8 +1,8 @@
 import io
 import affirm
 
-interface =
-    add(x, y)
+interface N =
+    add(x of N, y of N)
 
 interface Size(I) =
     size(I)

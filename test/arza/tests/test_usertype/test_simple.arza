@@ -1,8 +1,8 @@
 import affirm
 
-interface =
-    add(this, a)
-    val(this)
+interface I =
+    add(I, I)
+    val(I)
 
 type Zero
 type Vec2(p1, p2)

@@ -1,8 +1,8 @@
 type TestType(val)
 
-interface =
-    test_method_1(x, y, a)
-    test_method_2(x, a, y)
-    test_method_3(a, x, y)
-    test_method_4(a)
+interface TM(I) =
+    test_method_1(I, I, I)
+    test_method_2(I, I, I)
+    test_method_3(I, I, I)
+    test_method_4(I)
 

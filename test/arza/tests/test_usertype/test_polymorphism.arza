@@ -4,8 +4,8 @@ type L(l)
 type Nil
 type Some(val)
 
-interface =
-    eq(this, other)
+interface E =
+    eq(this of E, other of E)
 
 trait(T) for L =
     def len(this of T) = len(this.l)

@@ -2,8 +2,8 @@ import affirm
 
 type A(a)
 
-interface =
-    f(v)
+interface F =
+    f(F)
 
 trait T_A(T) for A =
     def f(v of T) = v.a

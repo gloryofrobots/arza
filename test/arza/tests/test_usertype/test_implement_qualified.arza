@@ -5,9 +5,9 @@ import tests:test_usertype:types as stuff
 prefix(++-+*++, ++-+*++, 70)
 infixl (+--, +--, 50)
 
-interface =
-    ++-+*++(this)
-    +--(v1, v2)
+interface I =
+    ++-+*++(this of I)
+    +--(v1 of I, v2 of I)
 
 type X(x)
 

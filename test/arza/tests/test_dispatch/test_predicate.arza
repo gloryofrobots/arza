@@ -1,8 +1,8 @@
 import affirm
 
-interface =
-    race_winner(v1, v2)
-    race_looser(v1, v2)
+interface Racer(R) =
+    race_winner(v1 of R, v2 of R)
+    race_looser(v1 of R, v2 of R)
 
 
 type Car (speed)

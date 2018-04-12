@@ -34,8 +34,8 @@ class W_Generic(W_Hashable):
         W_Hashable.__init__(self)
         self.name = name
         self.arity = arity
-        self.dispatch_indexes = [i for i in range(len(args_signature))]
-        self.dispatch_arity = len(self.dispatch_indexes)
+        self.dispatch_arity = len(args_signature)
+        self.dispatch_indexes = []
         # self.interfaces = plist.empty()
         self.arity = api.length_i(args_signature)
         self.args_signature = args_signature
@@ -46,6 +46,12 @@ class W_Generic(W_Hashable):
         self.cache_mask = cache_mask
         self.dag = None
         self.cache = space.newassocarray()
+
+    def register_dispatch_index(self, index):
+        if index in self.dispatch_indexes:
+            return
+        self.dispatch_indexes.append(index)
+        self.dispatch_indexes = list(sorted(self.dispatch_indexes))
 
     def get_types(self):
         types = plist.empty()
@@ -193,10 +199,19 @@ class W_Generic(W_Hashable):
 def _make_signature(process, gf, types, method, pattern, outers):
     any = process.std.types.Any
 
-    _types = space.newlist([
-                               any if space.isvoid(_type) else _type for _type in types
-                               ])
+    _types = []
+    for i, _type in enumerate(types):
+        if not space.isvoid(_type):
+            if i not in gf.dispatch_indexes:
+                return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+                                     gf,
+                                     space.newstring(u"No interface defined for argument in position"), space.newint(i))
+            else:
+                _types.append(_type)
+        else:
+            _types.append(any)
 
+    _types = space.newlist(_types)
     if gf.dispatch_arity != api.length_i(types):
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                              gf,
@@ -214,8 +229,6 @@ def specify(process, gf, types, method, pattern, outers):
     error.affirm_type(gf, space.isgeneric)
     sig = _make_signature(process, gf, types, method, pattern, outers)
     gf.add_signature(process, sig)
-    # for index, _type in zip(gf.dispatch_indexes, _types):
-    #     _type.register_generic(gf, space.newint(index))
 
 
 def override(process, gf, types, method, pattern, outers):

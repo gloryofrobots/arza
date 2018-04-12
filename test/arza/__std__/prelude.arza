@@ -82,35 +82,35 @@ prefix (~, ~, 96)
 ////////////////////////////////////////////////////////////
 
 interface Eq(I) =
-    ==(x of I, y)
-    !=(x of I, y)
+    ==(I, I)
+    !=(I, I)
 
 interface Comparable(I) =
-    cmp(first of I, second)
+    cmp(I, I)
 
 interface LessEq(I) is Eq =
-    <=(first of I, second)
+    <=(I, I)
 
 interface Ord(I) =
-    use <=(first of I, second)
-    use cmp(first of I, second)
-    <(first of I, second)
-    >=(first of I, second)
-    >(first of I, second)
-    max(first of I, second)
-    min(first of I, second)
+    use <=(I, I)
+    use cmp(I, I)
+    <(I, I)
+    >=(I, I)
+    >(I, I)
+    max(I, I)
+    min(I, I)
 
 interface Num(I) =
-    -(x of I, y)
-    +(x of I, y)
-    *(x of I, y)
-    /(x of I, y)
-    mod(x of I, y)
+    -(I, I)
+    +(I, I)
+    *(I, I)
+    /(I, I)
+    mod(I, I)
     // unary -
-    negate(x of I)
+    negate(I)
 
 interface Pow(I) =
-    **(x of I, y)
+    **(I, I)
 
 interface Str =
     str(Str)
@@ -150,6 +150,9 @@ interface Empty(I) =
 interface Cons(I) =
     cons(value, I)
 
+interface Consable(I) =
+    use cons(value of I, seq)
+
 interface Prepend(I) =
     prepend(I, value)
 
@@ -157,7 +160,7 @@ interface Append(I) =
     append(I, value)
 
 interface Concat(I) =
-    ++(I, other)
+    ++(I, I)
 
 interface Indexed(I) =
     index_of(I, obj)
@@ -178,10 +181,10 @@ interface Bound(I) =
     upper_bound(I)
 
 interface Range(I) =
-    range(I, last)
-    range_by (I, last, step)
+    range(I, I)
+    range_by (I, I, I)
     range_from(I)
-    range_from_by(I, step)
+    range_from_by(I, I)
 
 interface Ref(I) =
     &(I)
@@ -202,6 +205,9 @@ interface Call(I) =
 interface Cast(I) =
     cast(I, valueof to_what)
 
+interface Castable(I) =
+    use cast(what, I)
+
 // Bootstrap interfaces behavior
 
 
@@ -218,14 +224,14 @@ trait (T) for Record =
     def is_empty (this of T) as std_behavior:is_empty
     def cast(this of T, to_what) as std_behavior:cast
 
-    def != (this of T, other) = not (this == other)
+    def != (this of T, other of T) = not (this == other)
     def repr(this of T) = str(this)
 
 
 trait (T) for Any =
 
-    def == (this of T, other) as std_behavior:equal
-    def != (this of T, other) as std_behavior:not_equal
+    def == (this of T, other of T) as std_behavior:equal
+    def != (this of T, other of T) as std_behavior:not_equal
 
     def str (this of T) as std_behavior:str
     def repr (this of T) as std_behavior:repr

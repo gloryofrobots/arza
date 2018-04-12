@@ -1,8 +1,8 @@
 import io
 import affirm
 
-interface =
-    f1(v)
+interface F =
+    f1(F)
 
 def f1(i of Int)
     | 1 = #one

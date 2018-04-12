@@ -7,16 +7,16 @@ type LT
 type Val(v)
 type Val2(v)
 
-interface =
-    eq(x, y)
-    ne(x, y)
-    le(x, y)
-    lt(x, y)
-    ge(x, y)
-    gt(x, y)
-    cmp(x, y)
-    max(x, y)
-    min(x, y)
+interface I =
+    eq(I, I)
+    ne(I, I)
+    le(I, I)
+    lt(I, I)
+    ge(I, I)
+    gt(I, I)
+    cmp(I, I)
+    max(I, I)
+    min(I, I)
 
 let
     Equal =
