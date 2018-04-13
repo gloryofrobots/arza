@@ -5,7 +5,6 @@ import affirm
 import seq
 import list
 include tests (run as test)
-//include tests:test_examples (test)
 
 
 fun main() =

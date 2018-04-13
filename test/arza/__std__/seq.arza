@@ -1,40 +1,40 @@
 //REDUCERS///////////////////////////////////////////////////////
 fun foldl
-    | (f, acc, []) = acc
-    | (f, acc, hd::tl) = foldl(f, f(hd, acc), tl)
+    | ([], acc, f) = acc
+    | (hd::tl, acc, f) = foldl(tl, f(hd, acc), f)
 
 
 fun foldr
-    | (f, acc, []) = acc
-    | (f, acc, hd::tl) = f(hd, foldr(f, acc, tl))
+    | ([], acc, f) = acc
+    | (hd::tl, acc, f) = f(hd, foldr(tl, acc, f))
 
 
-fun reduce(f, sq)
-    | (f, x::xs) = foldl(f, x, xs)
-    | (f, []) = throw EmptySeqError(sq)
+fun reduce(sq, f)
+    | (x::xs, f) = foldl(xs, x, f)
+    | ([], f) = throw EmptySeqError(sq)
 
 
-fun scanl(func, accumulator, coll)
-    | (f, acc, []) = acc :: empty(coll)
-    | (f, acc, hd::tl) = acc :: scanl(f, f(hd, acc), tl)
+fun scanl(sq, accumulator, func)
+    | ([], acc, f) = acc :: empty(sq)
+    | (hd::tl, acc, f) = acc :: scanl(tl, f(hd, acc), f)
 
 
 //LOOPS ////////////////////////
 // possible casting solution
 //fun ensure_seq(fn) =
-//    fun (f, coll) =
-//        from_seq(fn(f, to_seq(coll)))
+//    fun (f, sq) =
+//        from_seq(fn(f, to_seq(sq)))
 
-fun map(f, coll)
-    | (f, []) = empty(coll)
-    | (f, hd::tl) = f(hd) :: map(f, tl)
+fun map(sq, f)
+    | ([], f) = empty(sq)
+    | (hd::tl, f) = f(hd) :: map(tl, f)
 
 
-fun foreach(f, coll)
-    | (f, []) = empty(coll)
-    | (f, hd::tl) =
+fun foreach(sq, f)
+    | ([], f) = empty(sq)
+    | (hd::tl, f) =
       f(hd)
-      foreach(f, tl)
+      foreach(tl, f)
 
 
 fun enum_to(last of Int, fn) = enum(0, last, fn)
@@ -59,68 +59,68 @@ fun enum_by (first of Int, last of Int, step of Int, fn) =
         _enum_by(first, last)
 
 
-fun traverse(coll) = foreach(identity, coll)
+fun traverse(sq) = foreach(sq, identity)
 
 
-fun intersperse(val, coll)
-    | (val, []) = empty(coll)
-    | (val, hd::tl ) = hd :: val :: intersperse(val, tl)
+fun intersperse(sq, val)
+    | ([], val) = empty(sq)
+    | (hd::tl, val) = hd :: val :: intersperse(tl, val)
 
 
-fun reverse(coll) =
+fun reverse(sq) =
     let fun _reverse
             | ([], result) = result
             | (hd::tl, result) = _reverse(tl, hd :: result)
 
-    in _reverse(coll, empty(coll))
+    in _reverse(sq, empty(sq))
 
 
-fun list(coll) =
+fun list(sq) =
     reverse(
-        foldl(cons, [], coll)
+        foldl(sq, [], `::`)
     )
 
-fun find_with(fn, default, coll)
-    | (fn, d, []) = default
-    | (fn, d, x::xs) =
+fun find_with(sq, default, fn)
+    | ([], d, fn) = default
+    | (x::xs, d, fn) =
         if fn(x) == True then
             x
         else
             find_with(fn, default, xs)
 
-fun find(default, coll) =
-    find_with(`==`, default, coll)
+fun find(sq, default) =
+    find_with(sq, default, `==`)
 
 ///ACCESSORS//////////////////////////////////////
 
 fun nth_tail
-    | (0, l) = l
-    | (1, [_, ...t]) = t
-    | (n, [_, ...t]) when n >= 0 = nth_tail(n - 1, t)
+    | (l, 0) = l
+    | ([_, ...t], 1) = t
+    | ([_, ...t], n) when n >= 0 = nth_tail(t, n - 1)
 
 
 fun nth
-    | (0, l) = l
-    | (1, [h, ...t]) = h
-    | (n, [h, ...t]) when n >= 0 = nth(n - 1, t)
+    | (l, 0) = l
+    | ([h, ...t], 1) = h
+    | ([h, ...t], n) when n >= 0 = nth(t, n - 1)
 
 
 //QUERIES///////////////////////////////////////////////////
 
 fun length(l) =
-    foldl((_, acc) -> acc + 1, 0, l)
+    foldl(l, 0, (_, acc) -> acc + 1)
 
 
 // check if seq has length greater then l
-fun has_min_length(l, coll) when l > 0 =
+fun has_min_length(sq, l) when l > 0 =
     fun _length_gt
-        | (step, []) when step < l = False
-        | (step, coll) when step == l = True
-        | (step, x::xs) =
-            _length_gt(step+1, xs)
+        | ([], step) when step < l = False
+        | (sq, step) when step == l = True
+        | (x::xs, step) =
+            _length_gt(xs, step+1)
 
 
-    _length_gt(0, coll)
+    _length_gt(sq, 0)
 
 
 fun last (x::xs) =
@@ -140,113 +140,113 @@ fun prefix_of
 fun suffix_of(suf, s) =
    let
        delta = len(s) - len(suf)
-       tl = nth_tail(delta, s)
+       tl = nth_tail(s, delta)
    in delta >= 0 and tl == suf
 
 
 //SUBLISTS/////////////////////////////////////////////////////////////
 
 fun drop
-    | (0, l) = l
-    | (count, hd::tl) = drop(count - 1, tl)
+    | (l, 0) = l
+    | (hd::tl, count) = drop(tl, count - 1)
 
 
-fun take(n, coll)
-    | (0, _) = empty(coll)
-    | (_, []) = empty(coll)
-    | (n, [x, ...xs]) = x :: take(n - 1, xs)
+fun take(sq, n)
+    | (_, 0) = empty(sq)
+    | ([], _) = empty(sq)
+    | ([x, ...xs], n) = x :: take(xs, n - 1)
 
 
-fun split_at(n, l) =
-    (take(n, l), drop(n, l))
+fun split_at(l, n) =
+    (take(l, n), drop(l, n))
 
 
-fun take_while(predicate, coll)
-    | (p, []) = empty(coll)
-    | (p, [x, ...xs]) =
-        if p(x) == True then x :: take_while(p, xs)
-        else empty(coll)
+fun take_while(sq, predicate)
+    | ([], p) = empty(sq)
+    | ([x, ...xs], p) =
+        if p(x) == True then x :: take_while(xs, p)
+        else empty(sq)
 
 
-fun drop_while(predicate, coll)
-    | (p, []) = empty(coll)
-    | (p, [x, ...xs1] as xs) =
-        if p(x) == True then drop_while(p, xs1)
+fun drop_while(sq, predicate)
+    | ([], p) = empty(sq)
+    | ([x, ...xs1] as xs, p) =
+        if p(x) == True then drop_while(xs1, p)
         else xs
 
 
-fun filter(predicate, coll)
-    | (p, []) = empty(coll)
-    | (p, x::xs) =
+fun filter(sq, predicate)
+    | ([], p) = empty(sq)
+    | (x::xs, p) =
         if p(x) then
-            x :: filter(p, xs)
+            x :: filter(xs, p)
         else
-            filter(p, xs)
+            filter(xs, p)
 
 
-fun span(predicate, coll)
-    | (p, []) =
-        let c = empty(coll)
+fun span(sq, predicate)
+    | ([], p) =
+        let c = empty(sq)
         in (c, c)
-    | (p, [x, ...xs1] as xs) =
+    | ([x, ...xs1] as xs, p) =
         if not(p(x)) then
-            (empty(coll), xs)
+            (empty(sq), xs)
         else
-            let (ys, zs) = span(p, xs1)
+            let (ys, zs) = span(xs1, p)
             in (x::ys, zs)
 
 
-fun partition(predicate, l) =
-    let fun _partition(pred, l, a, b)
-            | (pred, x::xs, a, b) =
-                if pred(x) then
-                   _partition(pred, xs, x::a, b)
-                else
-                   _partition(pred, xs, a, x::b)
+fun partition(sq, predicate) =
+    fun _partition(sq, pred, a, b)
+        | (x::xs, pred, a, b) =
+            if pred(x) == True then
+               _partition(xs, pred, x::a, b)
+            else
+               _partition(xs, pred, a, x::b)
 
-            | (pred, [], a, b) = (reverse(a), reverse(b))
+        | ([], pred, a, b) = (reverse(a), reverse(b))
 
-    in _partition(predicate, l, [], [])
-
-
-fun delete(item, coll)
-    | (item, [item, ...xs]) = xs
-    | (item, [x, ...xs]) = x :: delete(item, xs)
-    | (_, []) = empty(coll)
+    _partition(sq, predicate, [], [])
 
 
-fun insert(index, v, coll)
-    | (0, v, coll) = v::coll
-    | (i, v, []) = throw IndexError (["Invalid insertion index", index, v])
-    | (i, v, x::xs) = x :: insert(i - 1, v, xs)
+fun delete(sq, item)
+    | ([item, ...xs], item) = xs
+    | ([x, ...xs], item) = x :: delete(xs, item)
+    | ([], _) = empty(sq)
 
 
-fun append(v, coll) =
-    insert(length(coll), v, coll)
+fun insert(sq, index, v)
+    | (sq, 0, v) = v::sq
+    | ([], i, v) = throw IndexError (["Invalid insertion index", index, v])
+    | (x::xs, i, v) = x :: insert(xs, i - 1, v)
+
+
+fun append(sq, v) =
+    insert(sq, length(sq), v)
 
 
 ////QUERIES//////////////////////////////////////////////////////////////////
 
 fun conjunction(l) =
-    foldr((v, acc) -> v and acc, True, l)
+    foldr(l, True, (v, acc) -> v and acc)
 
 
 fun disjunction(l) =
-    foldr((v, acc) -> v or acc, False, l)
+    foldr(l, False, (v, acc) -> v or acc)
 
 
-fun any(p, l) =
-    disjunction(map(p, l))
+fun any(l, p) =
+    disjunction(map(l, p))
 
 
-fun all(p, l) =
-    conjunction(map(p, l))
+fun all(l, p) =
+    conjunction(map(l, p))
 
 
-fun element(x, l) = any(v -> v == x, l)
+fun element(l, x) = any(l, v -> v == x)
 
 
-fun contains(l, x) = element(x, l)
+fun contains(l, x) = element(l, x)
 
 
 fun equal
@@ -258,14 +258,14 @@ fun equal
 //BUILDERS/////////////////////////////////////////////////////////////
 
 fun concat(l1, l2) =
-    foldr(`::`, l2, l1)
+    foldr(l1, l2, `::`)
 
 
 fun uncons(x::xs) = (x, xs)
 
 
-fun initial(coll)
-    | [x] = empty(coll)
+fun initial(sq)
+    | [x] = empty(sq)
     | [x, ...xs] = x :: initial(xs)
     | [] = throw ValueError ("empty seq in initial")
 
@@ -295,8 +295,8 @@ fun unzip3(l) =
     in _unzip3(l, [], [], [])
 
 
-fun zipwith(f, seq1, seq2)
-    | (f, x::xs, y::ys) = f(x, y) :: zipwith(f, xs, ys)
+fun zipwith(seq1, seq2, f)
+    | (x::xs, y::ys, f) = f(x, y) :: zipwith(xs, ys, f)
     | (_, _, _) = []
 
 
@@ -313,7 +313,7 @@ fun split
         in (x::l, y::r)
 
 
-fun sort(f, s) =
+fun sort(s, f) =
     let
         fun _merge
             | ([], ys) = ys
@@ -332,7 +332,7 @@ fun sort(f, s) =
     in _sort(s)
 
 
-fun sort_asc(s) = sort(`<=`, s)
+fun sort_asc(s) = sort(s, `<=`)
 
 
-fun sort_desc(s) = sort(`>=`, s)
+fun sort_desc(s) = sort(s, `>=`)

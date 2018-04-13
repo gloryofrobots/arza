@@ -139,50 +139,50 @@ fun filter(predicate, coll) =
     )
 
 
-fun map(fn, co) =
+fun map(co, fn) =
     spawn(
         fun (yield) =
             seq:foreach(
-                (x) -> yield(fn(x)),
-                co
+                co,
+                (x) -> yield(fn(x))
             )
     )
 
 
-fun drop(count, co) =
+fun drop(co, count) =
     spawn(
         fun (yield) =
             (let
                 (fun _drop
-                    | (_, []) =
+                    | ([], _) =
                         empty(co)
-                    | (0, s) =
-                        seq:traverse(map(yield, s))
-                    | (n, x::xs) =
-                        _drop(n-1, xs)
+                    | (s, 0) =
+                        seq:traverse(map(s, yield))
+                    | (x::xs, n) =
+                        _drop(xs, n-1)
                 )
 
             in
-                _drop(count, co)
+                _drop(co, count)
             )
     )
 
-fun drop_while(fn, co) =
+fun drop_while(co, fn) =
     spawn(
         fun (yield) =
             (let
                 (fun _drop_while
-                    | (p, []) =
+                    | ([], p) =
                         empty(co)
-                    | (p, [x, ...xs1] as xs) =
+                    | ([x, ...xs1] as xs, p) =
                         (if p(x) then
-                            _drop_while(p, xs1)
+                            _drop_while(xs1, p)
                         else
-                            seq:traverse(map(yield, xs))
+                            seq:traverse(map(xs, yield))
                         )
                  )
             in
-                _drop_while(fn, co)
+                _drop_while(co, fn)
             )
     )
 
@@ -191,43 +191,43 @@ fun each(co) =
     spawn(
         fun (yield) =
             (fun | [] = empty(co)
-                 | s = seq:traverse( map(yield, s) )
+                 | s = seq:traverse(map(s, yield))
             )(co)
     )
 
 
 fun to_list(co) =
-    seq:map(identity, co)
+    seq:map(co, identity)
 
 
-fun scanl(fn, acc, co) =
+fun scanl(co, acc, fn) =
     spawn(
         fun (yield) =
             (let
                 (fun _scanl
-                    | (f, acc, []) = empty(co)
-                    | (f, acc, x::xs) =
+                    | ([], acc, f) = empty(co)
+                    | (x::xs, acc, f) =
                         (let v = f(x, acc)
                         in
                             yield(v)
-                            _scanl(f, v, xs)
+                            _scanl(xs, v, f)
                         )
                 )
             in
-                _scanl(fn, acc, co)
+                _scanl(co, acc, fn)
             )
     )
 
 
-fun intersperse(val, co) =
+fun intersperse(co, val) =
     spawn(
         fun (yield) =
             seq:foreach(
+                co,
                 (fun (x) =
                     yield(x)
                     yield(val)
-                ),
-                co
+                )
             )
     )
 

@@ -1,0 +1,116 @@
+import affirm
+import list
+import seq
+
+fun test_zip() =
+    let l1 = [1,2,3,4,5,6,7,8,9,10]
+    let l2 = seq:map(l1, ~`*`(4))
+    affirm:is_equal(
+        seq:zip(l1, l2),
+        [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20), (6, 24), (7, 28), (8, 32), (9, 36), (10, 40)]
+    )
+
+    let l4 = seq:take(l2, 5)
+    affirm:is_equal(seq:zip(l1, l4), [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20)])
+    let l6 = seq:map(l1, ~`-`(42))
+    affirm:is_equal(seq:zip3(l1, l2, l6),
+            [(1, 4, 41), (2, 8, 40), (3, 12, 39), (4, 16, 38), (5, 20, 37),
+             (6, 24, 36), (7, 28, 35), (8, 32, 34), (9, 36, 33), (10, 40, 32)])
+
+    let (_l1, _l2) = seq:unzip(seq:zip(l1, l2))
+    affirm:is_equal(l1, _l1)
+    affirm:is_equal(l2, _l2)
+
+    let (__l1, __l2, __l6) = seq:unzip3(seq:zip3(l1, l2, l6))
+    affirm:is_equal(l1, __l1)
+    affirm:is_equal(l2, __l2)
+    affirm:is_equal(l6, __l6)
+
+
+fun test_sort() =
+    affirm:is_equal(
+        seq:split(list:range_by(-100, 0, 10)),
+        ([-100, -80, -60, -40, -20], [-90, -70, -50, -30, -10]))
+
+
+    affirm:is_equal(seq:sort_asc([1, 4, 0, 0, 1, -10, -10, -25, -456, 2, 489, 128]),
+                    [-456, -25, -10, -10, 0, 0, 1, 1, 2, 4, 128, 489])
+
+
+    affirm:is_equal(
+                seq:sort_desc([1, 4, 0, 0, 1, -10, -10, -25, -456, 2, 489, 128]),
+                [489, 128, 4, 2, 1, 1, 0, 0, -10, -10, -25, -456])
+
+
+fun test_equal() =
+    let
+        l1 = [1,2,3,4]
+        l2 = [1,2,3,4]
+    in
+        affirm:is_true(seq:equal(l1, l2))
+        affirm:is_false(seq:equal(l1, []))
+        affirm:is_false(seq:equal(l1, [1,2,3,4,5,6]))
+
+
+fun test_base() =
+    let l1 = list:range(0, 10)
+    affirm:is_equal(seq:concat([0,1,2,3,4,5], [6,7,8,9]), l1)
+    affirm:is_equal(seq:concat([], l1), l1)
+    affirm:is_equal(seq:concat(l1, []), l1)
+    affirm:is_equal(seq:concat([], []), [])
+    affirm:is_equal(seq:reverse(l1), [9,8,7,6,5,4,3,2,1,0])
+
+    affirm:is_true(seq:prefix_of([1,2,3,4], [1,2,3,4,5,6]))
+    affirm:is_false(seq:prefix_of([0,1,2,3,4], [1,2,3,4,5,6]))
+    affirm:is_false(seq:prefix_of([1,2,3,4], [1,2,3,5,4,6]))
+
+    affirm:is_true(seq:suffix_of([4,5,6], [1,2,3,4,5,6]))
+    affirm:is_false(seq:suffix_of([3,5,6], [1,2,3,4,5,6]))
+    affirm:is_false(seq:suffix_of([4,5,6], [1,2,3,4,6,5]))
+
+    affirm:is_equal(seq:drop(l1, 3), [3,4,5,6,7,8,9])
+    affirm:is_equal(seq:map(l1,  (x -> x+1)), [1,2,3,4,5,6,7,8,9,10])
+
+    affirm:is_equal(seq:intersperse(l1, 0), [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0])
+    affirm:is_equal(seq:scanl(list:range(1, 11), 0, `+`),  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55])
+
+    affirm:is_equal(seq:last(l1), 9)
+    affirm:is_equal(seq:initial(l1), [0, 1, 2, 3, 4, 5, 6, 7, 8])
+    affirm:is_equal(seq:take(l1, 3), [0,1,2])
+    affirm:is_equal(seq:split_at(l1, 3),  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9]))
+    affirm:is_equal(seq:take_while(l1,  x -> x < 5), [0, 1, 2, 3, 4])
+    affirm:is_equal(seq:drop_while(l1,  x -> x < 5), [5, 6, 7, 8, 9])
+    affirm:is_equal(seq:span ([1,2,3,4,1,2,3,4], x -> x < 3),
+                    ([1, 2], [3, 4, 1, 2, 3, 4]))
+
+    affirm:is_equal(seq:span ([1,2,3], x -> x < 9),
+                    ([1, 2, 3], []))
+
+    affirm:is_equal(seq:span([1,2,3], x -> x < 0),
+                    ([], [1, 2, 3]))
+
+    affirm:is_true(seq:conjunction([True, True, True, True]))
+    affirm:is_false(seq:conjunction([True, True, True, False]))
+    affirm:is_true(seq:all([0,1,2,3,4,5,6], x -> x < 7))
+    affirm:is_false(seq:all([0,1,2,3,4,5,6], x -> x < 3))
+    affirm:is_true(seq:any([0,1,2,3,4,5,6], x -> x < 7))
+    affirm:is_true(seq:any([0,1,2,3,4,5,6], x -> x < 3))
+    affirm:is_false(seq:any([0,1,2,3,4,5,6], x -> x < -1))
+
+    affirm:is_equal(seq:delete(l1, 8), [0,1,2,3,4,5,6,7,9])
+
+    affirm:is_equal(
+        seq:reduce(
+            list:range(1, 6),
+            last([(x, y) -> x + y, (x, y) -> x - y, (x, y) -> x * y])
+        ), 120
+     )
+
+    affirm:is_equal(seq:map(list:range(0, 10), (x -> x * x)),
+                    [0, 1, 4, 9, 16, 25, 36, 49, 64, 81])
+
+fun test() =
+    test_equal()
+    test_base()
+    test_sort()
+    test_zip()

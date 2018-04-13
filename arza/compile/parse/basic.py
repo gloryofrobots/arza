@@ -96,9 +96,9 @@ def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
+                           space.newstring(line),
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
-                           space.newstring(line)
                        ]))
 
 
@@ -110,9 +110,10 @@ def parse_error(parser, message, token):
 
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
-                           space.newtuple([tokens.token_position(token),
-                                           tokens.token_line(token),
-                                           tokens.token_column(token)]),
+                           space.newtuple([
+                               tokens.token_line(token),
+                               tokens.token_column(token),
+                               tokens.token_position(token)]),
                            # tokens.token_to_string(token),
                            space.newstring(message),
                            space.newstring(line)

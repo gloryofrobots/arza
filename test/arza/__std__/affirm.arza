@@ -9,11 +9,10 @@ type Success (val)
 fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)
     seq:foreach(
+            calls_list,
             fun
                 | ((c1, c2)) = checker(fn(...c1), c2)
                 | ([c1, c2]) = checker(fn(...c1), c2)
-            ,
-            calls_list
         )
 
 
@@ -37,7 +36,7 @@ fun is_equal_all(...args) =
            let True = is_equal(val1, val2)
            in val2
     in
-        seq:reduce(_reducer, to_seq(args))
+        seq:reduce(to_seq(args), _reducer)
         True
 
 fun is_equal_keys_vals(obj, keys)
