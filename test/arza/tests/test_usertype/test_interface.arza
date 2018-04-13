@@ -15,8 +15,8 @@ trait(T) for [T1, T2] =
     def rest(this of T) = rest(to_list(this))
 
     //not enough for Slice
-    def drop(this of T, count) = seq:drop(count, to_list(this))
-    def take(this of T, count) = seq:take(count, to_list(this))
+    def drop(this of T, count) = seq:drop(to_list(this), count)
+    def take(this of T, count) = seq:take(to_list(this), count)
 
 
 def to_list(this of T1) = [this.v1, this.v2]

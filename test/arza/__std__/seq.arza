@@ -86,7 +86,7 @@ fun find_with(sq, default, fn)
         if fn(x) == True then
             x
         else
-            find_with(fn, default, xs)
+            find_with(xs, default, fn)
 
 fun find(sq, default) =
     find_with(sq, default, `==`)
@@ -102,7 +102,8 @@ fun nth_tail
 fun nth
     | (l, 0) = l
     | ([h, ...t], 1) = h
-    | ([h, ...t], n) when n >= 0 = nth(t, n - 1)
+    | ([h, ...t], n) when n >= 0 =
+        nth(t, n - 1)
 
 
 //QUERIES///////////////////////////////////////////////////
@@ -151,14 +152,13 @@ fun drop
     | (hd::tl, count) = drop(tl, count - 1)
 
 
+fun split_at(l, n) =
+    (take(l, n), drop(l, n))
+
 fun take(sq, n)
     | (_, 0) = empty(sq)
     | ([], _) = empty(sq)
     | ([x, ...xs], n) = x :: take(xs, n - 1)
-
-
-fun split_at(l, n) =
-    (take(l, n), drop(l, n))
 
 
 fun take_while(sq, predicate)

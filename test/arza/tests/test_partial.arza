@@ -110,34 +110,35 @@ fun test_pipe() =
         l = list:range(0, 10)
     in
         affirm:is_equal (
-            l |> seq:filter(even, _),
+            l |> seq:filter(_, even),
             [0, 2, 4, 6, 8]
         )
 
         affirm:is_equal(
-            l |> seq:filter .. even
-              |> seq:map .. (`+` .. 1),
+            l |> flip(seq:filter) .. even
+              |> flip(seq:map) .. (`+` .. 1),
              [1, 3, 5, 7, 9]
         )
 
         affirm:is_equal (
-            l |> seq:filter(even, _)
-              |> seq:map(`+` .. 1, _)
-              |> seq:map(flip(`-`) .. 2, _),
+            l |> seq:filter(_, even)
+              |> seq:map(_, `+` .. 1)
+              |> seq:map(_, flip(`-`) .. 2),
             [-1, 1, 3, 5, 7]
         )
 
         affirm:is_equal(
-            l |> seq:filter .. (even)
-              |> seq:map .. (`+` .. 1)
-              |> seq:map .. (flip(`-`) .. 2),
+            l |> flip(seq:filter) .. (even)
+              |> flip(seq:map) .. (`+` .. 1)
+              |> flip(seq:map) .. (flip(`-`) .. 2),
             [-1, 1, 3, 5, 7]
         )
 
         affirm:is_equal(
-            l |> seq:filter(even, _)
-              |> seq:map(`+`(1, _), _)
-              |> seq:map(~(flip(`-`))(2)(_), _),
+            l |> seq:filter(_, even)
+              |> seq:map(_, `+`(1, _))
+              |> seq:map(_, ~(flip(`-`))(2)(_)),
+//              |> seq:map(~(flip(`-`))(2)(_), _),
             [-1, 1, 3, 5, 7]
         )
 
@@ -146,26 +147,26 @@ fun test_pipe() =
             triple = `*` .. 3
         in
             affirm:is_equal (
-                l |> seq:filter(even, _)
-                  |> seq:map(`+` .. 1, _)
-                  |> seq:map(flip .. `-` .. 2, _)
-                  |> seq:map(triple >> square, _),
+                l |> seq:filter(_, even)
+                  |> seq:map(_, `+` .. 1)
+                  |> seq:map(_, flip .. `-` .. 2)
+                  |> seq:map(_, triple >> square),
                 [9, 9, 81, 225, 441]
             )
 
             affirm:is_equal (
-                 (seq:filter(even, _)
-                     >> seq:map(`+`(1, _), _)
-                     >> seq:map(flip(`-`)(2, _), _)
-                     >> seq:map(triple >> square, _))(l),
+                 (seq:filter(_, even)
+                     >> seq:map(_, `+`(1, _))
+                     >> seq:map(_, flip(`-`)(2, _))
+                     >> seq:map(_, triple >> square))(l),
                  [9, 9, 81, 225, 441]
             )
 
             affirm:is_equal (
-                l |> seq:filter(even, _)
-                  >> ~seq:map(`+` .. 1)
-                  >> seq:map(flip(`-`)(2, _), _)
-                  >> ~seq:map(triple >> square),
+                l |> seq:filter(_, even)
+                  >> ~(flip(seq:map))(`+` .. 1)
+                  >> seq:map(_, flip(`-`)(2, _))
+                  >> ~(flip(seq:map))(triple >> square),
                 [9, 9, 81, 225, 441]
             )
 

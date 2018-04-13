@@ -49,20 +49,20 @@ fun add_ship(game, pos) =
 
 fun atpos({ships}, ship_pos) =
     seq:find_with(
-        ship -> ship_pos == ship.pos,
+        ships,
         None,
-        ships
+        ship -> ship_pos == ship.pos
     )
 
 fun update_ship(game, newship) =
     game.{
         ships = seq:map(
+            game.ships,
             (fun(ship) =
                 (if ship.id == newship.id then
                     newship
                 else
-                    ship)),
-            game.ships
+                    ship))
         )
     }
 
@@ -88,14 +88,14 @@ fun fire_at({rows, cols, ships} as game, ship, fire_pos) =
 
 fun turn({rows, cols, ships} as game) =
     seq:foldl(
-        fun (ship, new_game) =
-            fire(new_game, ship)
-       , game
-       , ships
+       ships,
+       fun (ship, new_game) =
+           fire(new_game, ship),
+       game
        )
 
 fun checkgame(game) =
-     let (alive, dead) = seq:partition(fun({hp}) = hp > 0,  game.ships)
+     let (alive, dead) = seq:partition(game.ships, fun({hp}) = hp > 0 )
      match alive
          | [] = (game, (#DRAW, "All dead"))
          | x::[] = (game, (#WINNER, x))

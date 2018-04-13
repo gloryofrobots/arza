@@ -120,7 +120,16 @@ fun loop_reduce(init_fn, x, acc) =
 let
     take = seq:take
     take_while = seq:take_while
-    nth = seq:nth
+
+// CORO is stateful so you cant use PATTERN_MATCHIN for it
+fun nth(co, n) when n >= 0 =
+    if n == 0 then co
+    elif n == 1 then
+        let hd::tl = co
+        in hd
+    else
+        let hd::tl = co
+        in nth(tl, n - 1)
 
 fun filter(predicate, coll) =
     spawn(
@@ -135,7 +144,7 @@ fun filter(predicate, coll) =
                         _filter(p, xs)
                     )
             )
-            _filter(predicate, coll)
+            _filter(coll, predicate)
     )
 
 
@@ -232,7 +241,7 @@ fun intersperse(co, val) =
     )
 
 
-fun zipwith(fn, co1, co2) =
+fun zipwith(co1, co2, fn) =
     spawn(
         fun (yield) =
                 (let (fun _zip

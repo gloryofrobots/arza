@@ -71,18 +71,18 @@ fun joiner(_sep, _func) =
 
 fun join_strict(_str, _coll) =
     let _seq = to_seq(_coll)
-    in seq:foldl(joiner(_str, identity), "", _seq)
+    in seq:foldl(_seq, "", joiner(_str, identity))
 
 fun all(...args) =
     join("", args)
 
 fun join(_str, _coll) =
     let _seq = to_seq(_coll)
-    in seq:foldl(joiner(_str, str), "", _seq)
+    in seq:foldl(_seq, "", joiner(_str, str))
 
 fun join_with(_str, _coll, _func) =
     let _seq = to_seq(_coll)
-    in seq:foldl(joiner(_str, _func), "", _seq)
+    in seq:foldl(_seq, "", joiner(_str, _func))
 
 fun split(_str, _sep) = _string:split(_str, _sep)
 
