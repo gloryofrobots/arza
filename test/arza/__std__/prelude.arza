@@ -208,6 +208,9 @@ interface Cast(I) =
 interface Castable(I) =
     use cast(what, I)
 
+interface Close(I) =
+    close(I)
+
 // Bootstrap interfaces behavior
 
 
@@ -251,6 +254,8 @@ type GT
 type EQ
 type Some (val)
 type None
+// type used as signal for abortinf recursive processes
+type Abort
 
 // Various Errors
 type MessageMatchError is Error
@@ -275,6 +280,7 @@ type CompileError is Error
 type ParseError is Error
 type UnpackSequenceError is Error
 type FiberFlowError is Error
+type ClosedPIDError is Error
 type ExportError is Error
 type ImplementationError is Error
 type ConstraintError is Error

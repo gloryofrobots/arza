@@ -1,0 +1,61 @@
+import process
+import string
+
+type LazySeq(pid, index, value)
+    init(s, pid, index) =
+        if process:is_finished(pid) then
+            throw ClosedPIDError(pid)
+        else
+            pid ! (index, self())
+            receive value = s.{pid=pid, index=index, value=value}
+
+
+trait (T) for LazySeq =
+    def first(s of T) = s.value
+
+    def rest(s of T) =
+        if is_empty(s) then
+            throw EmptySeqError(s)
+        else
+            LazySeq(s.pid, s.index + 1)
+
+    def str(s of T) =
+        string:all("[", s.value, ", ...]")
+
+    def is_empty(s of T) = s.value == Abort
+    def empty(s of T) = []
+
+    def close(s of T) = process:kill(s.pid, 0)
+
+
+fun seq(fn, arg) =
+    fun __loop(memory, prev, curindex) =
+        receive
+            | (index, pid) =
+                if index > curindex then
+                    throw IndexError(index, curindex, "Process Seq invalid index")
+                elif index == curindex then
+                    let next = fn(prev)
+                    let new_memory = put(memory, index, next)
+                    pid ! next
+                    __loop(new_memory, next, curindex+1)
+                else
+                    let cache = memory.[index]
+                    pid ! cache
+                    __loop(memory, prev, curindex)
+
+
+    let pid = spawn(__loop, ({}, arg, 0))
+    LazySeq(pid, 0)
+
+
+describe LazySeq as (Seq, Close, Str, Empty)
+
+
+fun enum_by(n, s) =
+    seq(fun (x) = x + s, n-s)
+
+
+fun enum(n) =
+    enum_by(n, 1)
+

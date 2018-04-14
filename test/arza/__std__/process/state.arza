@@ -7,8 +7,6 @@ type StateError is Error
 
 fun pid(s) = asrecord(s).pid
 
-fun exit(s) =
-    process:kill(pid(s), 0)
 
 fun is_valid(s) =
     not process:is_finished(pid(s))
@@ -24,6 +22,9 @@ let ensure2 = decor:call_first(_, 2, __ensure_process)
 let ensure3 = decor:call_first(_, 3, __ensure_process)
 
 trait (T) for State =
+    def close(s of T) =
+        process:kill(pid(s), 0)
+
     @ensure3
     def put(s of T, key, value) =
         pid(s) ! (#put, key, value)

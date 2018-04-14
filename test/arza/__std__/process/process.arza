@@ -1,4 +1,10 @@
-include arza:_process
+include arza:_process (spawn, self, create, start, is_idle, is_active,
+                        is_complete, is_terminated, is_finished, is_waiting,
+                        set_error_print_enabled, get_active_processes, result,
+                        mailbox, pop, send, push, kill, resume, is_empty)
+
+trait (T) for PID =
+    def close(p of T) = kill(p, 0)
 
 fun wait_while_working(pid) =
     if is_finished(pid) then True

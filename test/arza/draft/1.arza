@@ -24,3 +24,6 @@ fun main() =
             |> remove_creature(_, g2)
     in
         io:print(game)
+
+
+

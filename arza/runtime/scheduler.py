@@ -92,17 +92,24 @@ class Scheduler:
         return plist.is_empty(self.active)
 
     def close(self, p):
+        if p.is_active():
+            self.__unactivate(p)
+        elif p.is_waiting():
+            self.waiting = plist.remove_silent(self.waiting, p)
+
+    def activate(self, p):
+        assert plist.find(self.active, p) == False
+        self.__add_active(p)
+
+    def __unactivate(self, p):
         if self.is_unactive():
             return
 
         # print "unactivate", p, self.active
         self.active = plist.remove_silent(self.active, p)
 
-    def activate(self, p):
-        self.__add_active(p)
-
     def unactivate(self, p):
-        self.close(p)
+        self.__unactivate(p)
         self.__add_waiting(p)
 
     def wakeup(self, process):

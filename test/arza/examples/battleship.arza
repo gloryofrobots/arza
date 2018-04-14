@@ -22,6 +22,7 @@ type Game(cols, rows, ships, _id)
             _id=0
         }
 
+
 def str({rows, cols, ships} of Game) =
     string:all(
         "<Game (",
@@ -34,8 +35,10 @@ def str({rows, cols, ships} of Game) =
         " >"
     )
 
+
 fun is_valid_pos({rows, cols}, (x, y) as pos) =
     x >= 0 and x < cols and y >= 0 and y < rows
+
 
 fun add_ship(game, pos) =
     let new_id = game._id + 1
@@ -46,13 +49,13 @@ fun add_ship(game, pos) =
     }
 
 
-
 fun atpos({ships}, ship_pos) =
     seq:find_with(
         ships,
         None,
         ship -> ship_pos == ship.pos
     )
+
 
 fun update_ship(game, newship) =
     game.{
@@ -66,6 +69,7 @@ fun update_ship(game, newship) =
         )
     }
 
+
 fun fire({rows, cols} as game, ship) =
     let
         x = randi(0, rows)
@@ -78,6 +82,7 @@ fun fire({rows, cols} as game, ship) =
     else
         fire_at(game, ship, fire_pos)
 
+
 fun fire_at({rows, cols, ships} as game, ship, fire_pos) =
     let enemy = atpos(game, fire_pos)
     match enemy
@@ -85,6 +90,7 @@ fun fire_at({rows, cols, ships} as game, ship, fire_pos) =
             update_ship(game, enemy.{hp = @ - 1})
         | None =
             game
+
 
 fun turn({rows, cols, ships} as game) =
     seq:foldl(
@@ -94,12 +100,14 @@ fun turn({rows, cols, ships} as game) =
        game
        )
 
+
 fun checkgame(game) =
      let (alive, dead) = seq:partition(game.ships, fun({hp}) = hp > 0 )
      match alive
          | [] = (game, (#DRAW, "All dead"))
          | x::[] = (game, (#WINNER, x))
          | _ = None
+
 
 fun run(game, count) when count > 0
     | (game, 0) = (game, (#DRAW, "Time is out"))
@@ -108,7 +116,6 @@ fun run(game, count) when count > 0
         match checkgame(game1)
             | None = run(game1, count_turns - 1)
             | result = result
-
 
 
 fun random_game() =
