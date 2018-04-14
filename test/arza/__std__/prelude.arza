@@ -255,7 +255,7 @@ type EQ
 type Some (val)
 type None
 // type used as signal for abortinf recursive processes
-type Abort
+type End
 
 // Various Errors
 type MessageMatchError is Error

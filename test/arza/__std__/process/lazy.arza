@@ -22,7 +22,7 @@ trait (T) for LazySeq =
     def str(s of T) =
         string:all("[", s.value, ", ...]")
 
-    def is_empty(s of T) = s.value == Abort
+    def is_empty(s of T) = s.value == End
     def empty(s of T) = []
 
     def close(s of T) = process:kill(s.pid, 0)
@@ -35,10 +35,14 @@ fun seq(fn, arg) =
                 if index > curindex then
                     throw IndexError(index, curindex, "Process Seq invalid index")
                 elif index == curindex then
-                    let next = fn(prev)
-                    let new_memory = put(memory, index, next)
-                    pid ! next
-                    __loop(new_memory, next, curindex+1)
+                    if prev == End then
+                        pid ! End
+                        __loop(memory, prev, curindex)
+                    else
+                        let next = fn(prev)
+                        let new_memory = put(memory, index, next)
+                        pid ! next
+                        __loop(new_memory, next, curindex+1)
                 else
                     let cache = memory.[index]
                     pid ! cache
