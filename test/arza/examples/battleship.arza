@@ -1,24 +1,36 @@
-import io
-import seq
-import string
-import affirm
-
 // This is simple battleship game
 // All ships have 1x1 size and they don't move throughout course of the game
 // game sim is just random shooting without memory
 
+// module imports
+// print functions
+import io
+// sequence combinators
+import seq
+import string
+// test assertions
+import affirm
+
+// type declaration
 type Ship(id, hp, pos)
 
+// defining method for generic function str which will be called by print function
+
 def str({id, hp, pos} of Ship) =
+    // Arza lacks sprintf for now, instead this is simple concatenation
     string:all("<Ship id=", id, " hp=", hp, " pos=", pos, ">")
 
-
+// Other type with initializer
+// Product of this type will be value which initializer returns
 type Game(cols, rows, ships, _id)
     init(game, cols, rows) =
         game.{
+            // field attrs
             rows = rows,
             cols = cols,
+            // list with ships, list is not a best type of data structure here but the simplest one
             ships=[],
+            // special id increment for new ships
             _id=0
         }
 
@@ -30,37 +42,56 @@ def str({rows, cols, ships} of Game) =
         ", ",
         cols,
         ") ",
+        // if is an expression like almost everything
         if not is_empty(ships) then "ships: \n...." else "",
         string:join("\n....", ships),
         " >"
     )
 
-
+// checking if position is on board
 fun is_valid_pos({rows, cols}, (x, y) as pos) =
     x >= 0 and x < cols and y >= 0 and y < rows
 
-
+// add ship and return new game record
+// because values are immutable in arza
 fun add_ship(game, pos) =
+    // increment id counter
     let new_id = game._id + 1
+    // create new ship with 2 hit points
     let ship = Ship(new_id, 2, pos)
+    // .{ operator allows to create modified immutable structure
+    // here we creating new instance of Game from old one with changed keys _id and ships
+    // @ placeholder means previous value and :: is cons operator
     game.{
         _id = new_id,
         ships = ship::@
+        // can be rewrite as
+        // ships = cons(ship, @)
     }
 
 
-fun atpos({ships}, ship_pos) =
+// using seq module for finding ship at pos ship_pos
+fun atpos({ships} of Game, ship_pos) =
+    // function arguments are subjects of pattern matching
+    // {ships} of Game means argument must be of type Game
+    // and must implement Map interface and has attribute ships
+    // binding ships will be created
     seq:find_with(
         ships,
+        // default value
         None,
+        //lambda expression
         ship -> ship_pos == ship.pos
     )
 
 
 fun update_ship(game, newship) =
+    // modifing game.ships
     game.{
         ships = seq:map(
-            game.ships,
+            // equivalent to game.ships
+            @,
+            // using parens to delimit multi expression function
             (fun(ship) =
                 (if ship.id == newship.id then
                     newship
@@ -70,10 +101,11 @@ fun update_ship(game, newship) =
     }
 
 
+// fire at random position
 fun fire({rows, cols} as game, ship) =
     let
-        x = randi(0, rows)
-        y = randi(0, cols)
+        x = randi(0, rows-1)
+        y = randi(0, cols-1)
         fire_pos = (x, y)
 
     if fire_pos == ship.pos then
@@ -83,8 +115,11 @@ fun fire({rows, cols} as game, ship) =
         fire_at(game, ship, fire_pos)
 
 
+// as operator in pattern matching will bind left value to right name in case of successful branch
 fun fire_at({rows, cols, ships} as game, ship, fire_pos) =
     let enemy = atpos(game, fire_pos)
+    // if we found enemy change its hp
+    // this all immutable of course, so we return new game state
     match enemy
         | enemy of Ship =
             update_ship(game, enemy.{hp = @ - 1})
@@ -93,22 +128,38 @@ fun fire_at({rows, cols, ships} as game, ship, fire_pos) =
 
 
 fun turn({rows, cols, ships} as game) =
+    // this basically foreach through all ships
+    // foldl is used because we can put current state as accumulator
+    /*
+        foldl is basically this function
+        fun foldl
+            | ([], acc, f) = acc
+            | (hd::tl, acc, f) = foldl(tl, f(hd, acc), f)
+    */
     seq:foldl(
-       ships,
-       fun (ship, new_game) =
-           fire(new_game, ship),
-       game
-       )
+        ships,
+        game,
+        fun (ship, new_game) =
+            fire(new_game, ship)
+    )
 
 
+// win conditions
+// all ships are dead then draw
+// if one ship alive she is the winner
+// else continue playing
 fun checkgame(game) =
-     let (alive, dead) = seq:partition(game.ships, fun({hp}) = hp > 0 )
-     match alive
-         | [] = (game, (#DRAW, "All dead"))
-         | x::[] = (game, (#WINNER, x))
-         | _ = None
+    let (alive, dead) = seq:partition(game.ships, fun({hp}) = hp > 0 )
+    match alive
+        | [] = (game, (#DRAW, "All dead"))
+        | x::[] = (game, (#WINNER, x))
+        | _ = None
 
 
+// This game main loop
+// This type of function is called recursive wrappers in arza
+// first branch will be executed only once
+// and subsequent calls will not check when count > 0 guard
 fun run(game, count) when count > 0
     | (game, 0) = (game, (#DRAW, "Time is out"))
     | (game, count_turns) =
@@ -118,21 +169,26 @@ fun run(game, count) when count > 0
             | result = result
 
 
+// just simple random game 
 fun random_game() =
     let
-        (game, result) = Game(4, 4)
-                 |> add_ship(_, (3,1))
-                 |> add_ship(_, (0,0))
-                 |> run(_, 100)
+        size = 4
+        pos = () -> randi(0, size-1)
+        (game, result) = Game(size, size)
+                |> add_ship(_, (0, pos()))
+                |> add_ship(_, (0, pos()))
+                |> run(_, 100)
     io:p(#GAME, game)
     io:p(#RESULT, result)
 
 
+// and some testing
 fun test() =
+    // random_game()
     fun test_game() =
         let game = Game(4, 4)
-                 |> add_ship(_, (3,1))
-                 |> add_ship(_, (0,0))
+                |> add_ship(_, (3,1))
+                |> add_ship(_, (0,0))
         let ship1 = atpos(game, (3, 1))
         let ship2 = atpos(game, (0, 0))
         (game, ship1, ship2)

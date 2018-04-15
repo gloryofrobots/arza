@@ -1,0 +1,103 @@
+Multiple dispatch
+=================
+
+Arza provides predicate multiple dispatch for polymorphism.
+In recent years more limited approach was implemented in Julia language.
+Arza generic functions could be specialized for any arguments and also for simple predicate expressions.
+Essentially, they resemble pattern matching functions in Erlang
+but with posiibility to define clauses at different places in code.
+Most novative concept in Arza is that programmer can define interfaces along side generic functions.
+
+```
+interface CargoRobot =
+    //@robot - tells interpreter that all types used as first argument in this generic function will implement
+    // CargoRobot interface
+    fun move_cargo(@robot, cargo)
+
+    // here type must me used as second arguments
+    fun recharge(amount, @robot)
+
+// Now declaring Cargo interface
+interface Cargo
+    // this function has been already declared in CargoRobot interface
+    // but Cargo types must be used as second arguments instead of first
+    use move_cargo(robot, @cargo)
+
+// Interfaces do not create namespaces.
+
+fun move(robot, cargo) =
+    move_cargo(robot, cargo)
+    recharge(100, robot)
+
+// Now define some types
+type BaseRobot = (model)
+
+// mixin this type in another
+type RobotActual(BaseRobot) = (energy_level)
+
+// this not an inheritance and methods defined for first type do not automatically support second type
+
+type Cargo(type, weight, moved)
+
+// defining methods
+
+def move_cargo(robot of RobotActual, cargo of Cargo) =
+    // data is imutable this is operator for creating shared copies
+    // there are no return statement
+    // last expression returns automatically
+    io:print("moving cargo")
+
+
+    //returning tuple with moved cargo and slightly exosted robot
+    (cargo.{moved = True},
+        // I will implement shortcut for persistent -= operation in future
+        robot.{battery=robot.battery-10})
+
+
+
+def recharge(r of Robot) =
+    r.{battery=100}
+
+//Some more examples
+interface Add =
+    fun add(val1, val2)
+
+// declare type for complex numbers
+type Complex(real, imag)
+
+// specialize add for Complex and Int types with def statement
+
+def add(c1 of Complex, c2 of Complex)  =
+    Complex(c1.real + c2.real, c1.imag + c2.imag)
+
+def add(i of Int, c of Complex)  =
+    Complex(i + c.real, c.imag)
+
+def add(c of Complex, i of Int) =
+	add(i, c)
+// Such definitions are not restricted to current module, you can define them anywhere, like
+
+import my_module:add
+def my_module:add(c of Complex, i of Int) =
+	add(i, c)
+
+```
+
+Predicate is a special condition, which narrow the application of a specialization.
+Specialisations with predicates have more priority then simple ones
+
+```
+def add(c of Complex, i of Int) when i == 0 =
+	c
+
+// You can use any normal expression in predicate including function calls
+
+interface Fav =
+    fun get_favorite(c1, c2)
+
+type Car (speed)
+
+fun faster(v1, v2) = v1.speed > v2.speed
+
+def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
+def get_favorite(c1 of Car, c2 of Car) = c2
