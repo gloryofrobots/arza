@@ -1,0 +1,40 @@
+import seq
+
+type Creature(alive, hungry)
+    init(c, speed) =
+        c.{
+            speed=speed
+            hungry=False,
+            alive=True
+        }
+
+type Shark is Creature
+
+type Fish is Creature
+
+interface Living(I) =
+    encounter(I, I)
+    die(I)
+
+interface Predator is Living(I) =
+    eat(I, pray)
+
+interface Pray is Wanderer(I) =
+    escape(I, predator)
+
+def die(c of Creature) = c.{alive=False}
+
+//default implementation
+def encounter(creature of Creature, creature2 of Creature) =
+    // shark will not attack other shark
+    (creature, creature)
+
+def encounter(shark of Shark, fish of Fish)
+    | ({hungry=True, speed}, {fish_speed}) when fish_speed < speed = eat(shark, fish)
+    | (_, _) = (shark, fish)
+
+// Swim away from shark
+def encounter(fish of Fish, shark of Shark) = escape(fish, shark)
+
+
+

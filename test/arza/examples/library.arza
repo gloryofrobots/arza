@@ -1,0 +1,72 @@
+import seq
+
+//case for triple dispatch described here https://softwareengineering.stackexchange.com/questions/291525/a-real-world-use-case-for-triple-dispatch
+//
+//This program represents a repository of citation information, containing books, articles and journals
+//with action of formatting those books for consumption on demand.
+//
+//Let's take two approaches to formatting. National Library of Medicine (derived from the Vancouver Project)
+//specifies citations in a particular way, mostly affecting how author names are laid out.
+//NLM differs from American Psychological Association (APA) formatting.
+//
+//Also we have to publish these citations and choice of outputs are: plain text, PDF, HTML.
+//Some of these items require different layout strategies,
+//depending on the type of the format (APA indents following lines, NLM doesn't).
+
+// Declaring interfaces
+
+interface Repo(I) =
+    add(I, item)
+
+interface Source(I) =
+    format(item of I, format_standart, output_format)
+
+interface Standart(I) =
+    use format(item, format_standart of I, output_format)
+
+interface Output(I) =
+    use format(item, format_standart, output_format of I)
+
+fun format_books(library) =
+    let books = seq:map(library.books, format)
+
+// Declaring types
+
+type Item(author, name)
+type Record(id, item)
+type Book is Item
+type Article is Item
+type Journal is Item
+
+type FormatStandart
+type NLM is FormatStandart
+type APA is FormatStandart
+
+type OutputFormat
+type PDF is OutputFormat
+type HTML is OutputFormat
+type TXT is OutputFormat
+
+type Library(_id, items)
+    init(l) =
+        l.{items = []}
+
+// Defining generic functions
+
+def add(l of Library, item) =
+    let id = l._id + 1
+    l.{
+        id = _id,
+        items = Record(id, item)::@
+    }
+
+
+def format(b of Book, c of NLM, f of TXT) = None // do something here
+def format(b of Article, c of NLM, f of TXT) = None // do something here
+def format(b of Journal, c of NLM, f of TXT) = None // do something here
+
+def format(b of Book, c of APA, f of TXT) = None // do something here
+def format(b of Article, c of APA, f of TXT) = None // do something here
+def format(b of Journal, c of APA, f of TXT) = None // do something here
+
+// and so on and so on

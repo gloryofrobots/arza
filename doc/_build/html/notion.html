@@ -55,7 +55,7 @@
 <h2>Simple game<a class="headerlink" href="#simple-game" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none"><div class="highlight"><pre>// This is simple battleship game
 // All ships have 1x1 size and they don&#39;t move throughout course of the game
-// game sim is just random shooting without memory
+// gameplay consists of random shooting by each of the ships
 
 // module imports
 // print functions
@@ -416,6 +416,164 @@ fun new(data) =
 </pre></div>
 </div>
 </div>
+<div class="section" id="triple-dispatch">
+<h2>Triple Dispatch<a class="headerlink" href="#triple-dispatch" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none"><div class="highlight"><pre>import seq
+
+//case for triple dispatch described here https://softwareengineering.stackexchange.com/questions/291525/a-real-world-use-case-for-triple-dispatch
+//
+//This program represents a repository of citation information, containing books, articles and journals
+//with action of formatting those books for consumption on demand.
+//
+//Let&#39;s take two approaches to formatting. National Library of Medicine (derived from the Vancouver Project)
+//specifies citations in a particular way, mostly affecting how author names are laid out.
+//NLM differs from American Psychological Association (APA) formatting.
+//
+//Also we have to publish these citations and choice of outputs are: plain text, PDF, HTML.
+//Some of these items require different layout strategies,
+//depending on the type of the format (APA indents following lines, NLM doesn&#39;t).
+
+// Declaring interfaces
+
+interface Repo(I) =
+    add(I, item)
+
+interface Source(I) =
+    format(item of I, format_standart, output_format)
+
+interface Standart(I) =
+    use format(item, format_standart of I, output_format)
+
+interface Output(I) =
+    use format(item, format_standart, output_format of I)
+
+fun format_books(library) =
+    let books = seq:map(library.books, format)
+
+// Declaring types
+
+type Item(author, name)
+type Record(id, item)
+type Book is Item
+type Article is Item
+type Journal is Item
+
+type FormatStandart
+type NLM is FormatStandart
+type APA is FormatStandart
+
+type OutputFormat
+type PDF is OutputFormat
+type HTML is OutputFormat
+type TXT is OutputFormat
+
+type Library(_id, items)
+    init(l) =
+        l.{items = []}
+
+// Defining generic functions
+
+def add(l of Library, item) =
+    let id = l._id + 1
+    l.{
+        id = _id,
+        items = Record(id, item)::@
+    }
+
+
+def format(b of Book, c of NLM, f of TXT) = None // do something here
+def format(b of Article, c of NLM, f of TXT) = None // do something here
+def format(b of Journal, c of NLM, f of TXT) = None // do something here
+
+def format(b of Book, c of APA, f of TXT) = None // do something here
+def format(b of Article, c of APA, f of TXT) = None // do something here
+def format(b of Journal, c of APA, f of TXT) = None // do something here
+
+// and so on and so on
+</pre></div>
+</div>
+</div>
+<div class="section" id="some-sequence-functions">
+<h2>Some sequence functions<a class="headerlink" href="#some-sequence-functions" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none"><div class="highlight"><pre>fun foldl
+    | ([], acc, f) = acc
+    | (hd::tl, acc, f) = foldl(tl, f(hd, acc), f)
+
+
+fun foldr
+    | ([], acc, f) = acc
+    | (hd::tl, acc, f) = f(hd, foldr(tl, acc, f))
+
+
+fun reduce(sq, f)
+    | (x::xs, f) = foldl(xs, x, f)
+    | ([], f) = throw EmptySeqError(sq)
+
+
+fun map(sq, f)
+    | ([], f) = empty(sq)
+    | (hd::tl, f) = f(hd) :: map(tl, f)
+
+
+fun filter(sq, predicate)
+    | ([], p) = empty(sq)
+    | (x::xs, p) =
+        if p(x) then
+            x :: filter(xs, p)
+        else
+            filter(xs, p)
+
+
+fun sort(s, f) =
+    let
+        fun _merge
+            | ([], ys) = ys
+            | (xs, []) = xs
+            | (x::xs, y::ys) =
+                if f(x, y) then x :: _merge(xs, y::ys)
+                else y :: _merge(x::xs, ys)
+
+        fun _sort
+            | [] = []
+            | [x] as s = s
+            | xs =
+                let (ys, zs) = split(xs)
+                in _merge(_sort(ys), _sort(zs))
+
+    in _sort(s)
+
+
+fun zip(seq1, seq2)
+    | (x::xs, y::ys) = (x, y) :: zip(xs, ys)
+    | (_, _) = []
+
+
+fun unzip(l) =
+    let fun _unzip
+        | ((x, y) :: ts, xs, ys) = _unzip(ts, x :: xs, y :: ys)
+        | ([], xs, ys) = (reverse(xs), reverse(ys))
+
+    in _unzip(l, [], [])
+
+
+fun zipwith(seq1, seq2, f)
+    | (x::xs, y::ys, f) = f(x, y) :: zipwith(xs, ys, f)
+    | (_, _, _) = []
+
+
+fun span(sq, predicate)
+    | ([], p) =
+        let c = empty(sq)
+        in (c, c)
+    | ([x, ...xs1] as xs, p) =
+        if not(p(x)) then
+            (empty(sq), xs)
+        else
+            let (ys, zs) = span(xs1, p)
+            in (x::ys, zs)
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -429,6 +587,8 @@ fun new(data) =
 <li><a class="reference internal" href="#">Notion of Arza</a><ul>
 <li><a class="reference internal" href="#simple-game">Simple game</a></li>
 <li><a class="reference internal" href="#mutable-state">Mutable State</a></li>
+<li><a class="reference internal" href="#triple-dispatch">Triple Dispatch</a></li>
+<li><a class="reference internal" href="#some-sequence-functions">Some sequence functions</a></li>
 </ul>
 </li>
 </ul>

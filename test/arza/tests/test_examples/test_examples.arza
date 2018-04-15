@@ -1,0 +1,7 @@
+import examples:battleship
+import examples:object
+
+
+fun test() =
+    battleship:test()
+    object:test()

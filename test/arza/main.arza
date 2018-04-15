@@ -4,7 +4,9 @@ import seq
 import list
 //include tests (run as test)
 //include tests:test_coro (test as test)
-include tests:test_process (test as test)
+//include tests:test_process (test as test)
+include tests:test_examples (test as test)
+include examples:library
 //import process:lazy
 
 

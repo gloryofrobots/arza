@@ -1,5 +1,0 @@
-import examples:battleship
-
-
-fun test() =
-    battleship:test()
