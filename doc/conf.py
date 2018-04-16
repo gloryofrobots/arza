@@ -259,3 +259,60 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+from pygments.lexer import RegexLexer, include
+from pygments import token
+from sphinx.highlighting import lexers
+def word(s):
+    return ("\\b%s\\b" % s, token.Keyword)
+
+class BCLLexer(RegexLexer):
+    name = 'arza'
+
+    tokens = {
+        'comments': [
+            (r'/\*.*?\*/', token.Comment),
+            (r'//.*?\n', token.Comment),
+        ],
+        'string': [
+            (r'[^"\\]+', token.String),
+            (r'\\.', token.String.Escape),
+            ('"', token.String, '#pop'),
+        ],
+        'root': [
+            include('comments'),
+            word("for"),
+            word("if"),
+            word('if'),
+            word('else'),
+            word('elif'),
+            word('then'),
+            word('match'),
+            word('import'),
+            word('infixr'),
+            word('infixl'),
+            word('prefix'),
+            word('interface'),
+            word('include'),
+            word('fun'),
+            word('def'),
+            word('let'),
+            word('type'),
+            word('is'),
+            word('trait'),
+            word('receive'),
+            word('init'),
+            word('in'),
+            word('try'),
+            word('catch'),
+            word('finally'),
+            (r'[a-zA-Z]', token.Name), # 
+            ('"', token.String, 'string'),
+            ('#[^\s]+', token.String),
+            (r'\s', token.Text),
+            # (r'[^(]+', token.Text),
+            (r'[^a-zA-Z]', token.Text), # 
+        ]
+    }
+
+lexers['arza'] = BCLLexer(startinline=True)

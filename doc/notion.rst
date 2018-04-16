@@ -4,7 +4,8 @@ Notion of Arza
 Simple game
 -----------
 
-.. code-block:: none
+.. code-block:: arza
+
                
     // This is simple battleship game
     // All ships have 1x1 size and they don't move throughout course of the game
@@ -229,7 +230,7 @@ Simple game
 Mutable State
 -------------
 
-.. code-block:: none
+.. code-block:: arza
 
     // this program will implement mutable state via processes
 
@@ -371,7 +372,7 @@ Mutable State
 Triple Dispatch
 ---------------
 
-.. code-block:: none
+.. code-block:: arza
 
     import seq
 
@@ -450,8 +451,8 @@ Triple Dispatch
 Some sequence functions
 -----------------------
 
-.. code-block:: none
- 
+.. code-block:: arza
+
     fun foldl
         | ([], acc, f) = acc
         | (hd::tl, acc, f) = foldl(tl, f(hd, acc), f)
