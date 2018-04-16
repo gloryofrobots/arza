@@ -165,7 +165,7 @@ class CodeRoutine(BaseRoutine):
                         api.put_at_index(env, arg1, value)
             # *************************************
             elif STORE_TEMPORARY == tag:
-                value = stack.top()
+                value = stack.pop()
                 env.set_temporary(arg1, value)
             # *************************************
             elif UNPACK_TUPLE == tag:
