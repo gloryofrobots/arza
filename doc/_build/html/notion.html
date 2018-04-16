@@ -53,39 +53,39 @@
 <h1>Notion of Arza<a class="headerlink" href="#notion-of-arza" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="simple-game">
 <h2>Simple game<a class="headerlink" href="#simple-game" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-arza"><div class="highlight"><pre><span class="c">// This is simple battleship game</span>
-<span class="c">// All ships have 1x1 size and they don&#39;t move throughout course of the game</span>
-<span class="c">// gameplay consists of random shooting by each of the ships</span>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// This is simple battleship game</span>
+<span class="cm">// All ships have 1x1 size and they don&#39;t move throughout course of the game</span>
+<span class="cm">// gameplay consists of random shooting by each of the ships</span>
 
-<span class="c">// module imports</span>
-<span class="c">// print functions</span>
+<span class="cm">// module imports</span>
+<span class="cm">// print functions</span>
 <span class="k">import</span> <span class="n">io</span>
-<span class="c">// sequence combinators</span>
+<span class="cm">// sequence combinators</span>
 <span class="k">import</span> <span class="n">seq</span>
 <span class="k">import</span> <span class="n">string</span>
-<span class="c">// test assertions</span>
+<span class="cm">// test assertions</span>
 <span class="k">import</span> <span class="n">affirm</span>
 
-<span class="c">// type declaration</span>
+<span class="cm">// type declaration</span>
 <span class="k">type</span> <span class="n">Ship</span>(<span class="n">id</span>, <span class="n">hp</span>, <span class="n">pos</span>)
 
-<span class="c">// defining method for generic function str which will be called by print function</span>
+<span class="cm">// defining method for generic function str which will be called by print function</span>
 
 <span class="k">def</span> <span class="n">str</span>({<span class="n">id</span>, <span class="n">hp</span>, <span class="n">pos</span>} <span class="n">of</span> <span class="n">Ship</span>) =
-    <span class="c">// Arza lacks sprintf for now, instead this is simple concatenation</span>
+    <span class="cm">// Arza lacks sprintf for now, instead this is simple concatenation</span>
     <span class="n">string</span>:<span class="n">all</span>(<span class="s">&quot;&lt;Ship id=&quot;</span>, <span class="n">id</span>, <span class="s">&quot; hp=&quot;</span>, <span class="n">hp</span>, <span class="s">&quot; pos=&quot;</span>, <span class="n">pos</span>, <span class="s">&quot;&gt;&quot;</span>)
 
-<span class="c">// Other type with initializer</span>
-<span class="c">// Product of this type will be value which initializer returns</span>
+<span class="cm">// Other type with initializer</span>
+<span class="cm">// Product of this type will be value which initializer returns</span>
 <span class="k">type</span> <span class="n">Game</span>(<span class="n">cols</span>, <span class="n">rows</span>, <span class="n">ships</span>, _<span class="n">id</span>)
     <span class="k">init</span>(<span class="n">game</span>, <span class="n">cols</span>, <span class="n">rows</span>) =
         <span class="n">game</span>.{
-            <span class="c">// field attrs</span>
+            <span class="cm">// field attrs</span>
             <span class="n">rows</span> = <span class="n">rows</span>,
             <span class="n">cols</span> = <span class="n">cols</span>,
-            <span class="c">// list with ships, list is not a best type of data structure here but the simplest one</span>
+            <span class="cm">// list with ships, list is not a best type of data structure here but the simplest one</span>
             <span class="n">ships</span>=[],
-            <span class="c">// special id increment for new ships</span>
+            <span class="cm">// special id increment for new ships</span>
             _<span class="n">id</span>=0
         }
 
@@ -97,56 +97,56 @@
         <span class="s">&quot;, &quot;</span>,
         <span class="n">cols</span>,
         <span class="s">&quot;) &quot;</span>,
-        <span class="c">// if is an expression like almost everything</span>
+        <span class="cm">// if is an expression like almost everything</span>
         <span class="k">if</span> <span class="n">not</span> <span class="n">is</span>_<span class="n">empty</span>(<span class="n">ships</span>) <span class="k">then</span> <span class="s">&quot;ships: </span><span class="se">\n</span><span class="s">....&quot;</span> <span class="k">else</span> <span class="s">&quot;&quot;</span>,
         <span class="n">string</span>:<span class="n">join</span>(<span class="s">&quot;</span><span class="se">\n</span><span class="s">....&quot;</span>, <span class="n">ships</span>),
         <span class="s">&quot; &gt;&quot;</span>
     )
 
-<span class="c">// checking if position is on board</span>
+<span class="cm">// checking if position is on board</span>
 <span class="k">fun</span> <span class="n">is</span>_<span class="n">valid</span>_<span class="n">pos</span>({<span class="n">rows</span>, <span class="n">cols</span>}, (<span class="n">x</span>, <span class="n">y</span>) <span class="n">as</span> <span class="n">pos</span>) =
     <span class="n">x</span> &gt;= 0 <span class="n">and</span> <span class="n">x</span> &lt; <span class="n">cols</span> <span class="n">and</span> <span class="n">y</span> &gt;= 0 <span class="n">and</span> <span class="n">y</span> &lt; <span class="n">rows</span>
 
-<span class="c">// add ship and return new game record</span>
-<span class="c">// because values are immutable in arza</span>
+<span class="cm">// add ship and return new game record</span>
+<span class="cm">// because values are immutable in arza</span>
 <span class="k">fun</span> <span class="n">add</span>_<span class="n">ship</span>(<span class="n">game</span>, <span class="n">pos</span>) =
-    <span class="c">// increment id counter</span>
+    <span class="cm">// increment id counter</span>
     <span class="k">let</span> <span class="n">new</span>_<span class="n">id</span> = <span class="n">game</span>._<span class="n">id</span> + 1
-    <span class="c">// create new ship with 2 hit points</span>
+    <span class="cm">// create new ship with 2 hit points</span>
     <span class="k">let</span> <span class="n">ship</span> = <span class="n">Ship</span>(<span class="n">new</span>_<span class="n">id</span>, 2, <span class="n">pos</span>)
-    <span class="c">// .{ operator allows to create modified immutable structure</span>
-    <span class="c">// here we creating new instance of Game from old one with changed keys _id and ships</span>
-    <span class="c">// @ placeholder means previous value and :: is cons operator</span>
+    <span class="cm">// .{ operator allows to create modified immutable structure</span>
+    <span class="cm">// here we creating new instance of Game from old one with changed keys _id and ships</span>
+    <span class="cm">// @ placeholder means previous value and :: is cons operator</span>
     <span class="n">game</span>.{
         _<span class="n">id</span> = <span class="n">new</span>_<span class="n">id</span>,
         <span class="n">ships</span> = <span class="n">ship</span>::@
-        <span class="c">// can be written as</span>
-        <span class="c">// ships = cons(ship, @)</span>
+        <span class="cm">// can be written as</span>
+        <span class="cm">// ships = cons(ship, @)</span>
     }
 
 
-<span class="c">// using seq module for finding ship at pos ship_pos</span>
+<span class="cm">// using seq module for finding ship at pos ship_pos</span>
 <span class="k">fun</span> <span class="n">atpos</span>({<span class="n">ships</span>} <span class="n">of</span> <span class="n">Game</span>, <span class="n">ship</span>_<span class="n">pos</span>) =
-    <span class="c">// function arguments are subjects of pattern matching</span>
-    <span class="c">// {ships} of Game means argument must be of type Game</span>
-    <span class="c">// and must implement Map interface and has attribute ships</span>
-    <span class="c">// binding ships will be created</span>
+    <span class="cm">// function arguments are subjects of pattern matching</span>
+    <span class="cm">// {ships} of Game means argument must be of type Game</span>
+    <span class="cm">// and must implement Map interface and has attribute ships</span>
+    <span class="cm">// binding ships will be created</span>
     <span class="n">seq</span>:<span class="n">find</span>_<span class="n">with</span>(
         <span class="n">ships</span>,
-        <span class="c">// default value</span>
+        <span class="cm">// default value</span>
         <span class="n">None</span>,
-        <span class="c">//lambda expression</span>
+        <span class="cm">//lambda expression</span>
         <span class="n">ship</span> -&gt; <span class="n">ship</span>_<span class="n">pos</span> == <span class="n">ship</span>.<span class="n">pos</span>
     )
 
 
 <span class="k">fun</span> <span class="n">update</span>_<span class="n">ship</span>(<span class="n">game</span>, <span class="n">newship</span>) =
-    <span class="c">// modifing game.ships</span>
+    <span class="cm">// modifing game.ships</span>
     <span class="n">game</span>.{
         <span class="n">ships</span> = <span class="n">seq</span>:<span class="n">map</span>(
-            <span class="c">// equivalent to game.ships</span>
+            <span class="cm">// equivalent to game.ships</span>
             @,
-            <span class="c">// using parens to delimit multi expression function</span>
+            <span class="cm">// using parens to delimit multi expression function</span>
             (<span class="k">fun</span>(<span class="n">ship</span>) =
                 (<span class="k">if</span> <span class="n">ship</span>.<span class="n">id</span> == <span class="n">newship</span>.<span class="n">id</span> <span class="k">then</span>
                     <span class="n">newship</span>
@@ -156,7 +156,7 @@
     }
 
 
-<span class="c">// fire at random position</span>
+<span class="cm">// fire at random position</span>
 <span class="k">fun</span> <span class="n">fire</span>({<span class="n">rows</span>, <span class="n">cols</span>} <span class="n">as</span> <span class="n">game</span>, <span class="n">ship</span>) =
     <span class="k">let</span>
         <span class="n">x</span> = <span class="n">randi</span>(0, <span class="n">rows</span>)
@@ -164,17 +164,17 @@
         <span class="n">fire</span>_<span class="n">pos</span> = (<span class="n">x</span>, <span class="n">y</span>)
 
     <span class="k">if</span> <span class="n">fire</span>_<span class="n">pos</span> == <span class="n">ship</span>.<span class="n">pos</span> <span class="k">then</span>
-        <span class="c">//retry</span>
+        <span class="cm">//retry</span>
         <span class="n">fire</span>(<span class="n">game</span>, <span class="n">ship</span>)
     <span class="k">else</span>
         <span class="n">fire</span>_<span class="n">at</span>(<span class="n">game</span>, <span class="n">ship</span>, <span class="n">fire</span>_<span class="n">pos</span>)
 
 
-<span class="c">// as operator in pattern matching will bind left value to right name in case of successful branch</span>
+<span class="cm">// as operator in pattern matching will bind left value to right name in case of successful branch</span>
 <span class="k">fun</span> <span class="n">fire</span>_<span class="n">at</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="n">as</span> <span class="n">game</span>, <span class="n">ship</span>, <span class="n">fire</span>_<span class="n">pos</span>) =
     <span class="k">let</span> <span class="n">enemy</span> = <span class="n">atpos</span>(<span class="n">game</span>, <span class="n">fire</span>_<span class="n">pos</span>)
-    <span class="c">// if we found enemy change its hp</span>
-    <span class="c">// this all immutable of course, so we return new game state</span>
+    <span class="cm">// if we found enemy change its hp</span>
+    <span class="cm">// this all immutable of course, so we return new game state</span>
     <span class="k">match</span> <span class="n">enemy</span>
         | <span class="n">enemy</span> <span class="n">of</span> <span class="n">Ship</span> =
             <span class="n">update</span>_<span class="n">ship</span>(<span class="n">game</span>, <span class="n">enemy</span>.{<span class="n">hp</span> = @ - 1})
@@ -183,14 +183,14 @@
 
 
 <span class="k">fun</span> <span class="n">turn</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="n">as</span> <span class="n">game</span>) =
-    <span class="c">// this basically foreach through all ships</span>
-    <span class="c">// foldl is used because we can put current state as accumulator</span>
-    /*
-        <span class="n">foldl</span> <span class="k">is</span> <span class="n">basically</span> <span class="n">this</span> <span class="n">function</span>
-        <span class="k">fun</span> <span class="n">foldl</span>
-            | ([], <span class="n">acc</span>, <span class="n">f</span>) = <span class="n">acc</span>
-            | (<span class="n">hd</span>::<span class="n">tl</span>, <span class="n">acc</span>, <span class="n">f</span>) = <span class="n">foldl</span>(<span class="n">tl</span>, <span class="n">f</span>(<span class="n">hd</span>, <span class="n">acc</span>), <span class="n">f</span>)
-    */
+    <span class="cm">// this basically foreach through all ships</span>
+    <span class="cm">// foldl is used because we can put current state as accumulator</span>
+    <span class="cm">/*</span>
+<span class="cm">        foldl is basically this function</span>
+<span class="cm">        fun foldl</span>
+<span class="cm">            | ([], acc, f) = acc</span>
+<span class="cm">            | (hd::tl, acc, f) = foldl(tl, f(hd, acc), f)</span>
+<span class="cm">    */</span>
     <span class="n">seq</span>:<span class="n">foldl</span>(
         <span class="n">ships</span>,
         <span class="n">game</span>,
@@ -199,10 +199,10 @@
     )
 
 
-<span class="c">// win conditions</span>
-<span class="c">// all ships are dead then draw</span>
-<span class="c">// if one ship alive she is the winner</span>
-<span class="c">// else continue playing</span>
+<span class="cm">// win conditions</span>
+<span class="cm">// all ships are dead then draw</span>
+<span class="cm">// if one ship alive she is the winner</span>
+<span class="cm">// else continue playing</span>
 <span class="k">fun</span> <span class="n">checkgame</span>(<span class="n">game</span>) =
     <span class="k">let</span> (<span class="n">alive</span>, <span class="n">dead</span>) = <span class="n">seq</span>:<span class="n">partition</span>(<span class="n">game</span>.<span class="n">ships</span>, <span class="k">fun</span>({<span class="n">hp</span>}) = <span class="n">hp</span> &gt; 0 )
     <span class="k">match</span> <span class="n">alive</span>
@@ -211,10 +211,10 @@
         | _ = <span class="n">None</span>
 
 
-<span class="c">// This game main loop</span>
-<span class="c">// This type of function is called recursive wrappers in arza</span>
-<span class="c">// first branch will be executed only once</span>
-<span class="c">// and subsequent calls will not check when count &gt; 0 guard</span>
+<span class="cm">// This game main loop</span>
+<span class="cm">// This type of function is called recursive wrappers in arza</span>
+<span class="cm">// first branch will be executed only once</span>
+<span class="cm">// and subsequent calls will not check when count &gt; 0 guard</span>
 <span class="k">fun</span> <span class="n">run</span>(<span class="n">game</span>, <span class="n">count</span>) <span class="n">when</span> <span class="n">count</span> &gt; 0
     | (<span class="n">game</span>, 0) = (<span class="n">game</span>, (<span class="s">#DRAW,</span> <span class="s">&quot;Time is out&quot;</span>))
     | (<span class="n">game</span>, <span class="n">count</span>_<span class="n">turns</span>) =
@@ -224,7 +224,7 @@
             | <span class="n">result</span> = <span class="n">result</span>
 
 
-<span class="c">// just simple random game</span>
+<span class="cm">// just simple random game</span>
 <span class="k">fun</span> <span class="n">random</span>_<span class="n">game</span>() =
     <span class="k">let</span>
         <span class="n">size</span> = 4
@@ -237,7 +237,7 @@
     <span class="n">io</span>:<span class="n">p</span>(<span class="s">#RESULT,</span> <span class="n">result</span>)
 
 
-<span class="c">// and some testing</span>
+<span class="cm">// and some testing</span>
 <span class="k">fun</span> <span class="n">test</span>() =
     <span class="k">fun</span> <span class="n">test</span>_<span class="n">game</span>() =
         <span class="k">let</span> <span class="n">game</span> = <span class="n">Game</span>(4, 4)
@@ -277,20 +277,20 @@
 </div>
 <div class="section" id="mutable-state">
 <h2>Mutable State<a class="headerlink" href="#mutable-state" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-arza"><div class="highlight"><pre><span class="c">// this program will implement mutable state via processes</span>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// this program will implement mutable state via processes</span>
 
 <span class="k">import</span> <span class="n">process</span>
 <span class="k">import</span> <span class="n">decor</span>
 
 <span class="k">type</span> <span class="n">State</span>(<span class="n">pid</span>)
 
-<span class="c">// special error</span>
+<span class="cm">// special error</span>
 <span class="k">type</span> <span class="n">StateError</span> <span class="k">is</span> <span class="n">Error</span>
 
-<span class="c">// because State will implement at generic all calls like state.key or</span>
-<span class="c">// matches {key1, key2} will be infinitely recursive</span>
-<span class="c">// to avoid this we need to cast state to parent Record type</span>
-<span class="c">// asrecord defined in prelude like fun asrecord(r) = r as Record</span>
+<span class="cm">// because State will implement at generic all calls like state.key or</span>
+<span class="cm">// matches {key1, key2} will be infinitely recursive</span>
+<span class="cm">// to avoid this we need to cast state to parent Record type</span>
+<span class="cm">// asrecord defined in prelude like fun asrecord(r) = r as Record</span>
 <span class="k">fun</span> <span class="n">pid</span>(<span class="n">s</span>) = <span class="n">asrecord</span>(<span class="n">s</span>).<span class="n">pid</span>
 
 
@@ -303,36 +303,36 @@
     <span class="k">else</span>
         <span class="n">s</span>
 
-<span class="c">// creating assertion decorators as partially applied function decor:call_first</span>
+<span class="cm">// creating assertion decorators as partially applied function decor:call_first</span>
 <span class="k">let</span> <span class="n">ensure</span>1 = <span class="n">decor</span>:<span class="n">call</span>_<span class="n">first</span>(_, 1, __<span class="n">ensure</span>_<span class="n">process</span>)
 <span class="k">let</span> <span class="n">ensure</span>2 = <span class="n">decor</span>:<span class="n">call</span>_<span class="n">first</span>(_, 2, __<span class="n">ensure</span>_<span class="n">process</span>)
 <span class="k">let</span> <span class="n">ensure</span>3 = <span class="n">decor</span>:<span class="n">call</span>_<span class="n">first</span>(_, 3, __<span class="n">ensure</span>_<span class="n">process</span>)
 
-<span class="c">// trait is function which can operate on types</span>
-<span class="c">// traits have global side effects</span>
-<span class="c">// they used to specify behavior for one or more types</span>
-<span class="c">// and can be applied to different set of types with &#39;instance&#39; expression</span>
-<span class="c">// this is anonymous trait. They are used just for convinience to avoid typing long type names</span>
+<span class="cm">// trait is function which can operate on types</span>
+<span class="cm">// traits have global side effects</span>
+<span class="cm">// they used to specify behavior for one or more types</span>
+<span class="cm">// and can be applied to different set of types with &#39;instance&#39; expression</span>
+<span class="cm">// this is anonymous trait. They are used just for convinience to avoid typing long type names</span>
 
 <span class="k">trait</span> (<span class="n">T</span>) <span class="k">for</span> <span class="n">State</span> =
-    <span class="c">// T means State</span>
+    <span class="cm">// T means State</span>
     <span class="k">def</span> <span class="n">close</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) =
         <span class="n">process</span>:<span class="n">kill</span>(<span class="n">pid</span>(<span class="n">s</span>), 0)
 
-    <span class="c">// all ensure decorators assert that state process is not dead</span>
+    <span class="cm">// all ensure decorators assert that state process is not dead</span>
     @<span class="n">ensure</span>3
     <span class="k">def</span> <span class="n">put</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">key</span>, <span class="n">value</span>) =
-        <span class="c">// sending tuple to process</span>
-        <span class="c">// #put is symbol specifiing type of action</span>
+        <span class="cm">// sending tuple to process</span>
+        <span class="cm">// #put is symbol specifiing type of action</span>
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#put,</span> <span class="n">key</span>, <span class="n">value</span>)
-        <span class="c">// returning itself</span>
+        <span class="cm">// returning itself</span>
         <span class="n">s</span>
 
     @<span class="n">ensure</span>2
     <span class="k">def</span> <span class="n">at</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">key</span>) =
-        <span class="c">// sending request</span>
+        <span class="cm">// sending request</span>
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#at,</span> <span class="n">self</span>(), <span class="n">key</span>)
-        <span class="c">// and receiving reply</span>
+        <span class="cm">// and receiving reply</span>
         <span class="k">receive</span> (<span class="s">#at,</span> <span class="n">val</span>) = <span class="n">val</span>
 
     @<span class="n">ensure</span>1
@@ -367,19 +367,19 @@
     <span class="k">def</span> <span class="n">arza</span>:<span class="n">is</span>_<span class="n">empty</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) = <span class="n">len</span>(<span class="n">s</span>) &gt; 0
 
 
-<span class="c">// this is actual process</span>
+<span class="cm">// this is actual process</span>
 <span class="k">fun</span> _<span class="n">loop</span>(<span class="n">data</span>) =
-    <span class="c">// this block will receive messages from other processes</span>
+    <span class="cm">// this block will receive messages from other processes</span>
     <span class="k">receive</span>
         | (<span class="s">#set,</span> <span class="n">new</span>_<span class="n">data</span>) =
-            <span class="c">// just replace data</span>
+            <span class="cm">// just replace data</span>
             _<span class="n">loop</span>(<span class="n">new</span>_<span class="n">data</span>)
 
         | (<span class="s">#get,</span> <span class="n">pid</span>) =
-            <span class="c">// receiving action with receiver</span>
-            <span class="c">// replying to receiver</span>
+            <span class="cm">// receiving action with receiver</span>
+            <span class="cm">// replying to receiver</span>
             <span class="n">pid</span> ! (<span class="s">#get,</span> <span class="n">data</span>)
-            <span class="c">// going to loop again because otherwise process will be finished</span>
+            <span class="cm">// going to loop again because otherwise process will be finished</span>
             _<span class="n">loop</span>(<span class="n">data</span>)
 
         | (<span class="s">#at,</span> <span class="n">pid</span>, <span class="n">key</span>) =
@@ -387,7 +387,7 @@
             _<span class="n">loop</span>(<span class="n">data</span>)
 
         | (<span class="s">#has,</span> <span class="n">pid</span>, <span class="n">key</span>) =
-            <span class="c">// calling has generic func  as has operator</span>
+            <span class="cm">// calling has generic func  as has operator</span>
             <span class="n">pid</span> ! (<span class="s">#has,</span> <span class="n">data</span> `<span class="n">has</span>` <span class="n">key</span>)
             _<span class="n">loop</span>(<span class="n">data</span>)
 
@@ -400,16 +400,16 @@
         | (<span class="s">#del,</span> <span class="n">key</span>) = _<span class="n">loop</span>(<span class="n">del</span>(<span class="n">data</span>, <span class="n">key</span>))
         | <span class="n">msg</span> = <span class="n">throw</span> (<span class="s">#InvalidMessage,</span> <span class="n">msg</span>)
 
-<span class="c">//constructor function</span>
-/*
-    <span class="n">you</span> <span class="n">can</span> <span class="n">use</span> <span class="n">this</span> <span class="n">module</span> <span class="n">like</span>
-    <span class="k">import</span> <span class="n">state</span>
-    <span class="k">let</span> <span class="n">s</span> = <span class="n">state</span>:<span class="n">new</span>({<span class="n">x</span>=1, <span class="n">y</span>=2, <span class="n">z</span>=3})
-    <span class="n">updates</span> <span class="n">state</span> <span class="n">structure</span>
-    <span class="n">s</span>.{<span class="n">x</span>=2}
-    <span class="n">replaces</span> <span class="n">state</span> <span class="n">value</span>
-    <span class="n">s</span>:=1
-*/
+<span class="cm">//constructor function</span>
+<span class="cm">/*</span>
+<span class="cm">    you can use this module like</span>
+<span class="cm">    import state</span>
+<span class="cm">    let s = state:new({x=1, y=2, z=3})</span>
+<span class="cm">    updates state structure</span>
+<span class="cm">    s.{x=2}</span>
+<span class="cm">    replaces state value</span>
+<span class="cm">    s:=1</span>
+<span class="cm">*/</span>
 <span class="k">fun</span> <span class="n">new</span>(<span class="n">data</span>) =
     <span class="k">let</span> <span class="n">pid</span> = <span class="n">spawn</span>(_<span class="n">loop</span>, <span class="n">data</span>)
     <span class="n">State</span>(<span class="n">pid</span>)
@@ -420,20 +420,20 @@
 <h2>Triple Dispatch<a class="headerlink" href="#triple-dispatch" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">import</span> <span class="n">seq</span>
 
-<span class="c">//case for triple dispatch described here https://softwareengineering.stackexchange.com/questions/291525/a-real-world-use-case-for-triple-dispatch</span>
-<span class="c">//</span>
-<span class="c">//This program represents a repository of citation information, containing books, articles and journals</span>
-<span class="c">//with action of formatting those books for consumption on demand.</span>
-<span class="c">//</span>
-<span class="c">//Let&#39;s take two approaches to formatting. National Library of Medicine (derived from the Vancouver Project)</span>
-<span class="c">//specifies citations in a particular way, mostly affecting how author names are laid out.</span>
-<span class="c">//NLM differs from American Psychological Association (APA) formatting.</span>
-<span class="c">//</span>
-<span class="c">//Also we have to publish these citations and choice of outputs are: plain text, PDF, HTML.</span>
-<span class="c">//Some of these items require different layout strategies,</span>
-<span class="c">//depending on the type of the format (APA indents following lines, NLM doesn&#39;t).</span>
+<span class="cm">//case for triple dispatch described here https://softwareengineering.stackexchange.com/questions/291525/a-real-world-use-case-for-triple-dispatch</span>
+<span class="cm">//</span>
+<span class="cm">//This program represents a repository of citation information, containing books, articles and journals</span>
+<span class="cm">//with action of formatting those books for consumption on demand.</span>
+<span class="cm">//</span>
+<span class="cm">//Let&#39;s take two approaches to formatting. National Library of Medicine (derived from the Vancouver Project)</span>
+<span class="cm">//specifies citations in a particular way, mostly affecting how author names are laid out.</span>
+<span class="cm">//NLM differs from American Psychological Association (APA) formatting.</span>
+<span class="cm">//</span>
+<span class="cm">//Also we have to publish these citations and choice of outputs are: plain text, PDF, HTML.</span>
+<span class="cm">//Some of these items require different layout strategies,</span>
+<span class="cm">//depending on the type of the format (APA indents following lines, NLM doesn&#39;t).</span>
 
-<span class="c">// Declaring interfaces</span>
+<span class="cm">// Declaring interfaces</span>
 
 <span class="k">interface</span> <span class="n">Repo</span>(<span class="n">I</span>) =
     <span class="n">add</span>(<span class="n">I</span>, <span class="n">item</span>)
@@ -450,7 +450,7 @@
 <span class="k">fun</span> <span class="n">format</span>_<span class="n">books</span>(<span class="n">library</span>) =
     <span class="k">let</span> <span class="n">books</span> = <span class="n">seq</span>:<span class="n">map</span>(<span class="n">library</span>.<span class="n">books</span>, <span class="n">format</span>)
 
-<span class="c">// Declaring types</span>
+<span class="cm">// Declaring types</span>
 
 <span class="k">type</span> <span class="n">Item</span>(<span class="n">author</span>, <span class="n">name</span>)
 <span class="k">type</span> <span class="n">Record</span>(<span class="n">id</span>, <span class="n">item</span>)
@@ -471,7 +471,7 @@
     <span class="k">init</span>(<span class="n">l</span>) =
         <span class="n">l</span>.{<span class="n">items</span> = []}
 
-<span class="c">// Defining generic functions</span>
+<span class="cm">// Defining generic functions</span>
 
 <span class="k">def</span> <span class="n">add</span>(<span class="n">l</span> <span class="n">of</span> <span class="n">Library</span>, <span class="n">item</span>) =
     <span class="k">let</span> <span class="n">id</span> = <span class="n">l</span>._<span class="n">id</span> + 1
@@ -481,15 +481,15 @@
     }
 
 
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="c">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="c">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="c">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
 
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="c">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="c">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="c">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
 
-<span class="c">// and so on and so on</span>
+<span class="cm">// and so on and so on</span>
 </pre></div>
 </div>
 </div>

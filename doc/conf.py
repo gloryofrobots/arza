@@ -260,7 +260,7 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
-from pygments.lexer import RegexLexer, include
+from pygments.lexer import RegexLexer
 from pygments import token
 from sphinx.highlighting import lexers
 def word(s):
@@ -270,9 +270,11 @@ class BCLLexer(RegexLexer):
     name = 'arza'
 
     tokens = {
-        'comments': [
-            (r'/\*.*?\*/', token.Comment),
-            (r'//.*?\n', token.Comment),
+        'comment': [
+            (r'[^*/]', token.Comment.Multiline),
+            (r'/\*', token.Comment.Multiline, '#push'),
+            (r'\*/', token.Comment.Multiline, '#pop'),
+            (r'[*/]', token.Comment.Multiline)
         ],
         'string': [
             (r'[^"\\]+', token.String),
@@ -280,7 +282,8 @@ class BCLLexer(RegexLexer):
             ('"', token.String, '#pop'),
         ],
         'root': [
-            include('comments'),
+            (r'/\*', token.Comment.Multiline, 'comment'),
+            (r'//.*?$', token.Comment.Multiline),
             word("for"),
             word("if"),
             word('if'),
@@ -304,12 +307,13 @@ class BCLLexer(RegexLexer):
             word('init'),
             word('in'),
             word('try'),
+            word('throw'),
             word('catch'),
             word('finally'),
             (r'[a-zA-Z]', token.Name), # 
             ('"', token.String, 'string'),
             ('#[^\s]+', token.String),
-            (r'\s', token.Text),
+            # (r'\s', token.Text),
             # (r'[^(]+', token.Text),
             (r'[^a-zA-Z]', token.Text), # 
         ]
