@@ -213,6 +213,8 @@ def isempty(obj):
 Traits
 """
 
+def dispatched(process, obj):
+    return obj._dispatch_(process)
 
 def get_type(process, obj):
     return obj._type_(process)

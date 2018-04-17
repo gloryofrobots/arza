@@ -2,10 +2,11 @@ import io
 import affirm
 import seq
 import list
+import generic
 include tests (run as test)
+//include examples:storage (test)
 //include tests:test_coro (test as test)
 //include tests:test_process (test as test)
-//import process:lazy
 
 
 fun main() =

@@ -1,5 +1,5 @@
-Notion of Arza
-==============
+Code examples
+=============
 
 Simple game
 -----------
@@ -269,6 +269,8 @@ Mutable State
     // and can be applied to different set of types with 'instance' expression
     // this is anonymous trait. They are used just for convinience to avoid typing long type names
 
+    // generic functions at, put has specific meaning in arza because expression
+    // x.y transforms by compiler into at(x, #y) and x.{y=1} into put(x, #y, 1)
     trait (T) for State =
         // T means State
         def close(s of T) =

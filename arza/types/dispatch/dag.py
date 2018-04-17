@@ -80,7 +80,7 @@ def _check_ambiguous_methods(process, args, stack):
         sig = extract_signature(process, node[0])
         errors.append(sig)
 
-    return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+    return error.throw_3(error.Errors.SPECIALIZE_ERROR,
                          space.newstring(u"Ambiguous method resolution"), args, space.newlist(errors))
 
 

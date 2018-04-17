@@ -104,7 +104,7 @@ class InterfaceDiscriminator(Discriminator):
                and other.interface == self.interface
 
     def _evaluate(self, process, arg):
-        t = api.get_type(process, arg)
+        t = api.dispatched(process, arg)
         api.d.pbp(10, "type", space.isinterface(arg), t, t.interfaces, t.interfaces_table, self.interface)
 
         if space.isinterface(arg):
@@ -152,17 +152,17 @@ class TypeDiscriminator(Discriminator):
                 return WEIGHT_FOUND
 
 
-        _type = api.get_type(process, arg)
+        _type = api.dispatched(process, arg)
         # n = api.to_s(_type.name)
         i = 0
         while space.isdatatype(_type):
             if api.equal_b(_type, self.type):
-                # print "FOUND", n, i, _type
+                # print "FOUND", i, self.type, _type
                 return WEIGHT_FOUND + i
             _type = _type.supertype
             i += 1
 
-        # print "NOTFOUND", n, self.type
+        # print "NOTFOUND", self.type, _type
         return WEIGHT_NOT_FOUND
 
     def __str__(self):

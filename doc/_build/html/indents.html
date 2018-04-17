@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Indentantions and layouts &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Notion of Arza" href="examples.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="examples.html" title="Notion of Arza"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="indentantions-and-layouts">
+<h1>Indentantions and layouts<a class="headerlink" href="#indentantions-and-layouts" title="Permalink to this headline">¶</a></h1>
+<p>Arza is indentation &#8220;aware&#8221; language</p>
+<p>If you are familiar with a language like Python that also is whitespace sensitive,
+be aware that that the rules for indentation in Arza are subtly different.</p>
+<p>Arza syntax very similar to F# light syntax where indentation
+used as statement and expression delimiter but instead of using simple
+dedents and indents like in Python, Arza uses code layouts to determine block borders</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// layout is similar to pythons four space indent</span>
+<span class="k">fun</span> <span class="n">f</span>(<span class="n">x</span>) =
+    1
+    2
+
+<span class="cm">// layout begins straight after = token</span>
+<span class="k">fun</span> <span class="n">f</span>(<span class="n">x</span>) = 1
+           2
+
+<span class="cm">// this would be a syntax error</span>
+<span class="k">fun</span> <span class="n">f</span>(<span class="n">x</span>) = 1
+    2
+
+<span class="k">if</span> <span class="n">x</span> == 1 <span class="k">then</span>
+     2
+<span class="k">else</span> 3
+
+<span class="k">fun</span> <span class="n">add</span>
+| (1, 2) = 3
+| (<span class="n">x</span>, <span class="n">y</span>) = <span class="n">x</span> + <span class="n">y</span>
+
+<span class="k">match</span> <span class="n">x</span>
+| <span class="n">True</span> = <span class="n">False</span>
+| <span class="n">False</span> =
+     <span class="n">True</span>
+</pre></div>
+</div>
+<p>There are special rules for operators to continue expressions from line above,
+which differs from F# syntax and more similar to Ruby syntax</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">fun</span> <span class="n">f</span>() =
+    1 +
+    2 +
+    3
+    <span class="cm">// returns 6</span>
+</pre></div>
+</div>
+<p>However this technique creates problem with ambidextra operators
+(operators having have both prefix and infix binding powers)
+Examples of such operators are - and (</p>
+<p>To resolve parse conflicts Arza uses new lines as terminators</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">fun</span> <span class="n">f</span>() =
+    <span class="cm">//lambda expression</span>
+    ((<span class="n">x</span>, <span class="n">y</span>) -&gt; <span class="n">x</span> + <span class="n">y</span>)
+    <span class="cm">// parser treats `(` as prefix expression because of new line</span>
+    (1, 41)
+
+    <span class="n">f</span>() == (1, 41)
+
+<span class="k">fun</span> <span class="n">f</span>2() =
+    <span class="cm">// parser treats `(` as infix expression and interprets</span>
+    <span class="cm">// this expression as call to lambda with arguments (1, 41)</span>
+    ((<span class="n">x</span>, <span class="n">y</span>) -&gt; <span class="n">x</span> + <span class="n">y</span>)(1, 41)
+
+<span class="n">f</span>2() == 42
+</pre></div>
+</div>
+<p>If you do not like to use indentation aware syntax at all, you can
+enclose any block in ( and )</p>
+<p>You can enclose in ( and ) almost any syntax construct and use  free code layout
+without worrying about whitespaces.</p>
+<div class="highlight-arza"><div class="highlight"><pre>(<span class="k">fun</span> <span class="n">f</span>() =
+        1
++
+2 + 3)
+
+(<span class="k">interface</span> <span class="n">Map</span>
+    <span class="n">put</span>
+        (<span class="n">key</span>, <span class="n">value</span>, <span class="n">Map</span>)
+<span class="n">at</span>
+    (<span class="n">key</span>,
+    <span class="n">Map</span>)
+)
+</pre></div>
+</div>
+<p>If you need to use nested statements inside such free layout you must enclose each of them in ()</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// Nine billion names of God the Integer</span>
+<span class="k">fun</span> <span class="n">nbn</span> () =
+    <span class="n">string</span>:<span class="n">join</span>(
+        <span class="n">seq</span>:<span class="n">map</span>(
+            <span class="k">fun</span>(<span class="n">n</span>) =
+                <span class="n">string</span>:<span class="n">join</span>_<span class="n">cast</span>(
+                <span class="n">seq</span>:<span class="n">map</span>(
+                        (<span class="k">fun</span> (<span class="n">g</span>) =
+                            <span class="cm">//let in block enclosed in ()</span>
+                            (<span class="k">let</span>
+                                (<span class="k">fun</span> _<span class="n">loop</span> (<span class="n">n</span>, <span class="n">g</span>) =
+                                    <span class="cm">// if block enclosed in ()</span>
+                                    (<span class="k">if</span> <span class="n">g</span> == 1 <span class="n">or</span> <span class="n">n</span> &lt; <span class="n">g</span> <span class="k">then</span> 1
+                                    <span class="k">else</span>
+                                        <span class="n">seq</span>:<span class="n">foldl</span>(
+                                            <span class="cm">// fun block enclosed in ()</span>
+                                            (<span class="k">fun</span> (<span class="n">q</span>, <span class="n">res</span>) =
+                                                <span class="cm">// if block enclosed in ()</span>
+                                                (<span class="k">if</span> <span class="n">q</span> &gt; <span class="n">n</span> - <span class="n">g</span>  <span class="k">then</span>
+                                                    <span class="n">res</span>
+                                                <span class="k">else</span>
+                                                    <span class="n">res</span> + _<span class="n">loop</span>(<span class="n">n</span>-<span class="n">g</span>, <span class="n">q</span>)
+                                                )
+                                            ),
+                                            1,
+                                            <span class="n">list</span>:<span class="n">range</span>(2, <span class="n">g</span>)
+                                        )
+                                    )
+                                )
+                            <span class="k">in</span> _<span class="n">loop</span>(<span class="n">n</span>, <span class="n">g</span>)
+                            )
+                        ),
+                        <span class="n">list</span>:<span class="n">range</span>(1, <span class="n">n</span>)
+                ),
+                <span class="s">&quot; &quot;</span>
+                ),
+        <span class="n">list</span>:<span class="n">range</span>(1, 25)
+        ),
+        <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+    )
+</pre></div>
+</div>
+<p>However because it is common pattern to use if or match expression inside function call
+there are special support for such syntax</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="n">add</span>(<span class="k">match</span> <span class="n">x</span>
+     | <span class="s">#one</span> = 1
+     | <span class="s">#two</span> = 2
+   <span class="cm">//here comma terminates free layout and there are no need to enclose match in ()</span>
+   , 2)
+
+<span class="n">add</span>(<span class="k">match</span> <span class="n">x</span>
+     | <span class="s">#one</span> = 1
+     | <span class="n">val</span> <span class="n">of</span> <span class="n">Float</span> =
+        <span class="cm">// but nested expressions must be enclosed</span>
+        (<span class="k">if</span> <span class="n">val</span> &lt; 0.0 <span class="k">then</span> <span class="n">abs</span>(<span class="n">val</span>)
+        <span class="k">else</span> <span class="n">val</span>)
+   <span class="cm">//here comma terminates free layout and there are no need to enclose match in ()</span>
+   , 2)
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Notion of Arza</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/indents.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="examples.html" title="Notion of Arza"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

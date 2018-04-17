@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Notion of Arza &mdash; arza 0.1 documentation</title>
+    <title>Code examples &mdash; arza 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Types" href="types.html" />
-    <link rel="prev" title="Overview" href="overview.html" /> 
+    <link rel="prev" title="Quick tour" href="tour.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +34,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="types.html" title="Types"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="overview.html" title="Overview"
+          <a href="tour.html" title="Quick tour"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -49,8 +45,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="notion-of-arza">
-<h1>Notion of Arza<a class="headerlink" href="#notion-of-arza" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="code-examples">
+<h1>Code examples<a class="headerlink" href="#code-examples" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="simple-game">
 <h2>Simple game<a class="headerlink" href="#simple-game" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-arza"><div class="highlight"><pre><span class="cm">// This is simple battleship game</span>
@@ -314,6 +310,8 @@
 <span class="cm">// and can be applied to different set of types with &#39;instance&#39; expression</span>
 <span class="cm">// this is anonymous trait. They are used just for convinience to avoid typing long type names</span>
 
+<span class="cm">// generic functions at, put has specific meaning in arza because expression</span>
+<span class="cm">// x.y transforms by compiler into at(x, #y) and x.{y=1} into put(x, #y, 1)</span>
 <span class="k">trait</span> (<span class="n">T</span>) <span class="k">for</span> <span class="n">State</span> =
     <span class="cm">// T means State</span>
     <span class="k">def</span> <span class="n">close</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) =
@@ -584,7 +582,7 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Notion of Arza</a><ul>
+<li><a class="reference internal" href="#">Code examples</a><ul>
 <li><a class="reference internal" href="#simple-game">Simple game</a></li>
 <li><a class="reference internal" href="#mutable-state">Mutable State</a></li>
 <li><a class="reference internal" href="#triple-dispatch">Triple Dispatch</a></li>
@@ -594,14 +592,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="overview.html"
-                        title="previous chapter">Overview</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="types.html"
-                        title="next chapter">Types</a></p>
+  <p class="topless"><a href="tour.html"
+                        title="previous chapter">Quick tour</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/notion.txt"
+    <li><a href="_sources/examples.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -628,10 +623,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="types.html" title="Types"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="overview.html" title="Overview"
+          <a href="tour.html" title="Quick tour"
              >previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>

@@ -1,6 +1,6 @@
 import io
 import affirm
-import generics
+import generic
 
 /////////////////////////////////////////////
 

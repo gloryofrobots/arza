@@ -1284,7 +1284,8 @@ def _parse_def_signature(parser, token):
                 _type = None
 
             if not _type:
-                _type = nodes.create_void_node(get_node_token(arg))
+                _type = nodes.create_name_node_s(token, lang_names.TANY)
+                # _type = nodes.create_void_node(get_node_token(arg))
             else:
                 _type = nodes.create_name_node_s(token, _type)
             dispatch.append(_type)

@@ -1,7 +1,9 @@
 import examples:battleship
 import examples:object
+import examples:storage
 
 
 fun test() =
     battleship:test()
     object:test()
+    storage:test()

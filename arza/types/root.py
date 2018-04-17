@@ -147,6 +147,9 @@ class W_Root:
     def _call_(self, process, args):
         return not_implemented_error(u"_call_", self, args)
 
+    def _dispatch_(self, process):
+        return self._type_(process)
+
     def _type_(self, process):
         return not_implemented_error(u"_type_", self)
 

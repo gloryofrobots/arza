@@ -89,7 +89,7 @@ class W_Generic(W_Hashable):
         #     if res is not None:
         #         return res
         if len(self.dispatch_indexes) == 0:
-            return error.throw_2(error.Errors.METHOD_INVOKE_ERROR,
+            return error.throw_2(error.Errors.INVOKE_ERROR,
                                  space.newstring(u"Generic defined without interfaces"),
                                  self)
 
@@ -98,7 +98,7 @@ class W_Generic(W_Hashable):
             arg = args[i]
             cache_mask = self.cache_mask[i]
             if cache_mask == 0:
-                _type = api.get_type(process, arg)
+                _type = api.dispatched(process, arg)
             else:
                 _type = arg
             _types.append(_type)
@@ -108,7 +108,7 @@ class W_Generic(W_Hashable):
         if space.isvoid(cache_method):
             method = self.dag.evaluate(process, args)
             if not method:
-                return error.throw_4(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
+                return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR,
                                      self,
                                      tuples.types_tuple(process, args),
                                      args,
@@ -188,7 +188,7 @@ class W_Generic(W_Hashable):
     def _make_method_node(self, process, sigs):
         sig = sigs[0]
         if len(sigs) != 1:
-            return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+            return error.throw_3(error.Errors.SPECIALIZE_ERROR,
                                  self,
                                  space.newlist(sigs),
                                  space.newstring(u"Ambiguous generic specialisation"))
@@ -206,9 +206,9 @@ def _make_signature(process, gf, types, method, pattern, outers):
 
     _types = []
     for i, _type in enumerate(types):
-        if not space.isvoid(_type):
+        if not space.isvoid(_type) and _type is not any:
             if i not in gf.dispatch_indexes:
-                return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+                return error.throw_3(error.Errors.SPECIALIZE_ERROR,
                                      gf,
                                      space.newstring(u"No interface defined for argument in position"), space.newint(i))
             else:
@@ -218,13 +218,13 @@ def _make_signature(process, gf, types, method, pattern, outers):
 
     _types = space.newlist(_types)
     if gf.dispatch_arity != api.length_i(types):
-        return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
+        return error.throw_2(error.Errors.SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Generic function arity inconsistent with specialisation arguments"))
 
     if gf.arity != method.arity:
         # print gf, method, gf.arity, method.arity
-        return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
+        return error.throw_2(error.Errors.SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
     return newsignature(process, _types, method, pattern, outers)
@@ -277,7 +277,7 @@ def generic(process, name, signature):
     arity = api.length_i(signature)
 
     if arity == 0:
-        error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
+        error.throw_1(error.Errors.SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
 
     cache_mask = []
     args = []
@@ -288,7 +288,7 @@ def generic(process, name, signature):
             if api.equal_b(argtype, space.newsymbol_s(process, lang_names.SVALUEOF)):
                 argcache = 1
             else:
-                return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR,
+                return error.throw_1(error.Errors.SPECIALIZE_ERROR,
                                      space.newstring(u"Invalid generic signature param"))
         else:
             argcache = 0

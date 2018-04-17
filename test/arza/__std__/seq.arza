@@ -36,7 +36,6 @@ fun foreach(sq, f)
       f(hd)
       foreach(tl, f)
 
-
 fun enum_to(last of Int, fn) = enum(0, last, fn)
 
 
@@ -256,6 +255,10 @@ fun equal
 
 
 //BUILDERS/////////////////////////////////////////////////////////////
+
+fun consmany(sq, value, count) when count > 0
+    | (sq, value, 0) = sq
+    | (sq, value, x) = consmany(value::sq, value, x - 1)
 
 fun concat(l1, l2) =
     foldr(l1, l2, `::`)

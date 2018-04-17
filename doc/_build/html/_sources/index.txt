@@ -9,11 +9,13 @@ Welcome to arza's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    overview
-   notion
-   types
+   indents
+   building_blocks
+   tour
+   examples
 
 
 

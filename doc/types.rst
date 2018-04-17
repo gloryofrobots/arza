@@ -1,120 +1,15 @@
 Types
 =====
 
-Integers
---------
+In Arza programmer can define abstract and record types
 
-.. code-block:: none
+Abstract types
+--------------
 
-   1 -42 100012020202
+.. code-block:: arza
 
+   type None
+   type Bool
 
-Floats
-------
-
-.. code-block:: none
-
-   2.02020330 -0.0000000001
-
-
-Strings
--------
-
-.. code-block:: none
-
-   "I am string"
-
-   """
-   I a
-                m
-          multiline string
-   """
-
-
-Symbols
--------
-
-.. code-block:: none
-
-    #atomic_string_created_onLyOnce
-
-
-Tuples
-------
-
-.. code-block:: none
-               
-    // Tuples are always created inside parens, so you can't write just 1,2,3
-    () (1,) (1,2,3)
-
-
-Lists
------
-
-.. code-block:: none
-               
-   [] [1] [1,2,3] 1::2::3::[]
-
-
-Maps
------
-
-.. code-block:: none
-               
-    {} {x=1} {x=1, y=(2,3), z=f(), n=(fun()=1)}
-
-
-Types
------
-
-.. code-block:: none
-               
-    // Abstract singleton type without ability to create instances
-    type None
-    type Bool
-    type True is Bool
-    type False is Bool
-    //record type
-    type Vec2(x,y)
-    type Vec3 is Vec2(...Vec2, z)
-
-Records
--------
-
-.. code-block:: none
-               
-    // Records are instances of record types
-    // To create instance use type like a function
-    let v2 = Vec2(1, 2)
-    let v3 = Vec3(1, 2, 4)
-
-Functions
----------
-
-.. code-block:: none
-               
-    fun add3 (x, y, z) = x + y + z
-    fun (a, b) = a not b
-    // lambdas
-    (x, y, z) -> x + y + z
-    // equivalent to single element tuple (x,) -> x
-    x -> x
-    // tuple from tuple
-    ((x,y,z),) -> x + y + z
-
-
-Intefaces and generic functions
--------------------------------
-
-.. code-block:: none
-               
-   // following code block will create interface Num
-   // and generic functions -, +, *, /, mod, negate
-   interface Num(I) =
-       -(I, I)
-       +(I, I)
-       *(I, I)
-       /(I, I)
-       mod(I, I)
-       // unary -
-       negate(I)
+Such types can not create instances and 
+and record types

@@ -184,6 +184,14 @@ def _simplify_def(compiler, code, node):
     else:
         outers_list = nodes.create_empty_list_node(nodes.node_token(pattern))
 
+    # sig = []
+    # _any = nodes.create_name_node_s(nodes.node_token(node), lang_names.TANY)
+    # for arg in signature:
+    #     if space.isvoid(arg):
+    #         sig.append(_any)
+    #     else:
+    #         sig.append(arg)
+
     ast = nodes.create_literal_node(nodes.node_token(pattern), pattern)
     return func, signature, method, ast, outers_list
 

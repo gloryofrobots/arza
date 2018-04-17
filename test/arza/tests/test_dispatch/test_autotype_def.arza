@@ -1,6 +1,6 @@
 import io
 import affirm
-import generics
+import generic
 
 
 interface F =
@@ -18,7 +18,7 @@ def f(False, """zzz""", 'x') = 42
 
 fun test() =
     let
-        types = generics:get_types(f)
+        types = generic:get_types(f)
     in
         affirm:is_equal(
                 types,

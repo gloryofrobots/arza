@@ -205,6 +205,9 @@ class W_AbstractType(W_BaseDatatype):
     def __init__(self, name, supertype):
         W_BaseDatatype.__init__(self, name, supertype, plist.empty())
 
+    def _dispatch_(self, process):
+        return self
+
     def _type_(self, process):
         return process.std.types.Datatype
 
