@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Import and Export &mdash; arza 0.1 documentation</title>
+    <title>Import and export &mdash; arza 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Quick tour" href="tour.html" />
-    <link rel="prev" title="Building blocks" href="building_blocks.html" /> 
+    <link rel="next" title="Metaprogramming" href="meta.html" />
+    <link rel="prev" title="Working with immutable state" href="immutable.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="tour.html" title="Quick tour"
+          <a href="meta.html" title="Metaprogramming"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="building_blocks.html" title="Building blocks"
+          <a href="immutable.html" title="Working with immutable state"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -50,10 +50,10 @@
           <div class="body">
             
   <div class="section" id="import-and-export">
-<h1>Import and Export<a class="headerlink" href="#import-and-export" title="Permalink to this headline">¶</a></h1>
+<h1>Import and export<a class="headerlink" href="#import-and-export" title="Permalink to this headline">¶</a></h1>
 <p>Arza uses files as modules. Modules in Arza could be used as top level objects with methods but
 most of the time there are no need for this. Instead arza treats modules as namespaces or mixins.
-You include objects  from one module to another and give to this objects specific prefix to avoid conflicts</p>
+You include names from one module to another and give to this names specific prefix to avoid conflicts</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="cm">// import qualified names (prefixed by module name)</span>
 <span class="k">import</span> <span class="n">seq</span>
 <span class="k">import</span> <span class="n">io</span>
@@ -166,18 +166,18 @@ Relative imports are not possible. Modules are loaded only once.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Import and Export</a><ul>
+<li><a class="reference internal" href="#">Import and export</a><ul>
 <li><a class="reference internal" href="#loading-order">Loading Order</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="building_blocks.html"
-                        title="previous chapter">Building blocks</a></p>
+  <p class="topless"><a href="immutable.html"
+                        title="previous chapter">Working with immutable state</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="tour.html"
-                        title="next chapter">Quick tour</a></p>
+  <p class="topless"><a href="meta.html"
+                        title="next chapter">Metaprogramming</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/import.txt"
@@ -207,10 +207,10 @@ Relative imports are not possible. Modules are loaded only once.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="tour.html" title="Quick tour"
+          <a href="meta.html" title="Metaprogramming"
              >next</a> |</li>
         <li class="right" >
-          <a href="building_blocks.html" title="Building blocks"
+          <a href="immutable.html" title="Working with immutable state"
              >previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>

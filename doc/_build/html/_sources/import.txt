@@ -1,11 +1,11 @@
-Import and Export
+Import and export
 =================
 
 .. highlight:: arza
 
 Arza uses files as modules. Modules in Arza could be used as top level objects with methods but
 most of the time there are no need for this. Instead arza treats modules as namespaces or mixins.
-You include objects  from one module to another and give to this objects specific prefix to avoid conflicts
+You include names from one module to another and give to this names specific prefix to avoid conflicts
 
 
 ::

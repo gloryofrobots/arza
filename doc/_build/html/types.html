@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User Types and subtyping &mdash; arza 0.1 documentation</title>
+    <title>User types and subtyping &mdash; arza 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -50,7 +50,7 @@
           <div class="body">
             
   <div class="section" id="user-types-and-subtyping">
-<h1>User Types and subtyping<a class="headerlink" href="#user-types-and-subtyping" title="Permalink to this headline">¶</a></h1>
+<h1>User types and subtyping<a class="headerlink" href="#user-types-and-subtyping" title="Permalink to this headline">¶</a></h1>
 <p>In Arza programmer can define abstract and concrete types</p>
 <div class="section" id="abstract-types">
 <h2>Abstract types<a class="headerlink" href="#abstract-types" title="Permalink to this headline">¶</a></h2>
@@ -75,18 +75,18 @@ For example in ML family languages one could write</p>
 <span class="cm">// now use this type as pattern</span>
 <span class="cm">// all clauses will be successful here</span>
 <span class="k">match</span> <span class="n">Just</span>(1)
-| <span class="n">maybe</span> <span class="n">of</span> <span class="n">Maybe</span>
-| <span class="n">maybe</span> <span class="n">of</span> <span class="n">Just</span>
-| {<span class="n">val</span>} <span class="n">of</span> <span class="n">Just</span>
-| {<span class="n">val</span>=1 <span class="n">as</span> <span class="n">value</span>} <span class="n">of</span> <span class="n">Just</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Maybe</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Just</span>
+| {<span class="n">val</span>} <span class="k">of</span> <span class="n">Just</span>
+| {<span class="n">val</span>=1 <span class="n">as</span> <span class="n">value</span>} <span class="k">of</span> <span class="n">Just</span>
 | <span class="n">Just</span>(<span class="n">val</span>)
 | <span class="n">Just</span>(1)
 | <span class="n">Just</span>(<span class="n">val</span>=1)
 | <span class="n">Just</span>(<span class="n">val</span>=1 <span class="n">as</span> <span class="n">value</span>)
 
 <span class="k">match</span> <span class="n">Nothing</span>
-| <span class="n">maybe</span> <span class="n">of</span> <span class="n">Maybe</span>
-| <span class="n">maybe</span> <span class="n">of</span> <span class="n">Nothing</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Maybe</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Nothing</span>
 | <span class="k">type</span> <span class="n">Nothing</span> <span class="cm">//need to distinguish between name and empy typeS</span>
 <span class="cm">// TODO make simpler type literal</span>
 | <span class="n">x</span> <span class="n">when</span> <span class="n">x</span> == <span class="n">Nothing</span>
@@ -124,7 +124,7 @@ can create custom initalizer. Such initializer is function defined with <tt clas
 If any of the fields will not be set then exception will be thrown</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">type</span> <span class="n">Library</span>(<span class="n">available</span>_<span class="n">books</span>, <span class="n">loaned</span>_<span class="n">books</span>)
      <span class="cm">//initializer</span>
-     <span class="k">init</span>(<span class="n">lib</span>, <span class="n">books</span> <span class="n">of</span> <span class="n">List</span>) =
+     <span class="k">init</span>(<span class="n">lib</span>, <span class="n">books</span> <span class="k">of</span> <span class="n">List</span>) =
           <span class="cm">// here lib variable is an empty record with uninitialized fields</span>
           <span class="cm">// returning modified copy of lib</span>
           <span class="n">lib</span>.{<span class="n">available</span>_<span class="n">books</span> = <span class="n">books</span>, <span class="n">loaned</span>_<span class="n">books</span>}
@@ -157,13 +157,13 @@ will be added to fields of would be subtype</p>
 <span class="k">type</span> <span class="n">Vec</span>3 <span class="k">is</span> <span class="n">Vec</span>2 (<span class="n">z</span>)
 <span class="cm">// Vec3 will have fields(x, y, z)</span>
 <span class="cm">// defining generic method</span>
-<span class="k">def</span> <span class="n">sum</span>(<span class="n">v</span> <span class="n">of</span> <span class="n">Vec</span>2) = <span class="n">v</span>.<span class="n">x</span> + <span class="n">v</span>.<span class="n">y</span>
+<span class="k">def</span> <span class="n">sum</span>(<span class="n">v</span> <span class="k">of</span> <span class="n">Vec</span>2) = <span class="n">v</span>.<span class="n">x</span> + <span class="n">v</span>.<span class="n">y</span>
 <span class="k">let</span> <span class="n">v</span>2 = <span class="n">Vec</span>2(1, 2)
 <span class="k">let</span> <span class="n">v</span>3 = <span class="n">Vec</span>2(1, 2, 3)
 <span class="cm">// because sum not defined for Vec3</span>
 <span class="n">sum</span>(<span class="n">v</span>2) == <span class="n">sum</span>(<span class="n">v</span>3)
 <span class="cm">//but after</span>
-<span class="k">def</span> <span class="n">sum</span>(<span class="n">v</span> <span class="n">of</span> <span class="n">Vec</span>3) = <span class="n">v</span>.<span class="n">x</span> + <span class="n">v</span>.<span class="n">y</span> + <span class="n">v</span>.<span class="n">z</span>
+<span class="k">def</span> <span class="n">sum</span>(<span class="n">v</span> <span class="k">of</span> <span class="n">Vec</span>3) = <span class="n">v</span>.<span class="n">x</span> + <span class="n">v</span>.<span class="n">y</span> + <span class="n">v</span>.<span class="n">z</span>
 <span class="n">sum</span>(<span class="n">v</span>3) == 6 != <span class="n">sum</span>(<span class="n">v</span>2)
 </pre></div>
 </div>
@@ -195,7 +195,7 @@ field declaration</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">User Types and subtyping</a><ul>
+<li><a class="reference internal" href="#">User types and subtyping</a><ul>
 <li><a class="reference internal" href="#abstract-types">Abstract types</a></li>
 <li><a class="reference internal" href="#concrete-types">Concrete types</a></li>
 <li><a class="reference internal" href="#subtyping">Subtyping</a></li>

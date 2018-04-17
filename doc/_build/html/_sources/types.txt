@@ -1,4 +1,4 @@
-User Types and subtyping
+User types and subtyping
 ========================
 
 .. highlight:: arza
