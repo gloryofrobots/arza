@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Quick tour" href="tour.html" />
+    <link rel="next" title="Conditions and pattern matching" href="flow.html" />
     <link rel="prev" title="Indentantions and layouts" href="indents.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="tour.html" title="Quick tour"
+          <a href="flow.html" title="Conditions and pattern matching"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="indents.html" title="Indentantions and layouts"
@@ -51,6 +51,12 @@
             
   <div class="section" id="building-blocks">
 <h1>Building blocks<a class="headerlink" href="#building-blocks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="booleans">
+<h2>Booleans<a class="headerlink" href="#booleans" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-arza"><div class="highlight"><pre><span class="n">True</span> <span class="n">False</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="integers">
 <h2>Integers<a class="headerlink" href="#integers" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-arza"><div class="highlight"><pre>1 -42 100012020202
@@ -96,7 +102,7 @@
 </div>
 <div class="section" id="maps">
 <h2>Maps<a class="headerlink" href="#maps" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-arza"><div class="highlight"><pre>{} {<span class="n">x</span>=1} {<span class="n">x</span>=1, <span class="n">y</span>=(2,3), <span class="n">z</span>=<span class="n">f</span>(), <span class="n">n</span>=(<span class="k">fun</span>()=1)}
+<div class="highlight-arza"><div class="highlight"><pre>{} {<span class="n">x</span>=1} {<span class="n">x</span>=1, <span class="n">y</span>=(2,3), <span class="n">z</span>=<span class="n">f</span>(), (1+1)=(<span class="k">fun</span>()=1)}
 </pre></div>
 </div>
 </div>
@@ -161,6 +167,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Building blocks</a><ul>
+<li><a class="reference internal" href="#booleans">Booleans</a></li>
 <li><a class="reference internal" href="#integers">Integers</a></li>
 <li><a class="reference internal" href="#floats">Floats</a></li>
 <li><a class="reference internal" href="#strings">Strings</a></li>
@@ -180,8 +187,8 @@
   <p class="topless"><a href="indents.html"
                         title="previous chapter">Indentantions and layouts</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="tour.html"
-                        title="next chapter">Quick tour</a></p>
+  <p class="topless"><a href="flow.html"
+                        title="next chapter">Conditions and pattern matching</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/building_blocks.txt"
@@ -211,7 +218,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="tour.html" title="Quick tour"
+          <a href="flow.html" title="Conditions and pattern matching"
              >next</a> |</li>
         <li class="right" >
           <a href="indents.html" title="Indentantions and layouts"

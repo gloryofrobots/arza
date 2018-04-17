@@ -1081,8 +1081,5 @@ Module search path would look something like  [BASEDIR, STD, ARZASTD] where
 * ARZASTD = environment variable ARZASTD which must contain path to global stdlib. If ARZASTD is empty, all required modules must be in STD directory
 
 #### Loading order
-* prelude.arza. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
-* stdlib modules used by runtime (derive.arza, bool.arza, num.arza, bit.arza, env.arza, string.arza, symbol.arza, vector.arza, list.arza, function.arza, fiber.arza, trait.arza, tuple.arza, map.arza, seq.arza, lazy.arza, datatype.arza)
-* running script (in our case program.arza). After loading this sript arza searches for function named 'main' and executes it. Result of 'main' function would be result of the program
 
 

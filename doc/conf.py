@@ -303,6 +303,7 @@ class BCLLexer(RegexLexer):
             word('type'),
             word('is'),
             word('trait'),
+            word('instance'),
             word('receive'),
             word('init'),
             word('in'),

@@ -3,6 +3,14 @@ Building blocks
 
 .. highlight:: arza
 
+Booleans
+--------
+
+::
+
+   True False
+
+
 Integers
 --------
 

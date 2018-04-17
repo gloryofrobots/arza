@@ -1,13 +1,14 @@
-Types
-=====
+User Types and subtyping
+========================
+
+.. highlight:: arza
 
 In Arza programmer can define abstract and record types
 
 Abstract types
 --------------
 
-.. code-block:: arza
-
+::
    type None
    type Bool
 

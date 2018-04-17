@@ -3,6 +3,14 @@ Building blocks
 
 .. highlight:: arza
 
+Booleans
+--------
+
+::
+
+   True False
+
+
 Integers
 --------
 
@@ -63,7 +71,7 @@ Maps
 
 ::
                
-    {} {x=1} {x=1, y=(2,3), z=f(), n=(fun()=1)}
+    {} {x=1} {x=1, y=(2,3), z=f(), (1+1)=(fun()=1)}
 
 Functions
 ---------

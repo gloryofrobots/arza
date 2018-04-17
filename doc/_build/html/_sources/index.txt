@@ -12,9 +12,15 @@ Contents:
    :maxdepth: 1
 
    overview
+   tour
    indents
    building_blocks
-   tour
+   flow
+   funcs
+   types
+   multi
+   import
+   meta
    examples
 
 
