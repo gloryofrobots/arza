@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Code examples" href="examples.html" />
+    <link rel="next" title="Processes" href="process.html" />
     <link rel="prev" title="Import and Export" href="import.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="examples.html" title="Code examples"
+          <a href="process.html" title="Processes"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="import.html" title="Import and Export"
@@ -51,6 +51,166 @@
             
   <div class="section" id="metaprogramming">
 <h1>Metaprogramming<a class="headerlink" href="#metaprogramming" title="Permalink to this headline">¶</a></h1>
+<p>Arza metaprogramming facilities are limited.</p>
+<p>I have not decided yet if I want macroses in language or not.</p>
+<p>Basically you can define custom operators in prelude global to all modules,
+or defeine them locally in you module for your module only.</p>
+<p>And you can use Python style decorators to generate functions and types at compile time.</p>
+<div class="section" id="custom-operators">
+<h2>Custom operators<a class="headerlink" href="#custom-operators" title="Permalink to this headline">¶</a></h2>
+<p>Fragment from prelude</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// first name is operator, second is function which be used by compiler and third is precedence</span>
+<span class="k">infixl</span> (&lt;|, &lt;|, 15)
+<span class="cm">// right binding</span>
+<span class="k">infixr</span> (!, __<span class="n">send</span>__, 15)
+<span class="k">infixl</span> (|&gt;, |&gt;, 20)
+<span class="k">infixl</span> (==, ==, 35)
+<span class="k">infixl</span> (!=, !=, 35)
+<span class="k">infixl</span> (+, +, 40)
+<span class="k">infixl</span> (-, -, 40)
+<span class="k">infixl</span> (.., .., 90)
+
+<span class="cm">// prefix operators</span>
+<span class="k">prefix</span> (~, ~, 96)
+<span class="cm">// cannot use - it is set for infix operator</span>
+<span class="k">prefix</span> (-, <span class="n">negate</span>, 55)
+<span class="cm">// some operators can not be defined because they have special meaning to parser</span>
+<span class="cm">// for example (: , .  ::)</span>
+
+<span class="cm">// later define functions</span>
+
+<span class="k">fun</span> |&gt;(<span class="n">x</span>, <span class="n">f</span>) = <span class="n">f</span>(<span class="n">x</span>)
+<span class="k">fun</span> &lt;|(<span class="n">f</span>, <span class="n">x</span>) = <span class="n">f</span>(<span class="n">x</span>)
+<span class="k">fun</span> &gt;&gt;(<span class="n">f</span>, <span class="n">g</span>) = <span class="n">x</span> -&gt; <span class="n">g</span>(<span class="n">f</span>(<span class="n">x</span>))
+<span class="k">fun</span> &lt;&lt;(<span class="n">f</span>, <span class="n">g</span>) = <span class="n">x</span> -&gt; <span class="n">f</span>(<span class="n">g</span>(<span class="n">x</span>))
+<span class="cm">// ... and others</span>
+</pre></div>
+</div>
+<p>So when Arza parses expression <tt class="code docutils literal"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span></tt> it compiles to <tt class="code docutils literal"><span class="pre">+(1,</span> <span class="pre">2)</span></tt>.</p>
+<p>The same with prefix operator. Expression <tt class="code docutils literal"><span class="pre">-1</span></tt> will be transformed into <tt class="code docutils literal"><span class="pre">negate(1)</span></tt></p>
+</div>
+<div class="section" id="decorators">
+<h2>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h2>
+<p>Decorators are syntactic sugar borrowed from Python for function composition.</p>
+<p>Decorators can be applied to functions, types, and methods</p>
+<p>In case of decorating functions decorator is a function which recieves other function and optional list of arguments
+and must return different function.</p>
+<p>Example</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">fun</span> <span class="n">add</span>1(<span class="n">fn</span>, <span class="n">v</span>) =
+    <span class="k">fun</span> (<span class="n">x</span>, ...<span class="n">args</span>) =
+        <span class="cm">// ...args will flush contents of a sequence into arguments</span>
+        <span class="n">fn</span>(<span class="n">x</span>+<span class="n">v</span>, ...<span class="n">args</span>)
+
+<span class="k">fun</span> <span class="n">add</span>2(<span class="n">fn</span>, <span class="n">v</span>1, <span class="n">v</span>2) =
+    <span class="k">fun</span> (<span class="n">x</span>, <span class="n">y</span>) =
+        <span class="n">fn</span>(<span class="n">x</span>+<span class="n">v</span>1, <span class="n">y</span>+<span class="n">v</span>2)
+
+<span class="cm">// applying decorators</span>
+@<span class="n">add</span>1(10)
+@<span class="n">add</span>2(0.1, 0.2)
+<span class="k">fun</span> <span class="n">f</span>(<span class="n">x</span>, <span class="n">y</span>) = <span class="n">x</span> + <span class="n">y</span>
+
+<span class="cm">// now f is functions decorated by to functions add1 and add2</span>
+
+<span class="cm">// decorators can be applied to specific methods</span>
+<span class="k">interface</span> <span class="n">I</span> =
+    <span class="n">add</span>(<span class="n">I</span>, <span class="n">I</span>)
+
+@<span class="n">add</span>1(10)
+@<span class="n">add</span>2(0.1, 0.2)
+<span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">Int</span>) = <span class="n">x</span> + <span class="n">y</span>
+
+@<span class="n">add</span>1(10)
+<span class="k">def</span>+(<span class="n">super</span>) <span class="n">sub</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">Int</span>) =  <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) + <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>)
+
+<span class="cm">// decorators can be used in traits also</span>
+<span class="k">trait</span> <span class="n">Add</span>(<span class="n">T</span>) <span class="k">for</span> <span class="n">Float</span> =
+    @<span class="n">add</span>1(0.1)
+    @<span class="n">add</span>1(0.01)
+    <span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">T</span>) = <span class="n">x</span> + <span class="n">y</span>
+
+    @<span class="n">add</span>2(0.001, 0.0001)
+    <span class="k">def</span>+ (<span class="n">super</span>) <span class="n">add</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">T</span>) = <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) * -1
+
+<span class="cm">// lets test our new functions</span>
+<span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">all</span>(<span class="n">f</span>(1,2), <span class="n">add</span>(1,2), 13.3)
+<span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">add</span>(1.0, 2.0), -3.1111)
+</pre></div>
+</div>
+<p>When decorating types decorator will receive tuple of three elements as first argument.</p>
+<p>This tuple will consist of supertype, fields as list of symbols and initialisation function.</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// this decorator will add specific field to type fields if this field is not already there</span>
+<span class="k">fun</span> <span class="n">add</span>_<span class="n">field</span> ((<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">init</span>) <span class="n">as</span> <span class="n">typedata</span>, <span class="n">field</span>) =
+    <span class="k">if</span> <span class="n">not</span> <span class="n">has</span>(<span class="n">fields</span>, <span class="n">field</span>) <span class="k">then</span>
+        (<span class="n">supertype</span>, <span class="n">append</span>(<span class="n">fields</span>, <span class="n">field</span>), _<span class="n">init</span>)
+    <span class="k">else</span>
+        <span class="n">typedata</span>
+
+<span class="cm">// this decorator will add field #y</span>
+<span class="k">let</span> <span class="n">add</span>_<span class="n">y</span> = <span class="n">add</span>_<span class="n">field</span>(_, <span class="s">#y)</span>
+
+<span class="cm">// this decorator will init specific field with value after initialisation</span>
+<span class="k">fun</span> <span class="n">init</span>_<span class="n">field</span>((<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">init</span>), <span class="n">field</span>, <span class="n">value</span>) =
+    <span class="k">let</span>
+        <span class="k">fun</span> _<span class="n">wrap</span>(...<span class="n">args</span>) =
+            <span class="k">let</span>
+                <span class="n">data</span> = _<span class="n">init</span>(...<span class="n">args</span>)
+            <span class="k">in</span>
+                <span class="n">data</span>.{(<span class="n">field</span>) = <span class="n">value</span>}
+    <span class="k">in</span>
+        (<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">wrap</span>)
+
+<span class="cm">// this is almost the same like above but initialize field with special function</span>
+<span class="k">fun</span> <span class="n">init</span>_<span class="n">field</span>_<span class="n">with</span>((<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">init</span>), <span class="n">field</span>, <span class="n">value</span>, <span class="n">fn</span>) =
+    <span class="k">let</span>
+        <span class="k">fun</span> _<span class="n">wrap</span>(...<span class="n">args</span>) =
+            <span class="k">let</span>
+                <span class="n">data</span> = _<span class="n">init</span>(...<span class="n">args</span>)
+            <span class="k">in</span>
+                <span class="n">data</span>.{(<span class="n">field</span>) = <span class="n">fn</span>(@, <span class="n">value</span>)}
+    <span class="k">in</span>
+        (<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">wrap</span>)
+
+<span class="cm">// Lets apply them to some types</span>
+@<span class="n">add</span>_<span class="n">field</span>(<span class="s">#z)</span>
+@<span class="n">add</span>_<span class="n">y</span>
+<span class="k">type</span> <span class="n">XYZ</span>(<span class="n">x</span>)
+
+@<span class="n">add</span>_<span class="n">field</span>(<span class="s">#c)</span>
+@<span class="n">add</span>_<span class="n">field</span>(<span class="s">#b)</span>
+@<span class="n">add</span>_<span class="n">field</span>(<span class="s">#a)</span>
+<span class="k">type</span> <span class="n">ABC</span>()
+
+
+@<span class="n">init</span>_<span class="n">field</span>(<span class="s">#b,</span> <span class="s">#b)</span>
+@<span class="n">init</span>_<span class="n">field</span>_<span class="n">with</span>(0, <span class="s">#c,</span> (<span class="n">x</span>, <span class="n">y</span>) -&gt; <span class="n">x</span> ++ <span class="n">y</span>)
+@<span class="n">add</span>_<span class="n">field</span>(<span class="s">#b)</span>
+<span class="k">type</span> <span class="n">AB</span>(<span class="n">a</span>)
+    <span class="k">init</span> (<span class="n">ab</span>, <span class="n">a</span>) = <span class="n">ab</span>.{<span class="n">a</span>=<span class="n">a</span>}
+
+<span class="k">type</span> <span class="n">Sum</span>(<span class="n">v</span>)
+    <span class="k">init</span> (<span class="n">sum</span>, <span class="n">x</span>, <span class="n">y</span>) =
+        <span class="n">sum</span>.{<span class="n">v</span> = <span class="n">x</span> + <span class="n">y</span>}
+
+@<span class="n">extends</span>(<span class="n">Sum</span>)
+<span class="k">type</span> <span class="n">Sum</span>2
+
+<span class="cm">// now we can test with</span>
+
+<span class="k">let</span>
+    <span class="n">xyz</span> = <span class="n">XYZ</span>(1, 2, 3)
+    <span class="n">abc</span> = <span class="n">ABC</span>(1, 2, 3)
+    <span class="n">ab</span> = <span class="n">AB</span>(<span class="s">#a)</span>
+    <span class="n">sum</span>1 = <span class="n">Sum</span>(1,2)
+    <span class="n">sum</span>2 = <span class="n">Sum</span>(1, 2)
+<span class="k">in</span>
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">to</span>_<span class="n">map</span>(<span class="n">xyz</span>, {<span class="n">x</span>=1, <span class="n">y</span>=2, <span class="n">z</span>=3})
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">to</span>_<span class="n">map</span>(<span class="n">abc</span>, {<span class="n">a</span>=1, <span class="n">b</span>=2, <span class="n">c</span>=3})
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">to</span>_<span class="n">map</span>(<span class="n">ab</span>, {<span class="n">a</span>=<span class="s">#ac,</span> <span class="n">b</span>=<span class="s">#b})</span>
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">all</span>(<span class="n">sum</span>1.<span class="n">v</span>, <span class="n">sum</span>2.<span class="n">v</span>, 3)
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -59,12 +219,21 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Metaprogramming</a><ul>
+<li><a class="reference internal" href="#custom-operators">Custom operators</a></li>
+<li><a class="reference internal" href="#decorators">Decorators</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="import.html"
                         title="previous chapter">Import and Export</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="examples.html"
-                        title="next chapter">Code examples</a></p>
+  <p class="topless"><a href="process.html"
+                        title="next chapter">Processes</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/meta.txt"
@@ -94,7 +263,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="examples.html" title="Code examples"
+          <a href="process.html" title="Processes"
              >next</a> |</li>
         <li class="right" >
           <a href="import.html" title="Import and Export"

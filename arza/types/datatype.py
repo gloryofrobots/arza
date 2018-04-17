@@ -218,7 +218,7 @@ class W_AbstractType(W_BaseDatatype):
         return api.to_s(self.name)
 
 
-class W_RecordType(W_BaseDatatype):
+class W_ConcreteType(W_BaseDatatype):
     def __init__(self, name, supertype, fields, initializer):
         W_BaseDatatype.__init__(self, name, supertype, plist.empty())
         self.fields = fields
@@ -282,7 +282,7 @@ class W_RecordType(W_BaseDatatype):
 
 
 def get_fields(t):
-    error.affirm_type(t, space.isrecordtype)
+    error.affirm_type(t, space.isconcretetype)
     return t.fields
 
 
@@ -292,7 +292,7 @@ def get_supertype(t):
 
 
 def get_init(t):
-    error.affirm_type(t, space.isrecordtype)
+    error.affirm_type(t, space.isconcretetype)
     if t.initializer is None:
         return space.newunit()
 
@@ -300,7 +300,7 @@ def get_init(t):
 
 
 def has_init(t):
-    error.affirm_type(t, space.isrecordtype)
+    error.affirm_type(t, space.isconcretetype)
     return t.initializer is not None
 
 
@@ -384,22 +384,22 @@ def newabstractdatatype(name, supertype):
 
 
 def newrecordtype(name, supertype, fields):
-    if space.isrecordtype(supertype):
+    if space.isconcretetype(supertype):
         fields = plist.concat(supertype.fields, fields)
 
-    return W_RecordType(name, supertype, fields, None)
+    return W_ConcreteType(name, supertype, fields, None)
 
 
 def newtype(process, name, supertype, fields, initializer):
     real_fields = []
-    if space.isrecordtype(supertype):
+    if space.isconcretetype(supertype):
         for f in supertype.fields:
             real_fields.append(f)
 
     for f in fields:
         if space.issymbol(f):
             real_fields.append(f)
-        elif space.isrecordtype(f):
+        elif space.isconcretetype(f):
             for mf in f.fields:
                 real_fields.append(mf)
         else:
@@ -429,7 +429,7 @@ def newtype(process, name, supertype, fields, initializer):
 
         if space.isunit(initializer):
             initializer = None
-        _type = W_RecordType(name, supertype, fields, initializer)
+        _type = W_ConcreteType(name, supertype, fields, initializer)
 
     if process.std.initialized:
         derived = process.std.interfaces.get_derived(_type)

@@ -19,8 +19,10 @@ Contents:
    funcs
    types
    multi
+   immutable
    import
    meta
+   process
    examples
 
 
@@ -28,7 +30,10 @@ Contents:
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
+
+..
+   * :ref:`genindex`
+   * :ref:`modindex`
+
 

@@ -227,6 +227,8 @@ Simple game
                 affirm:is_equal(label, #WINNER)
                 affirm:is_equal(winner.id, ship1.id)
 
+.. _mutable-state-label:
+
 Mutable State
 -------------
 

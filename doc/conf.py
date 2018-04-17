@@ -302,6 +302,7 @@ class BCLLexer(RegexLexer):
             word('let'),
             word('type'),
             word('is'),
+            word('of'),
             word('trait'),
             word('instance'),
             word('receive'),

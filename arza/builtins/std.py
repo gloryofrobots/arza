@@ -119,7 +119,7 @@ class Interfaces:
             self.Eq, self.Repr
         ])
 
-        self._derive_prelude(process)
+        # self._derive_prelude(process)
 
     def _derive_prelude(self, process):
         module = process.modules.prelude

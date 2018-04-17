@@ -457,7 +457,7 @@ def newdatatype(process, name, supertype, fields, init):
     error.affirm_type(init, lambda x: isfunction(init) or isunit(init), u"Expected Callable or ()")
     error.affirm_type(supertype, lambda x: isdatatype(supertype) or isunit(supertype), u"Expected Datatype or ()")
 
-    error.affirm_iterable(fields, lambda x: issymbol(x) or isrecordtype(x))
+    error.affirm_iterable(fields, lambda x: issymbol(x) or isconcretetype(x))
     return newtype(process, name, supertype, fields, init)
 
 
@@ -473,24 +473,19 @@ def isdatatype(w):
     return isinstance(w, W_BaseDatatype)
 
 
-def isrecordtype(w):
-    from arza.types.datatype import W_RecordType
-    return isinstance(w, W_RecordType)
+def isconcretetype(w):
+    from arza.types.datatype import W_ConcreteType
+    return isinstance(w, W_ConcreteType)
 
 
 def isuserdatatype(w):
-    from arza.types.datatype import W_RecordType, W_AbstractType
-    return isinstance(w, W_RecordType) or isinstance(w, W_AbstractType)
+    from arza.types.datatype import W_ConcreteType, W_AbstractType
+    return isinstance(w, W_ConcreteType) or isinstance(w, W_AbstractType)
 
 
 def isabstracttype(w):
     from arza.types.datatype import W_AbstractType
     return isinstance(w, W_AbstractType)
-
-
-def isnativedatatype(w):
-    from arza.types.datatype import W_NativeDatatype
-    return isinstance(w, W_NativeDatatype)
 
 
 def isrecord(w):
@@ -503,8 +498,8 @@ def isspecializable(w):
 
 
 def isdispatchable(w):
-    from arza.types.datatype import W_AbstractType, W_RecordType
-    return isinstance(w, W_AbstractType) or isinstance(w, W_RecordType)
+    from arza.types.datatype import W_AbstractType, W_ConcreteType
+    return isinstance(w, W_AbstractType) or isinstance(w, W_ConcreteType)
 
 
 ########################################################

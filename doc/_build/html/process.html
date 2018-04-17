@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Processes &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Code examples" href="examples.html" />
+    <link rel="prev" title="Metaprogramming" href="meta.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="examples.html" title="Code examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="meta.html" title="Metaprogramming"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="processes">
+<h1>Processes<a class="headerlink" href="#processes" title="Permalink to this headline">¶</a></h1>
+<p>Arza is heavily inspired by Erlang and uses its idea of processes as a concurrency tool.</p>
+<p>Processes or actors or symmetric coroutines are independent  universal primitives of concurrent computation.</p>
+<p>They can exchange messages but can not share any data.</p>
+<p>Arza syntax for process creation and message handling very similar to Erlang</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">//to spawn process</span>
+<span class="k">let</span> <span class="n">pid</span> = <span class="n">spawn</span>(<span class="n">somefunc</span>, <span class="n">args</span>)
+
+<span class="cm">// get pid of current process</span>
+<span class="k">let</span> <span class="n">this</span>_<span class="n">pid</span> = <span class="n">self</span>()
+
+<span class="cm">// to receive messages from other processes</span>
+<span class="k">receive</span>
+    | <span class="n">clause</span>1 = <span class="n">branch</span>1
+    | <span class="n">clause</span>2 = <span class="n">branch</span>2
+
+<span class="cm">// to kill process</span>
+<span class="n">close</span>(<span class="n">pid</span>)
+</pre></div>
+</div>
+<p>Ping-Pong example</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// usefull functions</span>
+<span class="k">import</span> <span class="n">process</span>
+
+<span class="k">type</span> <span class="n">PingPongFinished</span>(<span class="n">store</span>)
+
+<span class="k">fun</span> <span class="n">ping</span>(<span class="n">n</span>, <span class="n">pong</span>_<span class="n">pid</span>, <span class="n">store</span>) =
+    <span class="k">if</span> <span class="n">n</span> == 0 <span class="k">then</span>
+        <span class="cm">// This is message sending</span>
+        <span class="n">pong</span>_<span class="n">pid</span> ! <span class="s">#finished</span>
+        <span class="n">store</span>
+    <span class="k">else</span>
+        <span class="cm">// self() returns current pid</span>
+        <span class="n">pong</span>_<span class="n">pid</span> ! (<span class="s">#ping,</span> <span class="n">self</span>())
+        <span class="k">receive</span> <span class="s">#pong</span> =
+                <span class="n">ping</span>(<span class="n">n</span>-1, <span class="n">pong</span>_<span class="n">pid</span>, <span class="s">#pong</span> :: <span class="n">store</span>)
+
+<span class="k">fun</span> <span class="n">pong</span>(<span class="n">store</span>) =
+    <span class="k">receive</span>
+        | <span class="s">#finished</span> =
+            <span class="cm">// if excepion occures it became process result</span>
+            <span class="k">throw</span> <span class="n">PingPongFinished</span>(<span class="n">store</span>)
+
+        | (<span class="s">#ping,</span> <span class="n">ping</span>_<span class="n">pid</span>) =
+            <span class="n">ping</span>_<span class="n">pid</span>!<span class="s">#pong</span>
+            <span class="n">pong</span>(<span class="s">#ping</span> :: <span class="n">store</span>)
+
+    <span class="cm">// this disables printing exceptions in processes to stderr</span>
+    <span class="n">process</span>:<span class="n">set</span>_<span class="n">error</span>_<span class="n">print</span>_<span class="n">enabled</span>(<span class="n">pong</span>_<span class="n">pid</span>, <span class="n">False</span>)
+    <span class="k">let</span> <span class="n">pong</span>_<span class="n">pid</span> = <span class="n">spawn</span>(<span class="n">pong</span>, ([],))
+    <span class="cm">// using currying just for clarity</span>
+    <span class="n">ping</span>_<span class="n">pid</span> = <span class="n">spawn</span> .. <span class="n">ping</span> .. (3, <span class="n">pong</span>_<span class="n">pid</span>, [])
+    <span class="cm">// waiting for all processes to end</span>
+    <span class="n">result</span> = <span class="n">process</span>:<span class="n">wait</span>_<span class="n">for</span>([<span class="n">pong</span>_<span class="n">pid</span>, <span class="n">ping</span>_<span class="n">pid</span>])
+<span class="k">in</span>
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">result</span>.[<span class="n">ping</span>_<span class="n">pid</span>], [<span class="s">#pong,</span> <span class="s">#pong,</span> <span class="s">#pong])</span>
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">result</span>.[<span class="n">pong</span>_<span class="n">pid</span>], <span class="n">ValueError</span>([<span class="s">#ping,</span> <span class="s">#ping,</span> <span class="s">#ping]))</span>
+    <span class="cm">// closing</span>
+    <span class="n">close</span>(<span class="n">pong</span>_<span class="n">pid</span>)
+    <span class="n">close</span>(<span class="n">ping</span>_<span class="n">pid</span>)
+</pre></div>
+</div>
+<p>With symmetric coroutines  it&#8217;s easy to implement asymmetric coroutines</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// function from std lib</span>
+<span class="k">fun</span> <span class="n">coro</span>(<span class="n">fn</span>) =
+    <span class="k">let</span>
+        <span class="n">proc</span>1 = <span class="n">self</span>()
+        <span class="n">proc</span>2 = <span class="n">process</span>:<span class="n">create</span>()
+
+        <span class="k">fun</span> <span class="n">make</span>_<span class="n">chan</span>(<span class="n">pid</span>) =
+            <span class="k">fun</span> (...<span class="n">args</span>) =
+                <span class="k">if</span> <span class="n">is</span>_<span class="n">finished</span>(<span class="n">pid</span>) <span class="k">then</span>
+                    <span class="k">throw</span> <span class="n">CoroutineEmpty</span>(<span class="n">result</span>(<span class="n">pid</span>))
+                <span class="k">else</span>
+                    <span class="k">match</span> <span class="n">args</span>
+                        | () = <span class="n">pid</span> ! ()
+                        | (<span class="n">m</span>) = <span class="n">pid</span> ! <span class="n">m</span>
+                    <span class="cm">// receiving</span>
+                    <span class="k">receive</span> <span class="n">msg</span> = <span class="n">msg</span>
+        <span class="n">chan</span>1 = <span class="n">make</span>_<span class="n">chan</span>(<span class="n">proc</span>2)
+        <span class="n">chan</span>2 = <span class="n">make</span>_<span class="n">chan</span>(<span class="n">proc</span>1)
+
+        <span class="k">fun</span> <span class="n">wrapper</span>(...<span class="n">args</span>) =
+            <span class="k">let</span>
+                (<span class="n">res</span> =
+                    (<span class="k">try</span>
+                        <span class="n">fn</span>(...<span class="n">args</span>)
+                    <span class="k">catch</span> <span class="n">e</span> = <span class="n">e</span>
+                    )
+                )
+            <span class="k">in</span>
+                <span class="n">proc</span>1 ! <span class="n">res</span>
+                <span class="n">res</span>
+
+        <span class="k">fun</span> _<span class="n">coro</span>(...<span class="n">args</span>) =
+            <span class="k">if</span> <span class="n">is</span>_<span class="n">idle</span>(<span class="n">proc</span>2) <span class="k">then</span>
+                <span class="n">start</span>(<span class="n">proc</span>2, <span class="n">wrapper</span>, (<span class="n">chan</span>2,) ++ <span class="n">args</span>)
+                <span class="k">receive</span> <span class="n">msg</span> = <span class="n">msg</span>
+            <span class="k">else</span>
+                <span class="n">chan</span>1(...<span class="n">args</span>)
+    <span class="k">in</span>
+        _<span class="n">coro</span>
+
+<span class="k">fun</span> <span class="n">test</span>_<span class="n">coro</span>() =
+    <span class="k">let</span>
+        <span class="k">fun</span> <span class="n">test</span>1() =
+            <span class="k">let</span>
+                <span class="n">c</span> = <span class="n">process</span>:<span class="n">coro</span>(<span class="k">fun</span>(<span class="n">yield</span>, <span class="n">start</span>) =
+                    (<span class="k">let</span>
+                        <span class="n">x</span> = <span class="n">yield</span>(<span class="n">start</span>)
+                    <span class="k">in</span>
+                        <span class="n">yield</span>(<span class="n">x</span>)
+                    )
+                )
+                <span class="n">c</span>1 = <span class="n">process</span>:<span class="n">coro</span>((<span class="n">yield</span>) -&gt; <span class="s">#zero)</span>
+            <span class="k">in</span>
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span> .. <span class="n">c</span>1() .. <span class="s">#zero</span>
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">throw</span>(<span class="n">c</span>1, ())
+
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span> .. <span class="n">c</span>(<span class="s">#first)</span> .. <span class="s">#first</span>
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span> .. <span class="n">c</span>(<span class="s">#second)</span> .. <span class="s">#second</span>
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span> .. <span class="n">c</span>(<span class="s">#last)</span> .. <span class="s">#last</span>
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">throw</span>(<span class="n">c</span>, ())
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">throw</span>(<span class="n">c</span>, ())
+
+        <span class="k">fun</span> <span class="n">test</span>2() =
+            <span class="k">let</span>
+                <span class="n">c</span> = <span class="n">process</span>:<span class="n">coro</span>(<span class="k">fun</span>(<span class="n">yield</span>) = <span class="k">throw</span> 1)
+            <span class="k">in</span>
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span> .. <span class="n">c</span>() .. 1
+                <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">throw</span>(<span class="n">c</span>, ())
+    <span class="k">in</span>
+        <span class="n">test</span>1()
+        <span class="n">test</span>2()
+</pre></div>
+</div>
+<p>With processes you can create emmulation of mutable state</p>
+<p>Example: <a class="reference internal" href="examples.html#mutable-state-label"><em>Mutable State</em></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="meta.html"
+                        title="previous chapter">Metaprogramming</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Code examples</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/process.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="examples.html" title="Code examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="meta.html" title="Metaprogramming"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
