@@ -68,42 +68,42 @@ You include names from one module to another and give to this names specific pre
 <span class="k">let</span> <span class="n">three</span> = <span class="n">module</span>1:<span class="n">add</span>(1, 2)
 
 <span class="cm">// use aliases to resolve name conflicts</span>
-<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="n">as</span> <span class="n">mod</span>1
-<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 <span class="n">as</span> <span class="n">mod</span>1_1
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1
+<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1_1
 
 <span class="k">let</span> <span class="n">x</span> = <span class="n">mod</span>1:<span class="n">add</span>(<span class="n">mod</span>1_1:<span class="n">add</span>(1, 2), 3)
 
 <span class="cm">// import only required qualified names</span>
-<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 (<span class="n">f</span>1 <span class="n">as</span> <span class="n">f</span>1_1, <span class="n">f</span>2 <span class="n">as</span> <span class="n">f</span>2_1)
+<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 (<span class="n">f</span>1 <span class="k">as</span> <span class="n">f</span>1_1, <span class="n">f</span>2 <span class="k">as</span> <span class="n">f</span>2_1)
 <span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>1_1()
 <span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>2_1()
 
-<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="n">as</span> <span class="n">mod</span>1 (<span class="n">f</span>1, <span class="n">f</span>2)
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1 (<span class="n">f</span>1, <span class="n">f</span>2)
 <span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>1()
 <span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>2()
 
-<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 <span class="n">as</span> <span class="n">mod</span>1 (<span class="n">f</span>1 <span class="n">as</span> <span class="n">f</span>1_1, <span class="n">f</span>2 <span class="n">as</span> <span class="n">f</span>2_1)
+<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1 (<span class="n">f</span>1 <span class="k">as</span> <span class="n">f</span>1_1, <span class="n">f</span>2 <span class="k">as</span> <span class="n">f</span>2_1)
 <span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>1_1()
 <span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>2_1()
 
 <span class="cm">// binding funcs from two modules to same name if there are no conflicts between them</span>
-<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">ts</span>:<span class="n">module</span>_<span class="n">s</span> <span class="n">as</span> <span class="n">s</span>
-<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">ts</span>:<span class="n">module</span>_<span class="n">t</span> <span class="n">as</span> <span class="n">s</span>
+<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">ts</span>:<span class="n">module</span>_<span class="n">s</span> <span class="k">as</span> <span class="n">s</span>
+<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">ts</span>:<span class="n">module</span>_<span class="n">t</span> <span class="k">as</span> <span class="n">s</span>
 
 <span class="cm">// hiding names</span>
 <span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1  <span class="n">hiding</span> (<span class="n">CONST</span>)
 <span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>1()
 <span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>2()
 
-<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="n">as</span> <span class="n">mod</span>1 <span class="n">hiding</span> (<span class="n">f</span>1)
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1 <span class="n">hiding</span> (<span class="n">f</span>1)
 <span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>2()
 <span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">CONST</span>
 
-<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">module</span>_<span class="n">ab</span> <span class="n">as</span> <span class="n">ab</span>5 <span class="n">hiding</span> (<span class="n">f</span>_<span class="n">ab</span>, <span class="n">CONST</span>)
+<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">module</span>_<span class="n">ab</span> <span class="k">as</span> <span class="n">ab</span>5 <span class="n">hiding</span> (<span class="n">f</span>_<span class="n">ab</span>, <span class="n">CONST</span>)
 
 <span class="cm">/// UNQUALIFIED IMPORT</span>
 <span class="cm">// import specified unqualified names</span>
-<span class="k">include</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 (<span class="n">f</span>1, <span class="n">f</span>2, <span class="n">CONST</span> <span class="n">as</span> <span class="n">const</span>)
+<span class="k">include</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 (<span class="n">f</span>1, <span class="n">f</span>2, <span class="n">CONST</span> <span class="k">as</span> <span class="n">const</span>)
 <span class="k">let</span> _ = <span class="n">f</span>1()
 <span class="k">let</span> <span class="n">x</span> = <span class="n">f</span>2() + <span class="n">const</span>
 

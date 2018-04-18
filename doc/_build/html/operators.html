@@ -118,6 +118,79 @@ are declared internally and have special meaning for compiler</p>
 </div>
 <p>When Arza parses expression <tt class="code docutils literal"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span></tt> it compiles it to <tt class="code docutils literal"><span class="pre">+(1,</span> <span class="pre">2)</span></tt>.</p>
 <p>The same with prefix operator. Expression <tt class="code docutils literal"><span class="pre">-1</span></tt> will be transformed into <tt class="code docutils literal"><span class="pre">arza:negate(1)</span></tt></p>
+<div class="section" id="special-operators">
+<h2>Special operators<a class="headerlink" href="#special-operators" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">:</span></tt> like in <tt class="code docutils literal"><span class="pre">module:function()</span></tt> treats by compiler as exported name
+and as path separator in <tt class="code docutils literal"><span class="pre">import</span> <span class="pre">include</span></tt> expressions</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1
+<span class="k">let</span> <span class="n">three</span> = <span class="n">module</span>1:<span class="n">add</span>(1, 2)
+</pre></div>
+</div>
+</li>
+<li><p class="first">infix operators <tt class="code docutils literal"><span class="pre">and</span> <span class="pre">or</span></tt>  are compiled into jump instructions</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">-&gt;</span></tt>  creates lambda functions like <tt class="code docutils literal"><span class="pre">(x,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y</span></tt></p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">::</span></tt>  compiles into call <tt class="code docutils literal"><span class="pre">cons(left,</span> <span class="pre">right)</span></tt> in expressions and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">of</span></tt>  compiles into call <tt class="code docutils literal"><span class="pre">kindof(left,</span> <span class="pre">right)</span></tt> in expressions and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">as</span></tt>  compiles into call <tt class="code docutils literal"><span class="pre">cast(left,</span> <span class="pre">right)</span></tt> in expressions and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">.</span></tt> like in <tt class="code docutils literal"><span class="pre">left.right</span></tt> compiles into <tt class="code docutils literal"><span class="pre">at(left,</span> <span class="pre">#right)</span></tt> where
+<tt class="code docutils literal"><span class="pre">#right</span></tt> is symbol</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">.[</span></tt> like in <tt class="code docutils literal"><span class="pre">left.[right]</span></tt> compiles into <tt class="code docutils literal"><span class="pre">at(left,</span> <span class="pre">right)</span></tt> where
+<tt class="code docutils literal"><span class="pre">right</span></tt> is any expression</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">.{</span></tt> like in <tt class="code docutils literal"><span class="pre">left.{key=value}</span></tt> compiles into <tt class="code docutils literal"><span class="pre">put(left,</span> <span class="pre">#key,</span> <span class="pre">value)</span></tt>.
+If <tt class="code docutils literal"><span class="pre">key</span></tt> is enclosed in parens like <tt class="code docutils literal"><span class="pre">left.{(key)</span> <span class="pre">=</span> <span class="pre">value}</span></tt>
+it compiles to <tt class="code docutils literal"><span class="pre">put(left,</span> <span class="pre">key,</span> <span class="pre">value)</span></tt>.</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">let</span> <span class="n">x</span> = {<span class="n">x</span>=1, (1+2)=2}
+<span class="k">let</span> <span class="n">x</span>1 = <span class="n">x</span>.{<span class="n">x</span>=2, (<span class="n">True</span>)=2, (4-1)=2, <span class="s">&quot;key&quot;</span>=<span class="s">&quot;value&quot;</span>}
+</pre></div>
+</div>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">(</span></tt> like in <tt class="code docutils literal"><span class="pre">myfunc(ar1,</span> <span class="pre">arg2)</span></tt> compiles into special bytecode instruction and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">{</span></tt> like in <tt class="code docutils literal"><span class="pre">MyType{key1=value1,</span> <span class="pre">key2}</span></tt> receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">|</span></tt> delimits clauses in pattern matching</p>
+</li>
+<li><p class="first">prefix operator <tt class="code docutils literal"><span class="pre">not</span></tt> compiles  into special instruction</p>
+</li>
+<li><p class="first">prefix operator <tt class="code docutils literal"><span class="pre">#</span></tt> like in <tt class="code docutils literal"><span class="pre">#I_AM_SYMBOL</span></tt>
+constructs  symbols in expressions and in match clauses</p>
+</li>
+<li><p class="first">prefix operator <tt class="code docutils literal"><span class="pre">...</span></tt> like in <tt class="code docutils literal"><span class="pre">[x,</span> <span class="pre">x1,</span> <span class="pre">...xs]</span></tt> and <tt class="code docutils literal"><span class="pre">myfunc(...varargs)</span></tt>
+receives special treatment in pattern mathing and in function calls</p>
+</li>
+</ul>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">match</span> [1, 2, 3]
+| [<span class="n">head</span>, ...<span class="n">tail</span>]
+
+<span class="k">fun</span> <span class="n">f</span>(...<span class="n">args</span>) =
+    <span class="cm">//calling other func</span>
+    <span class="cm">// ...args flush sequence into call arguments</span>
+    <span class="n">f</span>2(1, 2, ...<span class="n">args</span>, 3, 4)
+</pre></div>
+</div>
+</div>
+<div class="section" id="functions-as-infix-operators">
+<h2>Functions as infix operators<a class="headerlink" href="#functions-as-infix-operators" title="Permalink to this headline">¶</a></h2>
+<p>To call function as infix operator enclose it in ``.</p>
+<p><strong>Such function operator will have precedence 35</strong></p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="n">mymap</span> `<span class="n">has</span>` <span class="s">#key</span>
+<span class="n">i</span> `<span class="n">kindof</span>` <span class="n">Int</span>
+1 `<span class="n">add</span>` 2
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -126,6 +199,15 @@ are declared internally and have special meaning for compiler</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Operators</a><ul>
+<li><a class="reference internal" href="#special-operators">Special operators</a></li>
+<li><a class="reference internal" href="#functions-as-infix-operators">Functions as infix operators</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="indents.html"
                         title="previous chapter">Indentantions and layouts</a></p>

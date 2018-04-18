@@ -132,11 +132,67 @@ Interfaces can be concatenated
     // you can combine interfaces
     interface Coll is (Put, At)
 
-Most of the times our programs can be easily formilised with single dispatch.
-For mathematical operations  double dispatch is very usefull.
-But sometimes there is need for even bigger arity of dispatch function
 
-I found this example of :ref:`triple-dispatch-label`
+In some specific case there is a need to dispatch not on type of the argument but on argument value.
+Example is the :code:`cast` function. 
+
+::
+   
+    interface Cast(I) =
+        cast(I, valueof to_what)
+
+    interface Castable(I) =
+        use cast(what, I)
+
+To specify that we need to dispatch on value keyword :code:`valueof` is used.
+
+Afterwards we can use it like
+
+::
+
+    import affirm
+
+    type Robot(battery_power)
+
+    def cast(r of Robot, type Int) = r.battery_power
+
+    def cast(r of Robot, interface Seq) = [r as Int]
+
+    def cast(r of Robot, interface Str) = "Robot"
+
+    def at(s of Robot, el) when el == #battery_power  =
+        // casting back to Record type to avoid infinite loop
+        (s as Record).battery_power + 1
+
+
+    fun test() =
+        let
+            r = Robot(42)
+        in
+            affirm:is_equal(r.battery_power, 43)
+            affirm:is_equal(r as Int, 43)
+            affirm:is_equal(r as Seq, [43])
+            affirm:is_equal(r as Str, "Robot")
+
+           
+If concrete type defines custom method for :code:`at` generic
+then to access it's internal structure you must cast it to parent Record type.
+Like in example above
+
+::
+
+    def at(s of Robot, el) when el == #battery_power  =
+        // casting back to Record type to avoid infinite loop
+        (s as Record).battery_power + 1
+
+
+Most of the times our programs can be easily implemented with single dispatch.
+In some cases especially for mathematical operations  double dispatch is very usefull.
+But sometimes there is a need for even bigger arity of dispatch function.
+
+I never actually encounter them in my own work,
+but here I found this example of :ref:`triple-dispatch-label` on the internet
+
 
 Defining methods
 ----------------
@@ -144,6 +200,7 @@ Defining methods
 To define new method for generic function use :code:`def` expression
 
 ::
+
    interface Num =
        //interface must be in both roles
        add(Num, Num)
@@ -189,6 +246,22 @@ Also method definition can have guards
 
     def race_winner(p of Plane, c of Car) = p
 
+There is a possibility to declare method not as function but as expression
+
+::
+
+   def somegeneric(t of Sometype) as someexpression()
+
+   // often it's used with functions defined in native modules
+
+   // native module
+   import arza:_string
+
+   // assign native functions as methods
+   def slice(s of String, _from, _to) as _string:slice
+   def drop(s of String, x) as _string:drop
+   def take(s of String, x) as _string:take
+
 
 Sometimes there is a need to override existing method
 
@@ -217,10 +290,10 @@ To do so use :code:`override` expression
 
     type Val(val)
 
-    // defining builtin operator +
-    override + (v1 of Val, v2 of Val) = v1.val + v2.val
+    // specifying builtin operator +
+    def + (v1 of Val, v2 of Val) = v1.val + v2.val
 
-    //redefining +
+    //overriding 
     override (super) + (v1 of Val, v2 of Val) = super(v1, v2) * 2
 
     fun test() =
@@ -231,4 +304,97 @@ To do so use :code:`override` expression
             v1 = Val(1)
             v2 = Val(2)
         in
-            affirm:is_equal .. (v1 + v2) .. 6
+            affirm:is_equal((v1 + v2), 6)
+
+Ensuring interface implementation
+---------------------------------
+
+After implementing all interface roles
+type will put reference to interface in it's list of implemented interfaces.
+
+But if there is a need to ensuring that this type(types) implements one or more interfaces you
+can assert this with :code:`describe` expression.
+
+::
+
+   describe Symbol as  Concat
+
+   describe String as (Eq, Repr,
+        Len, Coll,
+        Prepend, Append, Concat, Cons,
+        ToSeq, Slice, Empty)
+
+   describe (Triple, Pair) as Serializable
+
+   describe (Dictionary, Array, Pair, Triple, Single, SecondAndThird) as (Storage, GetSet)
+
+If some of the types does not implement even one of the interfaces then exception will be thrown.
+
+Traits
+------
+
+Trait in Arza is a function that can work on types. This function consist of one or more
+:code:`def instance override` expressions. :code:`instance` expression is a trait application to specific
+number of types.
+
+Traits are tools for code reuse and expressiveness.
+If subtype-supertype relationship between types is unwanted traits can help to share behavior between them.
+
+::
+
+    // creating trait 
+    // trait excepts two types and defines for them two methods
+    trait TEq(T1, T2) =
+        def equal (first of T1, second of T2) = first == second
+        def notequal (first of T1, second of T2) = first != second
+
+
+    // applying previously defined trait to couple of types
+    instance TEq(Int, Int)
+    instance TEq(Float, Float)
+    instance TEq(Int, Float)
+    instance TEq(Float, Int)
+
+
+Arza has special syntax for applying trait immidiatelly after it's declaration
+
+::
+   
+   
+   trait TValue(T) for MyType =
+       def val(v of T) = v.value
+
+   // to apply this to trait to more than one type 
+
+   trait TValue(T) for [MyType1, MyType1, MyType3] =
+       def val(v of T) = v.value
+
+   // in case of more arguments
+   trait TEq(T1, T2) for (Int, Float) =
+       def equal (first of T1, second of T2) = first == second
+       def notequal (first of T1, second of T2) = first != second
+
+    // or to cover all relations
+   trait TEq(T1, T2)
+           for [(Int, Float), (Int, Int), (Float, Float), (Float, Int)] =
+       def equal (first of T1, second of T2) = first == second
+       def notequal (first of T1, second of T2) = first != second
+
+Anonymous traits
+****************
+
+If we do not care about reusing trait after declaration we can ommit trait name
+
+::
+
+   trait (T1, T2)
+           for [(Int, Float), (Int, Int), (Float, Float), (Float, Int)] =
+       def equal (first of T1, second of T2) = first == second
+       def notequal (first of T1, second of T2) = first != second
+
+   // applying anonymous trait to multiple types in serial order
+   trait (T) for [Float, Int] =
+       // applying trait inside trait
+       instance TEq(T, T)
+       def - (x of T, y) as _number:sub
+       def + (x of T, y) as _number:add

@@ -86,7 +86,7 @@ and must return different function.</p>
 <span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">Int</span>) = <span class="n">x</span> + <span class="n">y</span>
 
 @<span class="n">add</span>1(10)
-<span class="k">def</span>+(<span class="n">super</span>) <span class="n">sub</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">Int</span>) =  <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) + <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>)
+<span class="k">override</span> (<span class="n">super</span>) <span class="n">sub</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">Int</span>) =  <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) + <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>)
 
 <span class="cm">// decorators can be used in traits also</span>
 <span class="k">trait</span> <span class="n">Add</span>(<span class="n">T</span>) <span class="k">for</span> <span class="n">Float</span> =
@@ -95,7 +95,7 @@ and must return different function.</p>
     <span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">x</span> + <span class="n">y</span>
 
     @<span class="n">add</span>2(0.001, 0.0001)
-    <span class="k">def</span>+ (<span class="n">super</span>) <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) * -1
+    <span class="k">override</span> (<span class="n">super</span>) <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) * -1
 
 <span class="cm">// lets test our new functions</span>
 <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">all</span>(<span class="n">f</span>(1,2), <span class="n">add</span>(1,2), 13.3)
@@ -105,7 +105,7 @@ and must return different function.</p>
 <p>When decorating types decorator will receive tuple of three elements as first argument.</p>
 <p>This tuple will consist of supertype, fields as list of symbols and initialisation function.</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="cm">// this decorator will add specific field to type fields if this field is not already there</span>
-<span class="k">fun</span> <span class="n">add</span>_<span class="n">field</span> ((<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">init</span>) <span class="n">as</span> <span class="n">typedata</span>, <span class="n">field</span>) =
+<span class="k">fun</span> <span class="n">add</span>_<span class="n">field</span> ((<span class="n">supertype</span>, <span class="n">fields</span>, _<span class="n">init</span>) <span class="k">as</span> <span class="n">typedata</span>, <span class="n">field</span>) =
     <span class="k">if</span> <span class="n">not</span> <span class="n">has</span>(<span class="n">fields</span>, <span class="n">field</span>) <span class="k">then</span>
         (<span class="n">supertype</span>, <span class="n">append</span>(<span class="n">fields</span>, <span class="n">field</span>), _<span class="n">init</span>)
     <span class="k">else</span>

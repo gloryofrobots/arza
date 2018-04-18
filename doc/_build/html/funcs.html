@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Import and Export" href="import.html" />
+    <link rel="next" title="Interfaces and multimethods" href="multi.html" />
     <link rel="prev" title="Conditions and pattern matching" href="flow.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="multi.html" title="Interfaces and multimethods"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="flow.html" title="Conditions and pattern matching"
@@ -122,7 +122,7 @@ and also for performing some checks only once</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="cm">// this function creates inner function and applies it to all it&#39;s arguments</span>
 <span class="cm">// because it does not want to check all types every iteration and also</span>
 <span class="cm">// it saves coll from first call</span>
-<span class="k">fun</span> <span class="n">scanl</span>(<span class="n">func</span> <span class="n">of</span> <span class="n">Function</span>, <span class="n">accumulator</span> <span class="n">of</span> <span class="n">Seq</span>, <span class="n">coll</span> <span class="n">of</span> <span class="n">Seq</span>) =
+<span class="k">fun</span> <span class="n">scanl</span>(<span class="n">func</span> <span class="k">of</span> <span class="n">Function</span>, <span class="n">accumulator</span> <span class="k">of</span> <span class="n">Seq</span>, <span class="n">coll</span> <span class="k">of</span> <span class="n">Seq</span>) =
     <span class="k">fun</span> _<span class="n">scanl</span>
         | (<span class="n">f</span>, <span class="n">acc</span>, []) = <span class="n">acc</span> :: <span class="n">empty</span>(<span class="n">coll</span>) <span class="cm">// coll contains initial value from first call</span>
         | (<span class="n">f</span>, <span class="n">acc</span>, <span class="n">hd</span>::<span class="n">tl</span>) = <span class="n">acc</span> :: <span class="n">scanl</span>(<span class="n">f</span>, <span class="n">f</span>(<span class="n">hd</span>, <span class="n">acc</span>), <span class="n">tl</span>)
@@ -152,14 +152,14 @@ and also for performing some checks only once</p>
     | 4 = <span class="s">#four</span>
 
 <span class="k">fun</span> <span class="n">f</span>_<span class="n">c</span>2
-    | (<span class="n">a</span> <span class="n">of</span> <span class="n">Bool</span>, <span class="n">b</span> <span class="n">of</span> <span class="n">String</span>, <span class="n">c</span>) = <span class="s">#first</span>
-    | (<span class="n">a</span> <span class="n">of</span> <span class="n">Bool</span>, <span class="n">b</span>, <span class="n">c</span>) = <span class="s">#second</span>
+    | (<span class="n">a</span> <span class="k">of</span> <span class="n">Bool</span>, <span class="n">b</span> <span class="k">of</span> <span class="n">String</span>, <span class="n">c</span>) = <span class="s">#first</span>
+    | (<span class="n">a</span> <span class="k">of</span> <span class="n">Bool</span>, <span class="n">b</span>, <span class="n">c</span>) = <span class="s">#second</span>
     | (<span class="n">a</span>, <span class="s">&quot;value&quot;</span>, <span class="s">#value)</span> = <span class="s">#third</span>
 
 <span class="k">fun</span> <span class="n">f</span>_<span class="n">c</span>3
     | (0, 1, <span class="n">c</span>) <span class="n">when</span> <span class="n">c</span> &lt; 0 =  <span class="s">#first</span>
-    | (<span class="n">a</span> <span class="n">of</span> <span class="n">Bool</span>, <span class="n">b</span> <span class="n">of</span> <span class="n">String</span>, <span class="n">c</span>) = <span class="s">#second</span>
-    | (<span class="n">a</span> <span class="n">of</span> <span class="n">Bool</span>, <span class="n">b</span>, <span class="n">c</span>) <span class="n">when</span> <span class="n">b</span> + <span class="n">c</span> == 40 = <span class="s">#third</span>
+    | (<span class="n">a</span> <span class="k">of</span> <span class="n">Bool</span>, <span class="n">b</span> <span class="k">of</span> <span class="n">String</span>, <span class="n">c</span>) = <span class="s">#second</span>
+    | (<span class="n">a</span> <span class="k">of</span> <span class="n">Bool</span>, <span class="n">b</span>, <span class="n">c</span>) <span class="n">when</span> <span class="n">b</span> + <span class="n">c</span> == 40 = <span class="s">#third</span>
 
 <span class="k">fun</span> <span class="n">map</span>(<span class="n">f</span>, <span class="n">coll</span>)
     | (<span class="n">f</span>, []) = <span class="n">empty</span>(<span class="n">coll</span>)
@@ -305,8 +305,8 @@ way to initialize complex data structures or perform chain of operations.</p>
   <p class="topless"><a href="flow.html"
                         title="previous chapter">Conditions and pattern matching</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="import.html"
-                        title="next chapter">Import and Export</a></p>
+  <p class="topless"><a href="multi.html"
+                        title="next chapter">Interfaces and multimethods</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/funcs.txt"
@@ -336,7 +336,7 @@ way to initialize complex data structures or perform chain of operations.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="multi.html" title="Interfaces and multimethods"
              >next</a> |</li>
         <li class="right" >
           <a href="flow.html" title="Conditions and pattern matching"

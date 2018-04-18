@@ -1,3 +1,5 @@
+// TODO think about deleting lenses and fibers and focus on processes
+
 import io
 import affirm
 import seq

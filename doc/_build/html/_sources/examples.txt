@@ -373,6 +373,9 @@ Mutable State
         let pid = spawn(_loop, data)
         State(pid)
 
+
+.. _triple-dispatch-label:
+
 Triple Dispatch
 ---------------
 

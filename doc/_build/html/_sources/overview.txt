@@ -49,3 +49,22 @@ What are the biggest problems
 * Language design is still unstable
 
 
+How to run
+----------
+
+::
+   
+   python targetarza.py program.arza
+
+
+**However it is much better to use PyPy**
+
+Examples
+--------
+
+Examples and tests could be found in :code:`ROOTDIR/test/arza` folder.
+
+Entry point for test suite is :code:`ROOTDIR/test/arza/main.arza`
+
+
+

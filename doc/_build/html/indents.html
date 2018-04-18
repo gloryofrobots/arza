@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Notion of Arza" href="examples.html" />
-    <link rel="prev" title="Overview" href="overview.html" /> 
+    <link rel="next" title="Operators" href="operators.html" />
+    <link rel="prev" title="Quick tour" href="tour.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="examples.html" title="Notion of Arza"
+          <a href="operators.html" title="Operators"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview"
+          <a href="tour.html" title="Quick tour"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -144,7 +144,7 @@ without worrying about whitespaces.</p>
                             (<span class="k">let</span>
                                 (<span class="k">fun</span> _<span class="n">loop</span> (<span class="n">n</span>, <span class="n">g</span>) =
                                     <span class="cm">// if block enclosed in ()</span>
-                                    (<span class="k">if</span> <span class="n">g</span> == 1 <span class="n">or</span> <span class="n">n</span> &lt; <span class="n">g</span> <span class="k">then</span> 1
+                                    (<span class="k">if</span> <span class="n">g</span> == 1 <span class="k">or</span> <span class="n">n</span> &lt; <span class="n">g</span> <span class="k">then</span> 1
                                     <span class="k">else</span>
                                         <span class="n">seq</span>:<span class="n">foldl</span>(
                                             <span class="cm">// fun block enclosed in ()</span>
@@ -184,7 +184,7 @@ there are special support for such syntax</p>
 
 <span class="n">add</span>(<span class="k">match</span> <span class="n">x</span>
      | <span class="s">#one</span> = 1
-     | <span class="n">val</span> <span class="n">of</span> <span class="n">Float</span> =
+     | <span class="n">val</span> <span class="k">of</span> <span class="n">Float</span> =
         <span class="cm">// but nested expressions must be enclosed</span>
         (<span class="k">if</span> <span class="n">val</span> &lt; 0.0 <span class="k">then</span> <span class="n">abs</span>(<span class="n">val</span>)
         <span class="k">else</span> <span class="n">val</span>)
@@ -201,11 +201,11 @@ there are special support for such syntax</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="overview.html"
-                        title="previous chapter">Overview</a></p>
+  <p class="topless"><a href="tour.html"
+                        title="previous chapter">Quick tour</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="examples.html"
-                        title="next chapter">Notion of Arza</a></p>
+  <p class="topless"><a href="operators.html"
+                        title="next chapter">Operators</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/indents.txt"
@@ -235,10 +235,10 @@ there are special support for such syntax</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="examples.html" title="Notion of Arza"
+          <a href="operators.html" title="Operators"
              >next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview"
+          <a href="tour.html" title="Quick tour"
              >previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>

@@ -99,11 +99,11 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 <p>Example with guard</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">match</span> (1,2,3)
     | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 2 = <span class="s">#first</span>
-    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="n">and</span> <span class="n">y</span> == 3 = <span class="s">#second</span>
-    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="n">and</span> <span class="n">y</span> == 2 <span class="n">and</span> <span class="n">x</span> == 3 = <span class="s">#third</span>
-    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="n">and</span> <span class="n">y</span> == 2 <span class="n">and</span> <span class="n">x</span> == 1 <span class="n">and</span> <span class="n">A</span> == 2 = <span class="s">#fourth</span>
-    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="n">and</span> <span class="n">y</span> == 2 <span class="n">and</span> <span class="n">x</span> == 1 <span class="n">and</span> <span class="n">not</span> (<span class="n">A</span> `<span class="k">is</span>` <span class="n">True</span>) <span class="n">and</span> <span class="n">greater</span>_<span class="n">then</span>_<span class="n">ten</span>(9) = <span class="s">#fifth</span>
-    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="n">and</span> <span class="n">y</span> == 2 <span class="n">and</span> <span class="n">x</span> == 1 <span class="n">and</span> <span class="n">A</span> `<span class="k">is</span>` <span class="n">True</span> <span class="n">or</span> <span class="n">greater</span>_<span class="n">then</span>_<span class="n">ten</span>(11) = <span class="s">#sixth</span>
+    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="k">and</span> <span class="n">y</span> == 3 = <span class="s">#second</span>
+    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="k">and</span> <span class="n">y</span> == 2 <span class="k">and</span> <span class="n">x</span> == 3 = <span class="s">#third</span>
+    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="k">and</span> <span class="n">y</span> == 2 <span class="k">and</span> <span class="n">x</span> == 1 <span class="k">and</span> <span class="n">A</span> == 2 = <span class="s">#fourth</span>
+    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="k">and</span> <span class="n">y</span> == 2 <span class="k">and</span> <span class="n">x</span> == 1 <span class="k">and</span> <span class="n">not</span> (<span class="n">A</span> `<span class="k">is</span>` <span class="n">True</span>) <span class="k">and</span> <span class="n">greater</span>_<span class="n">then</span>_<span class="n">ten</span>(9) = <span class="s">#fifth</span>
+    | (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 3 <span class="k">and</span> <span class="n">y</span> == 2 <span class="k">and</span> <span class="n">x</span> == 1 <span class="k">and</span> <span class="n">A</span> `<span class="k">is</span>` <span class="n">True</span> <span class="k">or</span> <span class="n">greater</span>_<span class="n">then</span>_<span class="n">ten</span>(11) = <span class="s">#sixth</span>
     | _ = 12
 </pre></div>
 </div>
@@ -164,13 +164,13 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
     <span class="cm">// operator as binds value or expression to variable</span>
 
     <span class="cm">// expression will succeeds if map has key a=True and then it will bind it not to a name but to b</span>
-    | {<span class="n">a</span>=<span class="n">True</span> <span class="n">as</span> <span class="n">b</span>}
+    | {<span class="n">a</span>=<span class="n">True</span> <span class="k">as</span> <span class="n">b</span>}
 
-    | {<span class="n">genre</span>, <span class="s">&quot;actress&quot;</span>=<span class="s">&quot;Lily&quot;</span> <span class="n">as</span> <span class="n">LilyName</span>, <span class="n">age</span>=13} <span class="n">as</span> <span class="n">Result</span>
-    | 42 <span class="n">as</span> <span class="n">i</span>
+    | {<span class="n">genre</span>, <span class="s">&quot;actress&quot;</span>=<span class="s">&quot;Lily&quot;</span> <span class="k">as</span> <span class="n">LilyName</span>, <span class="n">age</span>=13} <span class="k">as</span> <span class="n">Result</span>
+    | 42 <span class="k">as</span> <span class="n">i</span>
 
     <span class="cm">// when guard can be used to specify conditions for identical patterns</span>
-    | (<span class="n">a</span>, (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>)) <span class="n">when</span> <span class="n">z</span> == 3 <span class="n">and</span> <span class="n">y</span> == 2 <span class="n">and</span> <span class="n">x</span> == 1 <span class="n">and</span> <span class="n">not</span> (<span class="n">a</span> == <span class="n">True</span>)
+    | (<span class="n">a</span>, (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>)) <span class="n">when</span> <span class="n">z</span> == 3 <span class="k">and</span> <span class="n">y</span> == 2 <span class="k">and</span> <span class="n">x</span> == 1 <span class="k">and</span> <span class="n">not</span> (<span class="n">a</span> == <span class="n">True</span>)
     | (<span class="n">a</span>, (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>) <span class="n">when</span> <span class="n">z</span> == 4
     | (<span class="n">a</span>, (<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>))
 
@@ -211,7 +211,7 @@ implement specific protocols.</p>
     | {<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span>=<span class="s">&quot;YYYY&quot;</span> <span class="k">of</span> <span class="n">String</span>} = <span class="s">#third</span>
 
 <span class="k">match</span> [1,2,3]
-    | [<span class="n">a</span>, <span class="n">b</span>, <span class="n">c</span> <span class="n">as</span> <span class="n">B</span>2] <span class="n">as</span> <span class="n">B</span>1 = (<span class="n">B</span>1, <span class="n">B</span>2, <span class="n">a</span>, <span class="n">b</span>, <span class="n">c</span>)
+    | [<span class="n">a</span>, <span class="n">b</span>, <span class="n">c</span> <span class="k">as</span> <span class="n">B</span>2] <span class="k">as</span> <span class="n">B</span>1 = (<span class="n">B</span>1, <span class="n">B</span>2, <span class="n">a</span>, <span class="n">b</span>, <span class="n">c</span>)
     | _ = 42
 <span class="cm">// result will be ([1, 2, 3], 3, 1, 2, 3)</span>
 </pre></div>

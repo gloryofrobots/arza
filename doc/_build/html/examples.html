@@ -67,7 +67,7 @@
 
 <span class="cm">// defining method for generic function str which will be called by print function</span>
 
-<span class="k">def</span> <span class="n">str</span>({<span class="n">id</span>, <span class="n">hp</span>, <span class="n">pos</span>} <span class="n">of</span> <span class="n">Ship</span>) =
+<span class="k">def</span> <span class="n">str</span>({<span class="n">id</span>, <span class="n">hp</span>, <span class="n">pos</span>} <span class="k">of</span> <span class="n">Ship</span>) =
     <span class="cm">// Arza lacks sprintf for now, instead this is simple concatenation</span>
     <span class="n">string</span>:<span class="n">all</span>(<span class="s">&quot;&lt;Ship id=&quot;</span>, <span class="n">id</span>, <span class="s">&quot; hp=&quot;</span>, <span class="n">hp</span>, <span class="s">&quot; pos=&quot;</span>, <span class="n">pos</span>, <span class="s">&quot;&gt;&quot;</span>)
 
@@ -86,7 +86,7 @@
         }
 
 
-<span class="k">def</span> <span class="n">str</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="n">of</span> <span class="n">Game</span>) =
+<span class="k">def</span> <span class="n">str</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="k">of</span> <span class="n">Game</span>) =
     <span class="n">string</span>:<span class="n">all</span>(
         <span class="s">&quot;&lt;Game (&quot;</span>,
         <span class="n">rows</span>,
@@ -100,8 +100,8 @@
     )
 
 <span class="cm">// checking if position is on board</span>
-<span class="k">fun</span> <span class="n">is</span>_<span class="n">valid</span>_<span class="n">pos</span>({<span class="n">rows</span>, <span class="n">cols</span>}, (<span class="n">x</span>, <span class="n">y</span>) <span class="n">as</span> <span class="n">pos</span>) =
-    <span class="n">x</span> &gt;= 0 <span class="n">and</span> <span class="n">x</span> &lt; <span class="n">cols</span> <span class="n">and</span> <span class="n">y</span> &gt;= 0 <span class="n">and</span> <span class="n">y</span> &lt; <span class="n">rows</span>
+<span class="k">fun</span> <span class="n">is</span>_<span class="n">valid</span>_<span class="n">pos</span>({<span class="n">rows</span>, <span class="n">cols</span>}, (<span class="n">x</span>, <span class="n">y</span>) <span class="k">as</span> <span class="n">pos</span>) =
+    <span class="n">x</span> &gt;= 0 <span class="k">and</span> <span class="n">x</span> &lt; <span class="n">cols</span> <span class="k">and</span> <span class="n">y</span> &gt;= 0 <span class="k">and</span> <span class="n">y</span> &lt; <span class="n">rows</span>
 
 <span class="cm">// add ship and return new game record</span>
 <span class="cm">// because values are immutable in arza</span>
@@ -122,7 +122,7 @@
 
 
 <span class="cm">// using seq module for finding ship at pos ship_pos</span>
-<span class="k">fun</span> <span class="n">atpos</span>({<span class="n">ships</span>} <span class="n">of</span> <span class="n">Game</span>, <span class="n">ship</span>_<span class="n">pos</span>) =
+<span class="k">fun</span> <span class="n">atpos</span>({<span class="n">ships</span>} <span class="k">of</span> <span class="n">Game</span>, <span class="n">ship</span>_<span class="n">pos</span>) =
     <span class="cm">// function arguments are subjects of pattern matching</span>
     <span class="cm">// {ships} of Game means argument must be of type Game</span>
     <span class="cm">// and must implement Map interface and has attribute ships</span>
@@ -153,7 +153,7 @@
 
 
 <span class="cm">// fire at random position</span>
-<span class="k">fun</span> <span class="n">fire</span>({<span class="n">rows</span>, <span class="n">cols</span>} <span class="n">as</span> <span class="n">game</span>, <span class="n">ship</span>) =
+<span class="k">fun</span> <span class="n">fire</span>({<span class="n">rows</span>, <span class="n">cols</span>} <span class="k">as</span> <span class="n">game</span>, <span class="n">ship</span>) =
     <span class="k">let</span>
         <span class="n">x</span> = <span class="n">randi</span>(0, <span class="n">rows</span>)
         <span class="n">y</span> = <span class="n">randi</span>(0, <span class="n">cols</span>)
@@ -167,18 +167,18 @@
 
 
 <span class="cm">// as operator in pattern matching will bind left value to right name in case of successful branch</span>
-<span class="k">fun</span> <span class="n">fire</span>_<span class="n">at</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="n">as</span> <span class="n">game</span>, <span class="n">ship</span>, <span class="n">fire</span>_<span class="n">pos</span>) =
+<span class="k">fun</span> <span class="n">fire</span>_<span class="n">at</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="k">as</span> <span class="n">game</span>, <span class="n">ship</span>, <span class="n">fire</span>_<span class="n">pos</span>) =
     <span class="k">let</span> <span class="n">enemy</span> = <span class="n">atpos</span>(<span class="n">game</span>, <span class="n">fire</span>_<span class="n">pos</span>)
     <span class="cm">// if we found enemy change its hp</span>
     <span class="cm">// this all immutable of course, so we return new game state</span>
     <span class="k">match</span> <span class="n">enemy</span>
-        | <span class="n">enemy</span> <span class="n">of</span> <span class="n">Ship</span> =
+        | <span class="n">enemy</span> <span class="k">of</span> <span class="n">Ship</span> =
             <span class="n">update</span>_<span class="n">ship</span>(<span class="n">game</span>, <span class="n">enemy</span>.{<span class="n">hp</span> = @ - 1})
         | <span class="n">None</span> =
             <span class="n">game</span>
 
 
-<span class="k">fun</span> <span class="n">turn</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="n">as</span> <span class="n">game</span>) =
+<span class="k">fun</span> <span class="n">turn</span>({<span class="n">rows</span>, <span class="n">cols</span>, <span class="n">ships</span>} <span class="k">as</span> <span class="n">game</span>) =
     <span class="cm">// this basically foreach through all ships</span>
     <span class="cm">// foldl is used because we can put current state as accumulator</span>
     <span class="cm">/*</span>
@@ -314,12 +314,12 @@
 <span class="cm">// x.y transforms by compiler into at(x, #y) and x.{y=1} into put(x, #y, 1)</span>
 <span class="k">trait</span> (<span class="n">T</span>) <span class="k">for</span> <span class="n">State</span> =
     <span class="cm">// T means State</span>
-    <span class="k">def</span> <span class="n">close</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) =
+    <span class="k">def</span> <span class="n">close</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>) =
         <span class="n">process</span>:<span class="n">kill</span>(<span class="n">pid</span>(<span class="n">s</span>), 0)
 
     <span class="cm">// all ensure decorators assert that state process is not dead</span>
     @<span class="n">ensure</span>3
-    <span class="k">def</span> <span class="n">put</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">key</span>, <span class="n">value</span>) =
+    <span class="k">def</span> <span class="n">put</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">key</span>, <span class="n">value</span>) =
         <span class="cm">// sending tuple to process</span>
         <span class="cm">// #put is symbol specifiing type of action</span>
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#put,</span> <span class="n">key</span>, <span class="n">value</span>)
@@ -327,42 +327,42 @@
         <span class="n">s</span>
 
     @<span class="n">ensure</span>2
-    <span class="k">def</span> <span class="n">at</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">key</span>) =
+    <span class="k">def</span> <span class="n">at</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">key</span>) =
         <span class="cm">// sending request</span>
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#at,</span> <span class="n">self</span>(), <span class="n">key</span>)
         <span class="cm">// and receiving reply</span>
         <span class="k">receive</span> (<span class="s">#at,</span> <span class="n">val</span>) = <span class="n">val</span>
 
     @<span class="n">ensure</span>1
-    <span class="k">def</span> &amp;(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) =
+    <span class="k">def</span> &amp;(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>) =
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#get,</span> <span class="n">self</span>())
         <span class="k">receive</span> (<span class="s">#get,</span> <span class="n">val</span>) = <span class="n">val</span>
 
     @<span class="n">ensure</span>2
-    <span class="k">def</span> := (<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">val</span>) =
+    <span class="k">def</span> := (<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">val</span>) =
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#set,</span> <span class="n">val</span>)
         <span class="n">s</span>
 
     @<span class="n">ensure</span>2
-    <span class="k">def</span> <span class="n">del</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">el</span>) =
+    <span class="k">def</span> <span class="n">del</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">el</span>) =
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#del,</span> <span class="n">el</span>)
         <span class="n">s</span>
 
     @<span class="n">ensure</span>2
-    <span class="k">def</span> <span class="n">has</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">el</span>) =
+    <span class="k">def</span> <span class="n">has</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">el</span>) =
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#has,</span> <span class="n">self</span>(), <span class="n">el</span>)
         <span class="k">receive</span> (<span class="s">#has,</span> <span class="n">val</span>) = <span class="n">val</span>
 
     @<span class="n">ensure</span>1
-    <span class="k">def</span> <span class="n">arza</span>:<span class="n">len</span> (<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) =
+    <span class="k">def</span> <span class="n">arza</span>:<span class="n">len</span> (<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>) =
         <span class="n">pid</span>(<span class="n">s</span>) ! (<span class="s">#len,</span> <span class="n">self</span>())
         <span class="k">receive</span> (<span class="s">#len,</span> <span class="n">val</span>) = <span class="n">val</span>
 
     @<span class="n">ensure</span>2
-    <span class="k">def</span> ==(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">data</span>) = &amp;<span class="n">s</span> == <span class="n">data</span>
+    <span class="k">def</span> ==(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">data</span>) = &amp;<span class="n">s</span> == <span class="n">data</span>
 
     @<span class="n">ensure</span>1
-    <span class="k">def</span> <span class="n">arza</span>:<span class="n">is</span>_<span class="n">empty</span>(<span class="n">s</span> <span class="n">of</span> <span class="n">T</span>) = <span class="n">len</span>(<span class="n">s</span>) &gt; 0
+    <span class="k">def</span> <span class="n">arza</span>:<span class="n">is</span>_<span class="n">empty</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">len</span>(<span class="n">s</span>) &gt; 0
 
 
 <span class="cm">// this is actual process</span>
@@ -415,7 +415,7 @@
 </div>
 </div>
 <div class="section" id="triple-dispatch">
-<h2>Triple Dispatch<a class="headerlink" href="#triple-dispatch" title="Permalink to this headline">¶</a></h2>
+<span id="triple-dispatch-label"></span><h2>Triple Dispatch<a class="headerlink" href="#triple-dispatch" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">import</span> <span class="n">seq</span>
 
 <span class="cm">//case for triple dispatch described here https://softwareengineering.stackexchange.com/questions/291525/a-real-world-use-case-for-triple-dispatch</span>
@@ -437,13 +437,13 @@
     <span class="n">add</span>(<span class="n">I</span>, <span class="n">item</span>)
 
 <span class="k">interface</span> <span class="n">Source</span>(<span class="n">I</span>) =
-    <span class="n">format</span>(<span class="n">item</span> <span class="n">of</span> <span class="n">I</span>, <span class="n">format</span>_<span class="n">standart</span>, <span class="n">output</span>_<span class="n">format</span>)
+    <span class="n">format</span>(<span class="n">item</span> <span class="k">of</span> <span class="n">I</span>, <span class="n">format</span>_<span class="n">standart</span>, <span class="n">output</span>_<span class="n">format</span>)
 
 <span class="k">interface</span> <span class="n">Standart</span>(<span class="n">I</span>) =
-    <span class="n">use</span> <span class="n">format</span>(<span class="n">item</span>, <span class="n">format</span>_<span class="n">standart</span> <span class="n">of</span> <span class="n">I</span>, <span class="n">output</span>_<span class="n">format</span>)
+    <span class="k">use</span> <span class="n">format</span>(<span class="n">item</span>, <span class="n">format</span>_<span class="n">standart</span> <span class="k">of</span> <span class="n">I</span>, <span class="n">output</span>_<span class="n">format</span>)
 
 <span class="k">interface</span> <span class="n">Output</span>(<span class="n">I</span>) =
-    <span class="n">use</span> <span class="n">format</span>(<span class="n">item</span>, <span class="n">format</span>_<span class="n">standart</span>, <span class="n">output</span>_<span class="n">format</span> <span class="n">of</span> <span class="n">I</span>)
+    <span class="k">use</span> <span class="n">format</span>(<span class="n">item</span>, <span class="n">format</span>_<span class="n">standart</span>, <span class="n">output</span>_<span class="n">format</span> <span class="k">of</span> <span class="n">I</span>)
 
 <span class="k">fun</span> <span class="n">format</span>_<span class="n">books</span>(<span class="n">library</span>) =
     <span class="k">let</span> <span class="n">books</span> = <span class="n">seq</span>:<span class="n">map</span>(<span class="n">library</span>.<span class="n">books</span>, <span class="n">format</span>)
@@ -471,7 +471,7 @@
 
 <span class="cm">// Defining generic functions</span>
 
-<span class="k">def</span> <span class="n">add</span>(<span class="n">l</span> <span class="n">of</span> <span class="n">Library</span>, <span class="n">item</span>) =
+<span class="k">def</span> <span class="n">add</span>(<span class="n">l</span> <span class="k">of</span> <span class="n">Library</span>, <span class="n">item</span>) =
     <span class="k">let</span> <span class="n">id</span> = <span class="n">l</span>._<span class="n">id</span> + 1
     <span class="n">l</span>.{
         <span class="n">id</span> = _<span class="n">id</span>,
@@ -479,13 +479,13 @@
     }
 
 
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="k">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="k">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="k">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="k">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="k">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">NLM</span>, <span class="n">f</span> <span class="k">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
 
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
-<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="n">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="n">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="n">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="k">of</span> <span class="n">Book</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="k">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="k">of</span> <span class="n">Article</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="k">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
+<span class="k">def</span> <span class="n">format</span>(<span class="n">b</span> <span class="k">of</span> <span class="n">Journal</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">APA</span>, <span class="n">f</span> <span class="k">of</span> <span class="n">TXT</span>) = <span class="n">None</span> <span class="cm">// do something here</span>
 
 <span class="cm">// and so on and so on</span>
 </pre></div>
@@ -533,7 +533,7 @@
 
         <span class="k">fun</span> _<span class="n">sort</span>
             | [] = []
-            | [<span class="n">x</span>] <span class="n">as</span> <span class="n">s</span> = <span class="n">s</span>
+            | [<span class="n">x</span>] <span class="k">as</span> <span class="n">s</span> = <span class="n">s</span>
             | <span class="n">xs</span> =
                 <span class="k">let</span> (<span class="n">ys</span>, <span class="n">zs</span>) = <span class="n">split</span>(<span class="n">xs</span>)
                 <span class="k">in</span> _<span class="n">merge</span>(_<span class="n">sort</span>(<span class="n">ys</span>), _<span class="n">sort</span>(<span class="n">zs</span>))
@@ -563,7 +563,7 @@
     | ([], <span class="n">p</span>) =
         <span class="k">let</span> <span class="n">c</span> = <span class="n">empty</span>(<span class="n">sq</span>)
         <span class="k">in</span> (<span class="n">c</span>, <span class="n">c</span>)
-    | ([<span class="n">x</span>, ...<span class="n">xs</span>1] <span class="n">as</span> <span class="n">xs</span>, <span class="n">p</span>) =
+    | ([<span class="n">x</span>, ...<span class="n">xs</span>1] <span class="k">as</span> <span class="n">xs</span>, <span class="n">p</span>) =
         <span class="k">if</span> <span class="n">not</span>(<span class="n">p</span>(<span class="n">x</span>)) <span class="k">then</span>
             (<span class="n">empty</span>(<span class="n">sq</span>), <span class="n">xs</span>)
         <span class="k">else</span>
