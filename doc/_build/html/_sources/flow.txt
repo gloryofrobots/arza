@@ -130,8 +130,7 @@ Lets describe all possible patterns for pattern matching in arza
         // operator `of` restricts value to type or interface
         | x of Int
         | _ of List
-        | {field_name} of MyType
-        | (first_index, second_index) of MyType
+        | {field1, field2=value2} of MyType
 
         // operator as binds value or expression to variable
 
@@ -152,6 +151,18 @@ Lets describe all possible patterns for pattern matching in arza
         | None it will bind everything to name None
         // interface
         | interface Seq
+        // in case of concrete types
+        //treating custom types as tuples
+        | Vector3(x, y, z)
+        //treating custom types as maps
+        | Vector3{x, y, z}
+
+All data structure pattern except tuples :code:`(n1, n2, ...n)` are accepting user defined data types that
+implement specific protocols.
+
+* To support patterns :code:`x::x1::xs` and :code:`[x, x1, ...xs]` type must implement :code:`Seq` interface
+
+* To support :code:`{key1=value, key2=value}` type must implement :code:`Dict` interface
 
 Some examples
 

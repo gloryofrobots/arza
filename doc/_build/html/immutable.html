@@ -66,7 +66,7 @@ of data structures</p>
 </pre></div>
 </div>
 <p>If we need to create new copy of this map with  new home address
-and if we have only standart function <tt class="code docutils literal"><span class="pre">put</span></tt> to work with our code would be very verbose</p>
+and if we have only standart function <tt class="code docutils literal"><span class="pre">put</span></tt> to work with, code might be very verbose</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">let</span> <span class="n">new</span>_<span class="n">adress</span> = <span class="s">&quot;Zelena st. 20&quot;</span>
 <span class="k">let</span> <span class="n">new</span>_<span class="n">person</span> = <span class="n">put</span>(<span class="n">person</span>,
                      <span class="s">#adresses,</span>
@@ -75,17 +75,17 @@ and if we have only standart function <tt class="code docutils literal"><span cl
                           <span class="n">cons</span>(<span class="n">new</span>_<span class="n">adress</span>, <span class="n">person</span>.<span class="n">adresses</span>.<span class="n">homes</span>)))
 </pre></div>
 </div>
-<p>This code is hard to read and very error prone. Instead in Arza you can just write</p>
+<p>This is hard to read and very error prone. Instead in Arza you can just write</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">let</span> <span class="n">new</span>_<span class="n">adress</span> = <span class="s">&quot;Zelena st. 20&quot;</span>
 <span class="k">let</span> <span class="n">new</span>_<span class="n">person</span> = <span class="n">person</span>.{<span class="n">adresses</span>.<span class="n">homes</span> = <span class="n">cons</span>(<span class="n">new</span>_<span class="n">adress</span>, @)}
-<span class="cm">// Here @ placeholder means current path</span>
+<span class="cm">// Here @ placeholder means current path inside data structure</span>
 <span class="cm">// in case of this example it will be person.addresses.homes</span>
 </pre></div>
 </div>
 <p>Syntax like <tt class="code docutils literal"><span class="pre">object.property</span> <span class="pre">=</span> <span class="pre">value</span></tt> impossible in Arza.</p>
 <p>Instead you can use more powerfull modification syntax where you can add more than one change at once.
 With this syntax you can also emulate <tt class="code docutils literal"><span class="pre">+=</span></tt> operator from imperative languages</p>
-<p>Lets consider more complex examples</p>
+<p>More complex examples</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">fun</span> <span class="n">test</span>_<span class="n">map</span>() =
     <span class="k">let</span>
         <span class="n">d</span> = {
@@ -144,6 +144,25 @@ With this syntax you can also emulate <tt class="code docutils literal"><span cl
 </pre></div>
 </div>
 </div>
+<div class="section" id="default-values">
+<h2>Default values<a class="headerlink" href="#default-values" title="Permalink to this headline">¶</a></h2>
+<p>Arza does not support keyword arguments in functions, if you want to receive some kind of arbitrary options
+you can use maps. However often in such option maps some keys must be set to default values.</p>
+<p>Arza support special syntax for updating data structure value if it is absent</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">let</span>
+    <span class="n">v</span> = {<span class="n">x</span>=1, <span class="n">y</span>=2}
+    <span class="cm">// right side of or operator will be assigned to x</span>
+    <span class="cm">// only if there are no previous value</span>
+    <span class="n">v</span>1 = <span class="n">v</span>.{<span class="n">x</span> <span class="k">or</span> 42, <span class="n">z</span> <span class="k">or</span> 42, <span class="n">y</span> = 42}
+    <span class="cm">// the same works with lists, tuples and other data structs</span>
+    <span class="n">l</span> = [0, 1, 2, 3]
+    <span class="n">l</span>1 = <span class="n">l</span>.{0 <span class="k">or</span> 5}
+<span class="k">in</span>
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">v</span>1, {<span class="n">y</span> = 42, <span class="n">x</span> = 1, <span class="n">z</span> = 42})
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">l</span>1, <span class="n">l</span>)
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -156,6 +175,7 @@ With this syntax you can also emulate <tt class="code docutils literal"><span cl
   <ul>
 <li><a class="reference internal" href="#">Working with immutable state</a><ul>
 <li><a class="reference internal" href="#modifications">Modifications</a></li>
+<li><a class="reference internal" href="#default-values">Default values</a></li>
 </ul>
 </li>
 </ul>

@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Import and Export" href="import.html" />
-    <link rel="prev" title="User Types and subtyping" href="types.html" /> 
+    <link rel="next" title="Working with immutable state" href="immutable.html" />
+    <link rel="prev" title="Functions and partial application" href="funcs.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="immutable.html" title="Working with immutable state"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="types.html" title="User Types and subtyping"
+          <a href="funcs.html" title="Functions and partial application"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -51,6 +51,70 @@
             
   <div class="section" id="interfaces-and-multimethods">
 <h1>Interfaces and multimethods<a class="headerlink" href="#interfaces-and-multimethods" title="Permalink to this headline">¶</a></h1>
+<p>Arza&#8217;s approach to polymorphism is probably the most original part of the language</p>
+<p>If you want to learn in details about multiple dispatch you can read excelent Eli Bendersky&#8217;s articles
+<a class="reference external" href="https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/">https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/</a></p>
+<p>Arza uses generic functions with multiple dispatch and intefaces that restricts and formalises relations
+between types and generics.</p>
+<p>Interface is a term that most often is an attribute of object oriented system. It describes set of operations
+that specific class can do.</p>
+<p>But how can concept of interfaces can be applied to multimethods?
+In Arza interface can be described as a set of generic functions and specific argument positions in this functions.</p>
+<p>For example</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Storage</span> =
+   <span class="n">get</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">Storage</span>, <span class="n">key</span>)
+
+<span class="k">interface</span> <span class="n">Key</span> =
+   <span class="n">use</span> <span class="n">get</span>(<span class="n">storage</span>, <span class="n">key</span> <span class="k">of</span> <span class="n">Key</span>)
+</pre></div>
+</div>
+<p>In example above we declare two interfaces that share the same generic function <tt class="code docutils literal"><span class="pre">get</span></tt>.</p>
+<p>Expression <tt class="code docutils literal"><span class="pre">storage</span> <span class="pre">of</span> <span class="pre">Storage</span></tt> bind first argument of function <tt class="code docutils literal"><span class="pre">get</span></tt> to interface <tt class="code docutils literal"><span class="pre">Storage</span></tt>.</p>
+<p>Interface <tt class="code docutils literal"><span class="pre">Storage</span></tt> will be implemented by all types that act like first arguments in <tt class="code docutils literal"><span class="pre">get</span></tt>.
+Interface <tt class="code docutils literal"><span class="pre">Key</span></tt> will be implemented by all types that act like second arguments in <tt class="code docutils literal"><span class="pre">get</span></tt>.</p>
+<p>The same code can be written in shorter way</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// all declarations are equivalent</span>
+
+<span class="k">interface</span> <span class="n">Storage</span> =
+   <span class="n">get</span>(<span class="n">Storage</span>, <span class="n">key</span>)
+
+<span class="cm">//here I is interface alias</span>
+<span class="k">interface</span> <span class="n">Storage</span>(<span class="n">I</span>) =
+   <span class="n">get</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">I</span>, <span class="n">key</span>)
+
+<span class="cm">// or even shorter</span>
+<span class="k">interface</span> <span class="n">Storage</span>(<span class="n">I</span>) =
+   <span class="n">get</span>(<span class="n">I</span>, <span class="n">key</span>)
+</pre></div>
+</div>
+<p><strong>Generic function can be declared only inside interface. They can not be declared twice</strong></p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Storage</span> =
+   <span class="n">get</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">Storage</span>, <span class="n">key</span>)
+
+<span class="k">interface</span> <span class="n">Key</span> =
+   <span class="cm">// this is error, function get already declared above</span>
+   <span class="n">get</span>(<span class="n">storage</span>, <span class="n">key</span> <span class="k">of</span> <span class="n">Key</span>)
+   <span class="cm">// instead define reference with `use` expression</span>
+   <span class="n">use</span> <span class="n">get</span>(<span class="n">storage</span>, <span class="n">key</span> <span class="k">of</span> <span class="n">Key</span>)
+</pre></div>
+</div>
+<p>Interfaces do not create namespaces, our function <tt class="code docutils literal"><span class="pre">get</span></tt>
+will be available as <tt class="code docutils literal"><span class="pre">get</span></tt>, not as <tt class="code docutils literal"><span class="pre">Storage:get</span></tt></p>
+<p><strong>Generic function will dispatch only on arguments for whom interfaces are declared.</strong></p>
+<p>Interfaces in Arza perform two important functions</p>
+<ul>
+<li><p class="first">Formalisation of type behavior. Consider Arza&#8217;s pattern matching.
+If custom type used as first argument in <tt class="code docutils literal"><span class="pre">first</span></tt> and <tt class="code docutils literal"><span class="pre">rest</span></tt> generics,
+it can be destructured by <tt class="code docutils literal"><span class="pre">x::xs</span> <span class="pre">and</span> <span class="pre">[x,</span> <span class="pre">x1,</span> <span class="pre">...xs]</span></tt> patterns.</p>
+<p>Because in prelude  there is interface</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Seq</span> =
+    <span class="n">first</span>(<span class="n">Seq</span>)
+    <span class="n">rest</span>(<span class="n">Seq</span>)
+</pre></div>
+</div>
+<p>Compiler just perform this check <tt class="code docutils literal"><span class="pre">arza:is_implemented(customtype,</span> <span class="pre">Seq)</span></tt></p>
+</li>
+</ul>
 </div>
 
 
@@ -60,11 +124,11 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="types.html"
-                        title="previous chapter">User Types and subtyping</a></p>
+  <p class="topless"><a href="funcs.html"
+                        title="previous chapter">Functions and partial application</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="import.html"
-                        title="next chapter">Import and Export</a></p>
+  <p class="topless"><a href="immutable.html"
+                        title="next chapter">Working with immutable state</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/multi.txt"
@@ -94,10 +158,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="immutable.html" title="Working with immutable state"
              >next</a> |</li>
         <li class="right" >
-          <a href="types.html" title="User Types and subtyping"
+          <a href="funcs.html" title="Functions and partial application"
              >previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>

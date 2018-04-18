@@ -312,7 +312,15 @@ def hole_arg(index):
 
 def infix_lparen_pattern(parser, op, token, left):
     # right = _parse_lparen_tuple(parser, token)
-    items = _prefix_lcurly(parser, parser.map_key_parser, TT_RPAREN)
+    # items = _prefix_lcurly(parser, parser.map_key_parser, TT_RPAREN)
+    items = _parse_comma_separated(parser, TT_RPAREN)
+    right = node_1(NT_INDEXED, token, items)
+    return node_2(NT_OF, token, right, left)
+
+
+def infix_lcurly_pattern(parser, op, token, left):
+    # right = _parse_lparen_tuple(parser, token)
+    items = _prefix_lcurly(parser, parser.map_key_parser, TT_RCURLY)
     right = node_1(NT_MAP, token, items)
     return node_2(NT_OF, token, right, left)
 

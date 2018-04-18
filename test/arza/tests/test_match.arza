@@ -4,7 +4,7 @@ import io
 type V(x,y)
 
 fun test_match() =
-    // records are not tuples
+    // records are tuples or maps
     let
         vec = V(1,2)
     in
@@ -15,6 +15,20 @@ fun test_match() =
                 | V(x, y) = #three
             ),
             #three
+        )
+        affirm:is_equal((x, y), (1, 2))
+
+    let
+        vec = V(1,2)
+    in
+        affirm:is_equal(
+            (match vec
+                | (1, 2) = #one
+                | (a, b) = #two
+                | V{x=3, y} = #three
+                | V{x, y=2} = #four
+            ),
+            #four
         )
         affirm:is_equal((x, y), (1, 2))
 

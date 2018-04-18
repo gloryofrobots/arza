@@ -8,6 +8,7 @@ include tests (run as test)
 //include tests:test_coro (test as test)
 //include tests:test_process (test as test)
 
+type Vec2(x, y)
 
 fun main() =
     test()

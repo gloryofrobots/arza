@@ -230,6 +230,7 @@ class PatternParser(BaseParser):
         prefix(self, TT_TYPE, NT_TYPE, prefix_nud, 100)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
+        infix(self, TT_LCURLY, None, 95, infix_lcurly_pattern, layout=layout_lcurly)
         infix(self, TT_AS, None, 15, infix_bind)
         infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)

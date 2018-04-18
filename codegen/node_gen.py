@@ -22,6 +22,7 @@ NODES = [
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
+  "NT_INDEXED",
   "NT_UNIT",
   "NT_CONS",
   "NT_COMMA",

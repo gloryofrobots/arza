@@ -40,10 +40,11 @@ in Arza it would be just
    | maybe of Just
    | {val} of Just
    | {val=1 as value} of Just
+   // treating types as Tuples
    | Just(val)
    | Just(1)
-   | Just(val=1)
-   | Just(val=1 as value)
+   // Treating types as maps
+   | Just{val=1 as value}
 
    match Nothing
    | maybe of Maybe

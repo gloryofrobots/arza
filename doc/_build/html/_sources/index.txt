@@ -14,10 +14,11 @@ Contents:
    overview
    tour
    indents
-   building_blocks
+   operators
+   stdtypes
+   types
    flow
    funcs
-   types
    multi
    immutable
    import

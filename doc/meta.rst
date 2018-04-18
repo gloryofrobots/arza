@@ -8,47 +8,8 @@ Arza metaprogramming facilities are limited.
 
 I have not decided yet if I want macroses in language or not.
 
-Basically you can define custom operators in prelude global to all modules,
-or defeine them locally in you module for your module only.
+Instead I borrowed concept of decorators from Python to generate functions and types at compile time.
 
-And you can use Python style decorators to generate functions and types at compile time.
-
-Custom operators
-----------------
-
-Fragment from prelude 
-
-::
-
-    // first name is operator, second is function which be used by compiler and third is precedence 
-    infixl (<|, <|, 15)
-    // right binding
-    infixr (!, __send__, 15)
-    infixl (|>, |>, 20)
-    infixl (==, ==, 35)
-    infixl (!=, !=, 35)
-    infixl (+, +, 40)
-    infixl (-, -, 40)
-    infixl (.., .., 90)
-
-    // prefix operators
-    prefix (~, ~, 96)
-    // cannot use - it is set for infix operator
-    prefix (-, negate, 55)
-    // some operators can not be defined because they have special meaning to parser
-    // for example (: , .  ::) 
-
-    // later define functions
-    
-    fun |>(x, f) = f(x)
-    fun <|(f, x) = f(x)
-    fun >>(f, g) = x -> g(f(x))
-    fun <<(f, g) = x -> f(g(x))
-    // ... and others
-
-So when Arza parses expression :code:`1 + 2` it compiles to :code:`+(1, 2)`.
-
-The same with prefix operator. Expression :code:`-1` will be transformed into :code:`negate(1)`
 
 Decorators
 ----------

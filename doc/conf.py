@@ -308,6 +308,8 @@ class BCLLexer(RegexLexer):
             word('receive'),
             word('init'),
             word('in'),
+            word('and'),
+            word('or'),
             word('try'),
             word('throw'),
             word('catch'),

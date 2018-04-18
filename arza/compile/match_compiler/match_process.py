@@ -74,6 +74,45 @@ def _process_tuple(state, pattern, patterns, path):
     return patterns
 
 
+def _process_indexed(state, pattern, patterns, path):
+    children = node_first(pattern)
+    count = api.length(children)
+    count_i = api.to_i(count)
+    if count_i == 0:
+        return _process_unit(state, pattern, patterns, path)
+
+    last_index = count_i - 1
+
+    patterns = add_pattern(patterns, ["is_indexed", _create_path_node(nodes.node_token(pattern), path)])
+
+    last_child = children[last_index]
+    if node_type(last_child) == NT_REST:
+        min_length = space.newint(last_index)
+        patterns = add_pattern(patterns, ["length_ge", _create_path_node(nodes.node_token(pattern), path), min_length])
+    else:
+        patterns = add_pattern(patterns, ["length", _create_path_node(nodes.node_token(pattern), path), count])
+
+    if last_index > 0:
+        for i, child in enumerate(children[0:last_index]):
+            # TODO MOVE TO PARSER
+            if node_type(child) == NT_REST:
+                return transform_error(state, child, u'Invalid use of ... in tuple pattern')
+
+            patterns = _process_pattern(state, child, patterns,
+                                        add_path(create_int_node(nodes.node_token(child), i), path))
+    last_child = children[last_index]
+    if node_type(last_child) == NT_REST:
+        last_child = node_first(last_child)
+        cur_slice = create_drop_node(nodes.node_token(last_child),
+                                     create_int_node(nodes.node_token(last_child), last_index))
+        patterns = _process_pattern(state, last_child, patterns, add_path(cur_slice, path))
+    else:
+        patterns = _process_pattern(state, last_child, patterns,
+                                    add_path(create_int_node(nodes.node_token(last_child), last_index), path))
+
+    return patterns
+
+
 def _process_unit(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["equal",
                                       _create_path_node(nodes.node_token(pattern), path),
@@ -292,6 +331,8 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_tuple(state, pattern, patterns, path)
     elif ntype == NT_UNIT:
         return _process_unit(state, pattern, patterns, path)
+    elif ntype == NT_INDEXED:
+        return _process_indexed(state, pattern, patterns, path)
     elif ntype == NT_LIST:
         return _process_list(state, pattern, patterns, path)
     elif ntype == NT_MAP:

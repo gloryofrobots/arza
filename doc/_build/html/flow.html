@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
-    <link rel="next" title="Import and Export" href="import.html" />
-    <link rel="prev" title="Building blocks" href="building_blocks.html" /> 
+    <link rel="next" title="Functions and partial application" href="funcs.html" />
+    <link rel="prev" title="User types and subtyping" href="types.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="funcs.html" title="Functions and partial application"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="building_blocks.html" title="Building blocks"
+          <a href="types.html" title="User types and subtyping"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -157,10 +157,9 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 
 
     <span class="cm">// operator `of` restricts value to type or interface</span>
-    | <span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>
-    | _ <span class="n">of</span> <span class="n">List</span>
-    | {<span class="n">field</span>_<span class="n">name</span>} <span class="n">of</span> <span class="n">MyType</span>
-    | (<span class="n">first</span>_<span class="n">index</span>, <span class="n">second</span>_<span class="n">index</span>) <span class="n">of</span> <span class="n">MyType</span>
+    | <span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>
+    | _ <span class="k">of</span> <span class="n">List</span>
+    | {<span class="n">field</span>1, <span class="n">field</span>2=<span class="n">value</span>2} <span class="k">of</span> <span class="n">MyType</span>
 
     <span class="cm">// operator as binds value or expression to variable</span>
 
@@ -181,8 +180,19 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
     | <span class="n">None</span> <span class="n">it</span> <span class="n">will</span> <span class="n">bind</span> <span class="n">everything</span> <span class="n">to</span> <span class="n">name</span> <span class="n">None</span>
     <span class="cm">// interface</span>
     | <span class="k">interface</span> <span class="n">Seq</span>
+    <span class="cm">// in case of concrete types</span>
+    <span class="cm">//treating custom types as tuples</span>
+    | <span class="n">Vector</span>3(<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>)
+    <span class="cm">//treating custom types as maps</span>
+    | <span class="n">Vector</span>3{<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>}
 </pre></div>
 </div>
+<p>All data structure pattern except tuples <tt class="code docutils literal"><span class="pre">(n1,</span> <span class="pre">n2,</span> <span class="pre">...n)</span></tt> are accepting user defined data types that
+implement specific protocols.</p>
+<ul class="simple">
+<li>To support patterns <tt class="code docutils literal"><span class="pre">x::x1::xs</span></tt> and <tt class="code docutils literal"><span class="pre">[x,</span> <span class="pre">x1,</span> <span class="pre">...xs]</span></tt> type must implement <tt class="code docutils literal"><span class="pre">Seq</span></tt> interface</li>
+<li>To support <tt class="code docutils literal"><span class="pre">{key1=value,</span> <span class="pre">key2=value}</span></tt> type must implement <tt class="code docutils literal"><span class="pre">Dict</span></tt> interface</li>
+</ul>
 <p>Some examples</p>
 <div class="highlight-arza"><div class="highlight"><pre><span class="k">match</span> {<span class="n">name</span>=<span class="s">&quot;Bob&quot;</span>, <span class="n">surname</span>=(<span class="s">&quot;Alice&quot;</span>, <span class="s">&quot;Dou&quot;</span>), <span class="n">age</span>=42}
     | {<span class="n">age</span>=41, <span class="n">names</span>} =  (<span class="n">name</span>, <span class="n">age</span>, 0)
@@ -196,9 +206,9 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
     | (3, <span class="n">A</span>) = <span class="s">#third</span>
 
 <span class="k">match</span> {<span class="n">x</span>=1, <span class="n">y</span>=<span class="s">&quot;YYYY&quot;</span>}
-    | {<span class="n">x</span> <span class="n">of</span> <span class="n">String</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">Int</span>} = <span class="s">#first</span>
-    | {<span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>, <span class="n">y</span>=<span class="s">&quot;YY&quot;</span> <span class="n">of</span> <span class="n">String</span>} = <span class="s">#second</span>
-    | {<span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>, <span class="n">y</span>=<span class="s">&quot;YYYY&quot;</span> <span class="n">of</span> <span class="n">String</span>} = <span class="s">#third</span>
+    | {<span class="n">x</span> <span class="k">of</span> <span class="n">String</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">Int</span>} = <span class="s">#first</span>
+    | {<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span>=<span class="s">&quot;YY&quot;</span> <span class="k">of</span> <span class="n">String</span>} = <span class="s">#second</span>
+    | {<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span>=<span class="s">&quot;YYYY&quot;</span> <span class="k">of</span> <span class="n">String</span>} = <span class="s">#third</span>
 
 <span class="k">match</span> [1,2,3]
     | [<span class="n">a</span>, <span class="n">b</span>, <span class="n">c</span> <span class="n">as</span> <span class="n">B</span>2] <span class="n">as</span> <span class="n">B</span>1 = (<span class="n">B</span>1, <span class="n">B</span>2, <span class="n">a</span>, <span class="n">b</span>, <span class="n">c</span>)
@@ -312,11 +322,11 @@ are matched to catch clauses and if there are no successful branch ExceptionMatc
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="building_blocks.html"
-                        title="previous chapter">Building blocks</a></p>
+  <p class="topless"><a href="types.html"
+                        title="previous chapter">User types and subtyping</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="import.html"
-                        title="next chapter">Import and Export</a></p>
+  <p class="topless"><a href="funcs.html"
+                        title="next chapter">Functions and partial application</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/flow.txt"
@@ -346,10 +356,10 @@ are matched to catch clauses and if there are no successful branch ExceptionMatc
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="funcs.html" title="Functions and partial application"
              >next</a> |</li>
         <li class="right" >
-          <a href="building_blocks.html" title="Building blocks"
+          <a href="types.html" title="User types and subtyping"
              >previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>

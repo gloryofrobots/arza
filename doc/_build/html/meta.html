@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="arza 0.1 documentation" href="index.html" />
     <link rel="next" title="Processes" href="process.html" />
-    <link rel="prev" title="Import and Export" href="import.html" /> 
+    <link rel="prev" title="Import and export" href="import.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="process.html" title="Processes"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="import.html" title="Import and export"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -53,42 +53,7 @@
 <h1>Metaprogramming<a class="headerlink" href="#metaprogramming" title="Permalink to this headline">¶</a></h1>
 <p>Arza metaprogramming facilities are limited.</p>
 <p>I have not decided yet if I want macroses in language or not.</p>
-<p>Basically you can define custom operators in prelude global to all modules,
-or defeine them locally in you module for your module only.</p>
-<p>And you can use Python style decorators to generate functions and types at compile time.</p>
-<div class="section" id="custom-operators">
-<h2>Custom operators<a class="headerlink" href="#custom-operators" title="Permalink to this headline">¶</a></h2>
-<p>Fragment from prelude</p>
-<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// first name is operator, second is function which be used by compiler and third is precedence</span>
-<span class="k">infixl</span> (&lt;|, &lt;|, 15)
-<span class="cm">// right binding</span>
-<span class="k">infixr</span> (!, __<span class="n">send</span>__, 15)
-<span class="k">infixl</span> (|&gt;, |&gt;, 20)
-<span class="k">infixl</span> (==, ==, 35)
-<span class="k">infixl</span> (!=, !=, 35)
-<span class="k">infixl</span> (+, +, 40)
-<span class="k">infixl</span> (-, -, 40)
-<span class="k">infixl</span> (.., .., 90)
-
-<span class="cm">// prefix operators</span>
-<span class="k">prefix</span> (~, ~, 96)
-<span class="cm">// cannot use - it is set for infix operator</span>
-<span class="k">prefix</span> (-, <span class="n">negate</span>, 55)
-<span class="cm">// some operators can not be defined because they have special meaning to parser</span>
-<span class="cm">// for example (: , .  ::)</span>
-
-<span class="cm">// later define functions</span>
-
-<span class="k">fun</span> |&gt;(<span class="n">x</span>, <span class="n">f</span>) = <span class="n">f</span>(<span class="n">x</span>)
-<span class="k">fun</span> &lt;|(<span class="n">f</span>, <span class="n">x</span>) = <span class="n">f</span>(<span class="n">x</span>)
-<span class="k">fun</span> &gt;&gt;(<span class="n">f</span>, <span class="n">g</span>) = <span class="n">x</span> -&gt; <span class="n">g</span>(<span class="n">f</span>(<span class="n">x</span>))
-<span class="k">fun</span> &lt;&lt;(<span class="n">f</span>, <span class="n">g</span>) = <span class="n">x</span> -&gt; <span class="n">f</span>(<span class="n">g</span>(<span class="n">x</span>))
-<span class="cm">// ... and others</span>
-</pre></div>
-</div>
-<p>So when Arza parses expression <tt class="code docutils literal"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span></tt> it compiles to <tt class="code docutils literal"><span class="pre">+(1,</span> <span class="pre">2)</span></tt>.</p>
-<p>The same with prefix operator. Expression <tt class="code docutils literal"><span class="pre">-1</span></tt> will be transformed into <tt class="code docutils literal"><span class="pre">negate(1)</span></tt></p>
-</div>
+<p>Instead I borrowed concept of decorators from Python to generate functions and types at compile time.</p>
 <div class="section" id="decorators">
 <h2>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h2>
 <p>Decorators are syntactic sugar borrowed from Python for function composition.</p>
@@ -118,19 +83,19 @@ and must return different function.</p>
 
 @<span class="n">add</span>1(10)
 @<span class="n">add</span>2(0.1, 0.2)
-<span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">Int</span>) = <span class="n">x</span> + <span class="n">y</span>
+<span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">Int</span>) = <span class="n">x</span> + <span class="n">y</span>
 
 @<span class="n">add</span>1(10)
-<span class="k">def</span>+(<span class="n">super</span>) <span class="n">sub</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">Int</span>) =  <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) + <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>)
+<span class="k">def</span>+(<span class="n">super</span>) <span class="n">sub</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">Int</span>) =  <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) + <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>)
 
 <span class="cm">// decorators can be used in traits also</span>
 <span class="k">trait</span> <span class="n">Add</span>(<span class="n">T</span>) <span class="k">for</span> <span class="n">Float</span> =
     @<span class="n">add</span>1(0.1)
     @<span class="n">add</span>1(0.01)
-    <span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">T</span>) = <span class="n">x</span> + <span class="n">y</span>
+    <span class="k">def</span> <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">x</span> + <span class="n">y</span>
 
     @<span class="n">add</span>2(0.001, 0.0001)
-    <span class="k">def</span>+ (<span class="n">super</span>) <span class="n">add</span>(<span class="n">x</span> <span class="n">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="n">of</span> <span class="n">T</span>) = <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) * -1
+    <span class="k">def</span>+ (<span class="n">super</span>) <span class="n">add</span>(<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">super</span>(<span class="n">x</span>, <span class="n">y</span>) * -1
 
 <span class="cm">// lets test our new functions</span>
 <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">all</span>(<span class="n">f</span>(1,2), <span class="n">add</span>(1,2), 13.3)
@@ -222,7 +187,6 @@ and must return different function.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Metaprogramming</a><ul>
-<li><a class="reference internal" href="#custom-operators">Custom operators</a></li>
 <li><a class="reference internal" href="#decorators">Decorators</a></li>
 </ul>
 </li>
@@ -230,7 +194,7 @@ and must return different function.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="import.html"
-                        title="previous chapter">Import and Export</a></p>
+                        title="previous chapter">Import and export</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="process.html"
                         title="next chapter">Processes</a></p>
@@ -266,7 +230,7 @@ and must return different function.</p>
           <a href="process.html" title="Processes"
              >next</a> |</li>
         <li class="right" >
-          <a href="import.html" title="Import and Export"
+          <a href="import.html" title="Import and export"
              >previous</a> |</li>
         <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
       </ul>

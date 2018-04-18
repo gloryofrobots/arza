@@ -23,7 +23,7 @@ Consider Map
    }
 
 If we need to create new copy of this map with  new home address
-and if we have only standart function :code:`put` to work with our code would be very verbose
+and if we have only standart function :code:`put` to work with, code might be very verbose
 
 ::
 
@@ -34,22 +34,23 @@ and if we have only standart function :code:`put` to work with our code would be
                             #homes,
                              cons(new_adress, person.adresses.homes)))
 
-This code is hard to read and very error prone. Instead in Arza you can just write
+This is hard to read and very error prone. Instead in Arza you can just write
 
 ::
 
    
    let new_adress = "Zelena st. 20"
    let new_person = person.{adresses.homes = cons(new_adress, @)}
-   // Here @ placeholder means current path
+   // Here @ placeholder means current path inside data structure
    // in case of this example it will be person.addresses.homes
+
 
 Syntax like :code:`object.property = value` impossible in Arza.
 
 Instead you can use more powerfull modification syntax where you can add more than one change at once.
 With this syntax you can also emulate :code:`+=` operator from imperative languages
 
-Lets consider more complex examples
+More complex examples
 
 ::
 
@@ -108,3 +109,27 @@ Lets consider more complex examples
             }
         in
             affirm:is_equal(d1, [[0, 1, 4], 9, 4, [5, 6, 7, [64, 81, [42.0]]]])
+
+Default values
+--------------
+
+
+Arza does not support keyword arguments in functions, if you want to receive some kind of arbitrary options
+you can use maps. However often in such option maps some keys must be set to default values.
+
+Arza support special syntax for updating data structure value if it is absent
+
+
+::
+
+    let
+        v = {x=1, y=2}
+        // right side of or operator will be assigned to x
+        // only if there are no previous value
+        v1 = v.{x or 42, z or 42, y = 42}
+        // the same works with lists, tuples and other data structs
+        l = [0, 1, 2, 3]
+        l1 = l.{0 or 5}
+    in
+        affirm:is_equal(v1, {y = 42, x = 1, z = 42})
+        affirm:is_equal(l1, l)

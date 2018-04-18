@@ -1,5 +1,5 @@
-Building blocks
-===============
+Builtin types
+=============
 
 .. highlight:: arza
 
