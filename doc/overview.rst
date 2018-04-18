@@ -3,8 +3,11 @@ Overview
 
 Arza is an experimental eager functional programming language
 with dynamic type system supporting multiple dispatch and immutable data out of the box.
+
 It can be described like Erlang with a lot of syntactic sugar and some new ideas.
+
 Currently it exists only as a prototype written in Python.
+
 I am considering either to add RPython jit generation or to rewrite full interpreter in C.
 
 

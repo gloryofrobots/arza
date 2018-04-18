@@ -8,9 +8,9 @@ Current interpreter is implemented in Python (without RPython)
 
 There is no REPL at the moment.
 
-Detailed documentation here 
+Detailed [documentation](arza.readthedocs.io)
 
-## To run 
+## To run tests
 ```
 python targetarza.py test/arza/main.arza
 ```
