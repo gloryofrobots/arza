@@ -1,0 +1,61 @@
+import arza:_number
+import arza:_std as std_behavior
+import arza:_datatype as datatype
+
+
+trait TEq(T) =
+    def == (this of T, other) as std_behavior:equal
+    def != (this of T, other) as  std_behavior:not_equal
+
+trait TStr(T) =
+    def str (this of T) as std_behavior:str
+    def repr (this of T) as std_behavior:repr
+
+trait TRepr(T) =
+    def repr (this of T) = str(this)
+
+trait TOrder(T1, T2) =
+    def < (x of T1, y of T2) = cmp(x, y) == LT
+
+    def >= (x of T1, y of T2) = cmp(x, y) != LT
+
+    def > (x of T1, y of T2) = cmp(x, y) == GT
+
+trait TCmp(T1, T2) =
+    def cmp (x of T1, y of T2) =
+        if x == y then EQ
+        elif x <= y then LT
+        else GT
+
+trait TMinMax(T1, T2) =
+    def max (x of T1, y of T2) =
+        if x <= y then y
+        else x
+
+
+    def min (x of T1, y of T2) =
+        if x <= y then x
+        else y
+
+
+trait (T) for [Float, Int] =
+    def - (x of T, y) as _number:sub
+    def + (x of T, y) as _number:add
+    def * (x of T, y) as _number:mul
+    def / (x of T, y) as _number:div
+    def mod (x of T, y) as _number:mod
+    def negate (x of T) as _number:negate
+    def ** (x of T, y) as  _number:pow
+
+    def <= (x of T, y) as _number:le
+
+    instance TEq(T)
+    instance TStr(T)
+    instance TCmp(T, Any)
+    instance TMinMax(T, Any)
+    instance TOrder(T, Any)
+
+describe (Float, Int) as (Comparable, LessEq, Ord, Num, Pow, Eq, Repr)
+
+describe (Function, Generic, Partial, Datatype, Bool, Interface) as (Eq, Repr)
+

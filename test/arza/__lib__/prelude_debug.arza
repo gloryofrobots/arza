@@ -1,0 +1,105 @@
+
+
+//    let
+//        a = array(1,2,3,4)
+//        a2 =
+//            a |> seq:map(fun(x) = x * 2, _)
+//              |> seq:map(fun(x) = x + 100, _)
+//    in
+//        PL(a2)
+//    f(0, 1, (_, 3))(2)
+//    let
+//        m = load_module("prelude")
+//    in
+//        io:print(m)
+//let d = {
+//    x = 1,
+//    y = -1
+//}
+//let d1 = d.{
+//    s1 = d.s1.{
+//        s2 = d.s1.s2.{
+//            x = 1
+//        }
+//    },
+//    s1 = d.s1.{
+//        s2 = d.s1.s2
+//    }
+//}
+//let d1 = d.{
+//    s1.s2.x = 1,
+//    s1.s2 = @
+//}
+//type T1 is (T4, T5) = (v1, v2, v3)
+//type T1 = (v1, v2, v3)
+//type T1
+//
+//
+//type T1 = (v1, v2, v3)
+//type T2 = (v1,
+//                        v2,
+//v3)
+//
+//type T3
+//    (v1, v2, v3)
+//
+//type T4
+//(v1, v2, v3)
+//
+//(   type
+//T5
+//(v1,
+//  v2,
+//     v3))
+
+//def+(super) f(i of Int) = 1
+//interface Coll is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+//
+//interface Coll =
+//    fun put(@key, value, @coll)
+//    use at(key, @coll)
+//
+//interface =
+//    fun put(key, value, coll)
+//    fun at(key, coll)
+
+//interface ShrinkableCollection  =
+//    fun del(Key, @coll)
+//
+
+
+//trait __T0(T of I) for api:String =
+//    def f0({name} of T) = 1
+//
+//trait __T1(T) for [String, api:Char, Symbol] =
+//    def f1(s of T) = 1
+//
+//trait __T2(T1, T2) for (String, Char) =
+//    def f2(s of T1, v of T2) = 1
+//    def f2_1(s of T1, v of T2) = 2
+//
+//trait __T3(T1, T2) for [(S, V), (api:A, B)] =
+//    def f3(s of T1, s2 of T2) = 1
+
+//(trait Body(T1, T2) =
+//    (use T1 in
+//        (def do_something(t of T1) = 1))
+//
+//    (def do_something(t of T1) = 1)
+//    (def do_something(t of T2, t of T1) = 2)
+//)
+//
+//trait Body(T1, T2) =
+//    OtherTrait(T1)
+//    use T1 in
+//        def do_something(t of T1) = 1
+//
+//    def do_something(t of T2, t of T1) = 2
+//
+
+//fun Body(T1, T2) =
+//    fun (x, y) = x
+//    fun (x, y, z) = z
+
+
+

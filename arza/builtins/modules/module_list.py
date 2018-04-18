@@ -4,7 +4,8 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_list')
+    from arza.builtins import lang_names
+    _module_name = lang_names.get_lang_symbol(process, u"_list")
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'length', length, 1)
     api.put_native_function(process, _module, u'to_tuple', to_tuple, 1)
@@ -72,28 +73,24 @@ def _tail(process, routine):
 
 @complete_native_routine
 def slice(process, routine):
-    arg2 = routine.get_arg(2)
-
+    arg0 = routine.get_arg(0)
     arg1 = api.to_i(routine.get_arg(1))
+    arg2 = api.to_i(routine.get_arg(2))
 
-    arg0 = api.to_i(routine.get_arg(0))
-
-    return plist.slice(arg2, arg0, arg1)
+    return plist.slice(arg0, arg1, arg2)
 
 
 @complete_native_routine
 def take(process, routine):
-    arg1 = routine.get_arg(1)
+    arg0 = routine.get_arg(0)
+    arg1 = api.to_i(routine.get_arg(1))
 
-    arg0 = api.to_i(routine.get_arg(0))
-
-    return plist.take(arg1, arg0)
+    return plist.take(arg0, arg1)
 
 
 @complete_native_routine
 def drop(process, routine):
-    arg1 = routine.get_arg(1)
+    arg0 = routine.get_arg(0)
+    arg1 = api.to_i(routine.get_arg(1))
 
-    arg0 = api.to_i(routine.get_arg(0))
-
-    return plist.drop(arg1, arg0)
+    return plist.drop(arg0, arg1)

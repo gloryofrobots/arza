@@ -1,0 +1,34 @@
+include arza:_io (write, stdout)
+import seq
+import string
+
+fun out() = stdout()
+
+fun _write_list_items(args, func, file, sep, ends) =
+    let
+        s = string:join_with(sep, args, func) ++ ends
+    in
+        write(s, file)
+
+
+fun printr(...args) =
+    _write_list_items(args, repr, out(), " ", "\n")
+
+
+fun print(...args) =
+    print_list(args)
+
+
+fun print_list(items) =
+    _write_list_items(items, str, out(), " ", "\n")
+
+
+fun println(...args) =
+    _write_list_items(args, str, out(), "\n", "\n")
+
+
+let
+    p = print
+    pln = println
+    pr = printr
+

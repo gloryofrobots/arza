@@ -127,7 +127,8 @@ class W_Tuple(W_Hashable):
 
     def _at_(self, index):
         from arza.types.space import newvoid, isint
-        assert isint(index)
+        if not isint(index):
+            return newvoid()
         try:
             el = self.elements[api.to_i(index)]
         except IndexError:
@@ -205,6 +206,14 @@ def prepend(tupl, val):
         return space.newtuple([val])
 
     return W_Tuple([val] + tupl.elements)
+
+
+def append(tupl, val):
+    type_check(tupl)
+    if space.isunit(tupl):
+        return space.newtuple([val])
+
+    return W_Tuple(tupl.elements + [val])
 
 
 def to_list(t):

@@ -4,7 +4,8 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_tuple')
+    from arza.builtins import lang_names
+    _module_name = lang_names.get_lang_symbol(process, u"_tuple")
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'slice', slice, 3)
     api.put_native_function(process, _module, u'take', take, 2)
@@ -12,6 +13,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'index_of', get_index, 2)
     api.put_native_function(process, _module, u'concat', concat, 2)
     api.put_native_function(process, _module, u'prepend', prepend, 2)
+    api.put_native_function(process, _module, u'append', append, 2)
     api.put_native_function(process, _module, u'to_list', _to_list, 1)
 
     _module.export_all()
@@ -20,40 +22,35 @@ def setup(process, stdlib):
 
 @complete_native_routine
 def slice(process, routine):
-    arg2 = routine.get_arg(2)
-
+    arg0 = routine.get_arg(0)
     arg1 = api.to_i(routine.get_arg(1))
+    arg2 = api.to_i(routine.get_arg(2))
 
-    arg0 = api.to_i(routine.get_arg(0))
-
-    return tuples.slice(arg2, arg0, arg1)
+    return tuples.slice(arg0, arg1, arg2)
 
 
 @complete_native_routine
 def take(process, routine):
-    arg1 = routine.get_arg(1)
+    arg0 = routine.get_arg(0)
+    arg1 = api.to_i(routine.get_arg(1))
 
-    arg0 = api.to_i(routine.get_arg(0))
-
-    return tuples.take(arg1, arg0)
+    return tuples.take(arg0, arg1)
 
 
 @complete_native_routine
 def drop(process, routine):
-    arg1 = routine.get_arg(1)
+    arg0 = routine.get_arg(0)
+    arg1 = api.to_i(routine.get_arg(1))
 
-    arg0 = api.to_i(routine.get_arg(0))
-
-    return tuples.drop(arg1, arg0)
+    return tuples.drop(arg0, arg1)
 
 
 @complete_native_routine
 def get_index(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.get_index(arg1, arg0)
+    return api.get_index(arg0, arg1)
 
 
 @complete_native_routine
@@ -67,11 +64,18 @@ def concat(process, routine):
 
 @complete_native_routine
 def prepend(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
+    return tuples.prepend(arg0, arg1)
 
-    return tuples.prepend(arg1, arg0)
+
+@complete_native_routine
+def append(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+
+    return tuples.append(arg0, arg1)
 
 
 @complete_native_routine

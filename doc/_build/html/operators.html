@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Operators &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Builtin types" href="stdtypes.html" />
+    <link rel="prev" title="Indentantions and layouts" href="indents.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="stdtypes.html" title="Builtin types"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="indents.html" title="Indentantions and layouts"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="operators">
+<h1>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h1>
+<p>You can define custom operators in prelude global to all modules,
+or define them locally in you module for your module only.</p>
+<p>Some of the operators like <tt class="code docutils literal"><span class="pre">::</span> <span class="pre">.</span> <span class="pre">:</span> <span class="pre">and</span> <span class="pre">or</span> <span class="pre">-&gt;</span> <span class="pre">#</span></tt>
+are declared internally and have special meaning for compiler</p>
+<p>All defined operators in prelude</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// first name is operator, second is function which be used by compiler and third is precedence</span>
+<span class="cm">// right binding</span>
+<span class="k">infixr</span> (:=, :=, 10)
+
+<span class="cm">// internal infix as of precedence 15</span>
+
+<span class="k">infixr</span> (&lt;-, &lt;-, 15)
+<span class="k">infixr</span> (!, __<span class="n">send</span>__, 15) <span class="cm">// sending message</span>
+<span class="k">infixl</span> (&lt;|, &lt;|, 15) <span class="cm">// pipe left</span>
+<span class="k">infixl</span> (|&gt;, |&gt;, 20) <span class="cm">// pipe right</span>
+
+<span class="cm">// internal infix or precedence 25</span>
+
+<span class="k">infixl</span> (&lt;&lt;, &lt;&lt;, 25) <span class="cm">// func composition left</span>
+<span class="k">infixl</span> (&gt;&gt;, &gt;&gt;, 25) <span class="cm">// func composition right</span>
+
+<span class="cm">// internal infix and precendece 30</span>
+
+<span class="k">infixl</span> (&lt;, &lt;, 35)
+<span class="k">infixl</span> (&gt;, &gt;, 35)
+<span class="k">infixl</span> (&gt;=, &gt;=, 35)
+<span class="k">infixl</span> (&lt;=, &lt;=, 35)
+<span class="k">infixl</span> (==, ==, 35)
+<span class="k">infixl</span> (!=, !=, 35)
+<span class="k">infixl</span> (++, ++, 40)
+<span class="k">infixl</span> (+, +, 40)
+<span class="k">infixl</span> (-, -, 40)
+<span class="k">infixl</span> (*, *, 50)
+<span class="k">infixl</span> (/, /, 50)
+
+<span class="cm">// prefix operator</span>
+<span class="cm">// cannot use - it is set for infix operator</span>
+<span class="cm">// use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -</span>
+<span class="k">prefix</span> (-, <span class="n">arza</span>:<span class="n">negate</span>, 55)
+
+<span class="cm">// internal infix :: precedence 60</span>
+
+<span class="k">infixl</span> (**, **, 60) <span class="cm">// pow</span>
+
+<span class="cm">// internal prefix # precedence 70</span>
+
+<span class="k">prefix</span> (&amp;, &amp;, 70) <span class="cm">// deref</span>
+<span class="k">prefix</span> (&amp;&amp;, &amp;&amp;, 70) <span class="cm">//deref deref</span>
+<span class="k">infixl</span> (.., .., 90) <span class="cm">// carrying</span>
+
+<span class="cm">// internal infix (  .{ .[ precedence 95</span>
+
+<span class="k">prefix</span> (~, ~, 96) <span class="cm">// carried function</span>
+
+<span class="cm">// internal infix . : precedence 100</span>
+</pre></div>
+</div>
+<p>Later you must create functions for declared operators like</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">fun</span> |&gt;(<span class="n">x</span>, <span class="n">f</span>) = <span class="n">f</span>(<span class="n">x</span>)
+<span class="k">fun</span> &lt;|(<span class="n">f</span>, <span class="n">x</span>) = <span class="n">f</span>(<span class="n">x</span>)
+<span class="k">fun</span> &gt;&gt;(<span class="n">f</span>, <span class="n">g</span>) = <span class="n">x</span> -&gt; <span class="n">g</span>(<span class="n">f</span>(<span class="n">x</span>))
+<span class="k">fun</span> &lt;&lt;(<span class="n">f</span>, <span class="n">g</span>) = <span class="n">x</span> -&gt; <span class="n">f</span>(<span class="n">g</span>(<span class="n">x</span>))
+<span class="cm">// ... and others</span>
+</pre></div>
+</div>
+<p>When Arza parses expression <tt class="code docutils literal"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span></tt> it compiles it to <tt class="code docutils literal"><span class="pre">+(1,</span> <span class="pre">2)</span></tt>.</p>
+<p>The same with prefix operator. Expression <tt class="code docutils literal"><span class="pre">-1</span></tt> will be transformed into <tt class="code docutils literal"><span class="pre">arza:negate(1)</span></tt></p>
+<div class="section" id="special-operators">
+<h2>Special operators<a class="headerlink" href="#special-operators" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">:</span></tt> like in <tt class="code docutils literal"><span class="pre">module:function()</span></tt> treats by compiler as exported name
+and as path separator in <tt class="code docutils literal"><span class="pre">import</span> <span class="pre">include</span></tt> expressions</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1
+<span class="k">let</span> <span class="n">three</span> = <span class="n">module</span>1:<span class="n">add</span>(1, 2)
+</pre></div>
+</div>
+</li>
+<li><p class="first">infix operators <tt class="code docutils literal"><span class="pre">and</span> <span class="pre">or</span></tt>  are compiled into jump instructions</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">-&gt;</span></tt>  creates lambda functions like <tt class="code docutils literal"><span class="pre">(x,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y</span></tt></p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">::</span></tt>  compiles into call <tt class="code docutils literal"><span class="pre">cons(left,</span> <span class="pre">right)</span></tt> in expressions and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">of</span></tt>  compiles into call <tt class="code docutils literal"><span class="pre">kindof(left,</span> <span class="pre">right)</span></tt> in expressions and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">as</span></tt>  compiles into call <tt class="code docutils literal"><span class="pre">cast(left,</span> <span class="pre">right)</span></tt> in expressions and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">.</span></tt> like in <tt class="code docutils literal"><span class="pre">left.right</span></tt> compiles into <tt class="code docutils literal"><span class="pre">at(left,</span> <span class="pre">#right)</span></tt> where
+<tt class="code docutils literal"><span class="pre">#right</span></tt> is symbol</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">.[</span></tt> like in <tt class="code docutils literal"><span class="pre">left.[right]</span></tt> compiles into <tt class="code docutils literal"><span class="pre">at(left,</span> <span class="pre">right)</span></tt> where
+<tt class="code docutils literal"><span class="pre">right</span></tt> is any expression</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">.{</span></tt> like in <tt class="code docutils literal"><span class="pre">left.{key=value}</span></tt> compiles into <tt class="code docutils literal"><span class="pre">put(left,</span> <span class="pre">#key,</span> <span class="pre">value)</span></tt>.
+If <tt class="code docutils literal"><span class="pre">key</span></tt> is enclosed in parens like <tt class="code docutils literal"><span class="pre">left.{(key)</span> <span class="pre">=</span> <span class="pre">value}</span></tt>
+it compiles to <tt class="code docutils literal"><span class="pre">put(left,</span> <span class="pre">key,</span> <span class="pre">value)</span></tt>.</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">let</span> <span class="n">x</span> = {<span class="n">x</span>=1, (1+2)=2}
+<span class="k">let</span> <span class="n">x</span>1 = <span class="n">x</span>.{<span class="n">x</span>=2, (<span class="n">True</span>)=2, (4-1)=2, <span class="s">&quot;key&quot;</span>=<span class="s">&quot;value&quot;</span>}
+</pre></div>
+</div>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">(</span></tt> like in <tt class="code docutils literal"><span class="pre">myfunc(ar1,</span> <span class="pre">arg2)</span></tt> compiles into special bytecode instruction and
+receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">{</span></tt> like in <tt class="code docutils literal"><span class="pre">MyType{key1=value1,</span> <span class="pre">key2}</span></tt> receives special treatment in pattern matching</p>
+</li>
+<li><p class="first">infix operator <tt class="code docutils literal"><span class="pre">|</span></tt> delimits clauses in pattern matching</p>
+</li>
+<li><p class="first">prefix operator <tt class="code docutils literal"><span class="pre">not</span></tt> compiles  into special instruction</p>
+</li>
+<li><p class="first">prefix operator <tt class="code docutils literal"><span class="pre">#</span></tt> like in <tt class="code docutils literal"><span class="pre">#I_AM_SYMBOL</span></tt>
+constructs  symbols in expressions and in match clauses</p>
+</li>
+<li><p class="first">prefix operator <tt class="code docutils literal"><span class="pre">...</span></tt> like in <tt class="code docutils literal"><span class="pre">[x,</span> <span class="pre">x1,</span> <span class="pre">...xs]</span></tt> and <tt class="code docutils literal"><span class="pre">myfunc(...varargs)</span></tt>
+receives special treatment in pattern mathing and in function calls</p>
+</li>
+</ul>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">match</span> [1, 2, 3]
+| [<span class="n">head</span>, ...<span class="n">tail</span>]
+
+<span class="k">fun</span> <span class="n">f</span>(...<span class="n">args</span>) =
+    <span class="cm">//calling other func</span>
+    <span class="cm">// ...args flush sequence into call arguments</span>
+    <span class="n">f</span>2(1, 2, ...<span class="n">args</span>, 3, 4)
+</pre></div>
+</div>
+</div>
+<div class="section" id="functions-as-infix-operators">
+<h2>Functions as infix operators<a class="headerlink" href="#functions-as-infix-operators" title="Permalink to this headline">¶</a></h2>
+<p>To call function as infix operator enclose it in ``.</p>
+<p><strong>Such function operator will have precedence 35</strong></p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="n">mymap</span> `<span class="n">has</span>` <span class="s">#key</span>
+<span class="n">i</span> `<span class="n">kindof</span>` <span class="n">Int</span>
+1 `<span class="n">add</span>` 2
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Operators</a><ul>
+<li><a class="reference internal" href="#special-operators">Special operators</a></li>
+<li><a class="reference internal" href="#functions-as-infix-operators">Functions as infix operators</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="indents.html"
+                        title="previous chapter">Indentantions and layouts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="stdtypes.html"
+                        title="next chapter">Builtin types</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/operators.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="stdtypes.html" title="Builtin types"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="indents.html" title="Indentantions and layouts"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

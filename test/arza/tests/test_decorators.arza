@@ -10,8 +10,8 @@ fun add2(fn, v1, v2) =
         fn(x+v1, y+v2)
 
 interface I =
-    fun add(I, y)
-    fun sub(I, y)
+    add(I, I)
+    sub(I, I)
 
 @add1(10)
 @add2(0.1, 0.2)
@@ -20,7 +20,7 @@ def add(x of Int, y of Int) = x + y
 def sub(x of Int, y of Int) =  x - y
 
 @add1(10)
-def+(super) sub(x of Int, y of Int) =  super(x, y) + super(x, y)
+override (super) sub(x of Int, y of Int) =  super(x, y) + super(x, y)
 
 
 trait Add(T) for Float =
@@ -29,7 +29,7 @@ trait Add(T) for Float =
     def add(x of T, y of T) = x + y
 
     @add2(0.001, 0.0001)
-    def+ (super) add(x of T, y of T) = super(x, y) * -1
+    override (super) add(x of T, y of T) = super(x, y) * -1
 
 
 fun test_simple() =
@@ -48,13 +48,13 @@ fun test_simple() =
 
 fun add_y(t) = add_field(t, #y)
 
-fun add_field ((fields, _init) as typedata, field) =
-    if not elem(field, fields) then
-        (append(field, fields), _init)
+fun add_field ((supertype, fields, _init) as typedata, field) =
+    if not has(fields, field) then
+        (supertype, append(fields, field), _init)
     else
         typedata
 
-fun init_field_with((fields, _init), field, value, fn) =
+fun init_field_with((supertype, fields, _init), field, value, fn) =
     let
         fun _wrap(...args) =
             let
@@ -62,10 +62,10 @@ fun init_field_with((fields, _init), field, value, fn) =
             in
                 data.{(field) = fn(@, value)}
     in
-        (fields, _wrap)
+        (supertype, fields, _wrap)
 
 
-fun init_field((fields, _init), field, value) =
+fun init_field((supertype, fields, _init), field, value) =
     let
         fun _wrap(...args) =
             let
@@ -73,7 +73,7 @@ fun init_field((fields, _init), field, value) =
             in
                 data.{(field) = value}
     in
-        (fields, _wrap)
+        (supertype, fields, _wrap)
 
 
 @add_field(#z)
@@ -90,11 +90,11 @@ type ABC()
 @init_field_with(0, #c, (x, y) -> x ++ y)
 @add_field(#b)
 type AB(a)
-    init (self, a) = self.{a=a}
+    init (ab, a) = ab.{a=a}
 
 type Sum(v)
-    init (self, x, y) =
-        self.{v = x + y}
+    init (sum, x, y) =
+        sum.{v = x + y}
 
 @extends(Sum)
 type Sum2

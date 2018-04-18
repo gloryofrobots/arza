@@ -312,7 +312,15 @@ def hole_arg(index):
 
 def infix_lparen_pattern(parser, op, token, left):
     # right = _parse_lparen_tuple(parser, token)
-    items = _prefix_lcurly(parser, parser.map_key_parser, TT_RPAREN)
+    # items = _prefix_lcurly(parser, parser.map_key_parser, TT_RPAREN)
+    items = _parse_comma_separated(parser, TT_RPAREN)
+    right = node_1(NT_INDEXED, token, items)
+    return node_2(NT_OF, token, right, left)
+
+
+def infix_lcurly_pattern(parser, op, token, left):
+    # right = _parse_lparen_tuple(parser, token)
+    items = _prefix_lcurly(parser, parser.map_key_parser, TT_RCURLY)
     right = node_1(NT_MAP, token, items)
     return node_2(NT_OF, token, right, left)
 
@@ -623,21 +631,21 @@ def prefix_if(parser, op, token):
 # but making let-in a statement not an option
 # but let without in must be a statement
 # may be something like parser.expression_level variable
-# def prefix_let(parser, op, token):
-#     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-#     if parser.token_type == TT_IN:
-#         advance_expected(parser, TT_IN)
-#         inexp = statements(parser, [])
-#         return node_2(NT_LET, token, letblock, inexp)
-#     else:
-#         return letblock
-
-
 def prefix_let(parser, op, token):
     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-    advance_expected(parser, TT_IN)
-    inexp = statements(parser, [])
-    return node_2(NT_LET, token, letblock, inexp)
+    if parser.token_type == TT_IN:
+        advance_expected(parser, TT_IN)
+        inexp = statements(parser, [])
+        return node_2(NT_LET, token, letblock, inexp)
+    else:
+        return letblock
+
+
+# def prefix_let(parser, op, token):
+#     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
+#     advance_expected(parser, TT_IN)
+#     inexp = statements(parser, [])
+#     return node_2(NT_LET, token, letblock, inexp)
 
 
 def prefix_module_let(parser, op, token):
@@ -966,6 +974,16 @@ def prefix_nameless_fun(parser, op, token):
     return node_2(NT_FUN, token, name, funcs)
 
 
+def prefix_expression_fun(parser, op, token):
+    if parser.token_type == TT_NAME:
+        name, funcs = _parse_named_function(parser, token)
+    else:
+        name = empty_node()
+        funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+
+    return node_2(NT_FUN, token, name, funcs)
+
+
 def prefix_module_fun(parser, op, token):
     name, funcs = _parse_named_function(parser.expression_parser, token)
     return node_2(NT_FUN, token, name, funcs)
@@ -979,7 +997,7 @@ def prefix_decorator(parser, op, token):
         args = list_node([])
 
     decorated = statement(parser)
-    check_node_types(parser, decorated, [NT_TYPE, NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
+    check_node_types(parser, decorated, [NT_TYPE, NT_FUN, NT_DEF, NT_OVERRIDE, NT_DECORATOR])
     # decorated = expect_expression_of_types(parser, 0, [NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
     # if parser.token_type in [TT_DEF, TT_FUN, TT_AT_SIGN]:
     #     name, funcs = _parse_named_function(parser.expression_parser, token)
@@ -1144,23 +1162,33 @@ def prefix_type_init(parser, op, token):
 def stmt_type(parser, op, token):
     """
     complicated operator, possible syntaxes
-    type T1(v1, ...T2, v3)
+    type T1 is T2 (v1, ...T2, v3)
         init(x, y, ...) =
             ...
     type T1
     """
     check_token_type(parser, TT_NAME)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    if parser.token_type == TT_IS:
+        advance_expected(parser, TT_IS)
+        supertype = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    else:
+        supertype = empty_node()
 
-    construct = empty_node()
     if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser.type_parser, token)
-        if parser.token_type == TT_INIT:
-            construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
+        # allows to replace type X is Record to type X ()
+        if nodes.is_empty_node(supertype) and api.length_i(fields) == 0:
+            supertype = nodes.create_name_node_s(token, lang_names.TRECORD)
     else:
         fields = empty_node()
 
-    return nodes.node_3(NT_TYPE, token, name, fields, construct)
+    if parser.token_type == TT_INIT:
+        construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
+    else:
+        construct = empty_node()
+
+    return nodes.node_4(NT_TYPE, token, name, supertype, fields, construct)
 
 
 # DERIVE
@@ -1199,7 +1227,11 @@ def _parse_def_body(parser, token, signature):
         advance_expected(parser, TT_AS)
         method = expression(parser, 0)
     else:
-        funcs = _parse_single_function(parser, signature)
+        # funcs = _parse_single_function(parser, signature)
+        if parser.token_type == TT_CASE:
+            funcs = _parse_recursive_function(parser, nodes.empty_node(), signature, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+        else:
+            funcs = _parse_single_function(parser, signature)
         method = node_2(NT_FUN, token, empty_node(), funcs)
     return method
 
@@ -1260,7 +1292,8 @@ def _parse_def_signature(parser, token):
                 _type = None
 
             if not _type:
-                _type = nodes.create_void_node(get_node_token(arg))
+                _type = nodes.create_name_node_s(token, lang_names.TANY)
+                # _type = nodes.create_void_node(get_node_token(arg))
             else:
                 _type = nodes.create_name_node_s(token, _type)
             dispatch.append(_type)
@@ -1313,16 +1346,16 @@ def infix_def_of(parser, op, token, left):
 
 # DEFPLUS
 
-def _parse_defplus(parser, op, token, allow_non_determined=False):
+def _parse_override(parser, op, token, allow_non_determined=False):
     advance_expected(parser, TT_LPAREN)
-    super_name = expression(parser.def_parser.def_plus_super_parser, 0)
+    super_name = expression(parser.def_parser.override_super_parser, 0)
     advance_expected(parser, TT_RPAREN)
     method = _parse_def(parser, op, token, allow_non_determined)
-    return nodes.node_2(NT_DEF_PLUS, token, super_name, method)
+    return nodes.node_2(NT_OVERRIDE, token, super_name, method)
 
 
-def stmt_def_plus(parser, op, token):
-    return _parse_defplus(parser, op, token, False)
+def stmt_override(parser, op, token):
+    return _parse_override(parser, op, token, False)
 
 
 # INTERFACE
@@ -1333,15 +1366,9 @@ def prefix_interface_valueof(parser, op, token):
     return node_1(NT_TUPLE, token, list_node([sym, name]))
 
 
-def prefix_interface_generic_fun(parser, op, token):
-    generic_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-    args = node_1(NT_LIST, token, items)
-    return node_2(NT_GENERIC, token, generic_name, args)
-
 
 def prefix_interface_fun(parser, op, token):
-    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    name = itself(parser, op, token)
     args = _parse_comma_separated(parser.function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     return node_2(NT_GENERIC, token, name, args)
 
@@ -1387,10 +1414,6 @@ def infix_interface_of(parser, op, token, left):
 
 
 def stmt_interface(parser, op, token):
-    if parser.token_type == TT_ASSIGN:
-        advance_expected(parser, TT_ASSIGN)
-        return statements(parser.interface_parser.generic_parser, TERM_BLOCK)
-
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
 
     if parser.token_type == TT_LPAREN:
@@ -1456,8 +1479,8 @@ def _trait_for_ensure_tuple(node):
         return node
 
 
-def prefix_trait_def_plus(parser, op, token):
-    return _parse_defplus(parser, op, token, True)
+def prefix_trait_override(parser, op, token):
+    return _parse_override(parser, op, token, True)
 
 
 def prefix_trait_def(parser, op, token):

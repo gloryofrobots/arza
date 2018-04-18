@@ -1,0 +1,42 @@
+import io
+import affirm
+
+interface N =
+    add(x of N, y of N)
+
+interface Size(I) =
+    size(I)
+    _size(I)
+
+type Vec()
+
+type Vec2 is Vec
+    (x, y)
+    init(v, x, y) =
+        v.{x=x, y=y}
+
+type Vec3 is Vec
+    (...Vec2, z)
+    init (vec, x, y, z) =
+        super(Vec2, vec, x, y).{z=z}
+
+type Vec3Float is Vec3
+    init (vec, x of Float, y of Float, z of Float) =
+        super(Vec3, vec, x, y, z)
+
+def size(v of Vec) = _size(v)
+def _size(v of Vec) = throw NotImplementedError(#_size)
+
+def _size(v of Vec2) = 2
+def _size(v of Vec3) = 3
+
+fun test() =
+    let
+        v2 = Vec2(1, 2)
+        v3 = Vec3(3, 4, 5)
+        v3f = Vec3Float(3.0, 4.0, 5.0)
+
+    affirm:is_equal(size(v2), 2)
+    affirm:is_equal(size(v3), 3)
+    affirm:is_equal(size(v3f), 3)
+    affirm:is_throw(Vec3Float, [1, 0, #c])

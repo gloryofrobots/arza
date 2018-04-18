@@ -86,7 +86,8 @@ class CodeRoutine(BaseRoutine):
 
             # api.d.pbp(self.BP, "_execute", opcode)
             # api.d.pbp(self.BP, "------ routine ----", api.to_s(self._name_), process)
-            # self._print_stack()
+            # if api.d.has_bp(self.BP):
+            #     self._print_stack()
             # self._print_code(opcode)
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
@@ -164,7 +165,7 @@ class CodeRoutine(BaseRoutine):
                         api.put_at_index(env, arg1, value)
             # *************************************
             elif STORE_TEMPORARY == tag:
-                value = stack.top()
+                value = stack.pop()
                 env.set_temporary(arg1, value)
             # *************************************
             elif UNPACK_TUPLE == tag:

@@ -39,11 +39,155 @@ fun trait_x(T1) {
     }
 }
 
-class XYZ(X):
-    init(x, y, z):
-        super(x)
-        self.z = z
+protocol Eq(F, S) =
+    PartialEq._
+    PartialEq.(eq, ne, ge)
+    Num.+
+    ==(F, S)
+    !=(F, S) = not F == S
+
+
+
+type X (...A, a,b,c,d,e,f)
+    init(self, B, C) =
+        self.b = B
+        self.c = C
+
+    instance A
+    instance Eq(_, B)
+    def index_of (val, self of T) as _datatype:record_index_of
+    def keys(self) as _datatype:record_keys
+    def values(self) as _datatype:record_values
 
 
 
 
+trait TRecord(T) =
+    def index_of (val, self of T) as _datatype:record_index_of
+    def keys(self) as _datatype:record_keys
+    def values(self) as _datatype:record_values
+
+    def put (k, v, self) as std_behavior:put
+    def at (self, k) as std_behavior:at
+    def del (self, el) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
+    def len (self) as std_behavior:len
+    def is_empty (self) as std_behavior:is_empty
+    def cast(to_what, self) as std_behavior:cast
+
+
+trait TEq(T1, T2) =
+    def == (self, other) as std_behavior:equal
+    def != (self, other) as  std_behavior:not_equal
+
+trait TStr(T) =
+    def str (self of T) as std_behavior:str
+    def repr (self of T) as std_behavior:repr
+
+trait TRe
+trait T
+
+
+instance T(X)
+
+type Y()
+
+trait T(T1, T2)
+    extend (T1, T2)
+        def ==(x, y) =
+        def !=(x, y) =
+
+
+type Instance
+
+type Error <: Instance
+    (x, y, z)
+
+type Error
+    behavior(Instance, Any)
+
+
+{: x=1, y=2 :}
+
+{% x=1, y=2 %}
+
+{~ x=1, y=2 ~}
+
+
+
+
+
+
+
+
+fun foreach(f coll)
+    | (f [])  empty coll;
+    | (f hd::tl) (
+        f hd;
+        foreach f tl;
+    )
+
+
+
+
+
+X = clone Y (
+    m = fun (x y z) (
+        + x y (- x z);
+        [x y z].map fun i (i + 1);
+        :map [x y z] fun i (i + 1);
+        :map (list x y z) [i| i + 1];
+    )
+)
+
+X = class Y (
+  defun m (x y z) (
+
+  )
+)
+
+x = :new X;
+m = :m x 1 2 3
+
+X <: Y (
+    f = fun (x y z) (
+
+    )
+)
+
+X = class Y (
+    m = fun x y z (
+        + x y (- x z);
+    )
+)
+
+set builtin_amake fun size (
+    val_check size int;
+    set s (val_int size);
+    set a (alloc_array s);
+    foreach 0 s fun (i) (
+        :put (val_array_ptr a) i vall_null;
+    );
+    return a;
+)
+
+defun builtin_amake (size) (
+    val_check size int.
+    s = val_int size.
+    a = alloc_array s.
+    foreach 0 s fun (i) (
+        :put val_array_ptr a .. i vall_null.
+    ).
+    return a.
+)
+
+static value builtin_amake( value size ) {
+	value a;
+	int i,s;
+	val_check(size,int);
+	s = val_int(size);
+	a = alloc_array(s);
+	for(i=0;i<s;i++)
+		val_array_ptr(a)[i] = val_null;
+	return a;
+}

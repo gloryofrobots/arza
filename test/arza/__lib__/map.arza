@@ -1,0 +1,30 @@
+import arza:_map
+import string
+import seq
+import std
+
+trait TMap(M) for Map =
+    instance std:TEq(M)
+
+    def put (m of M, k, v) as std_behavior:put
+    def del (m of M, el) as std_behavior:del
+    def has (m of M, el) as std_behavior:has
+    def is_empty (m of M) as std_behavior:is_empty
+    def len (m of M) as std_behavior:len
+
+    def repr(m of M) = str(m)
+
+    def str(m of M) =
+        let fun _joiner((fst, snd)) =
+                str(fst) ++ "=" ++ repr(snd)
+        in "{"
+                ++ string:join_with(", ", to_seq(m), _joiner) ++
+           "}"
+
+    def to_seq(m of M) = _map:to_list(m)
+
+    def keys(m of M) = seq:map(to_seq(m), at(_, 0))
+    def values(m of M) = seq:map(to_seq(m), at(_, 1))
+--------------------------------------------------
+
+describe Map as (Eq, Len, Repr, Coll, Dict, ToSeq)

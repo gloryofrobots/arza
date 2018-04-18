@@ -1,0 +1,452 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Interfaces and multimethods &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Working with immutable state" href="immutable.html" />
+    <link rel="prev" title="Functions and partial application" href="funcs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="immutable.html" title="Working with immutable state"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="funcs.html" title="Functions and partial application"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="interfaces-and-multimethods">
+<h1>Interfaces and multimethods<a class="headerlink" href="#interfaces-and-multimethods" title="Permalink to this headline">¶</a></h1>
+<p>Arza&#8217;s approach to polymorphism is probably the most original part of the language</p>
+<p>If you want to learn in details about multiple dispatch you can read excelent Eli Bendersky&#8217;s articles
+<a class="reference external" href="https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/">https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch/</a></p>
+<p>Arza uses generic functions with multiple dispatch and intefaces that restricts and formalises relations
+between types and generics.</p>
+<div class="section" id="interfaces">
+<h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h2>
+<p>Interface is a term that most often is an attribute of object oriented system. It describes set of operations
+that specific class can do.</p>
+<p>But how can concept of interfaces can be applied to multimethods?
+In Arza interface can be described as a set of generic functions and specific argument positions in this functions.</p>
+<p>For example</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Storage</span> =
+   <span class="n">get</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">Storage</span>, <span class="n">key</span>)
+
+<span class="k">interface</span> <span class="n">Key</span> =
+   <span class="k">use</span> <span class="n">get</span>(<span class="n">storage</span>, <span class="n">key</span> <span class="k">of</span> <span class="n">Key</span>)
+</pre></div>
+</div>
+<p>In example above we declare two interfaces that share the same generic function <tt class="code docutils literal"><span class="pre">get</span></tt>.</p>
+<p>Expression <tt class="code docutils literal"><span class="pre">storage</span> <span class="pre">of</span> <span class="pre">Storage</span></tt> bind first argument of function <tt class="code docutils literal"><span class="pre">get</span></tt> to interface <tt class="code docutils literal"><span class="pre">Storage</span></tt>.</p>
+<p>Interface <tt class="code docutils literal"><span class="pre">Storage</span></tt> will be implemented by all types that act like first arguments in <tt class="code docutils literal"><span class="pre">get</span></tt>.
+Interface <tt class="code docutils literal"><span class="pre">Key</span></tt> will be implemented by all types that act like second arguments in <tt class="code docutils literal"><span class="pre">get</span></tt>.</p>
+<p>The same code can be written in shorter way</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// all declarations are equivalent</span>
+
+<span class="k">interface</span> <span class="n">Storage</span> =
+   <span class="n">get</span>(<span class="n">Storage</span>, <span class="n">key</span>)
+
+<span class="cm">//here I is interface alias</span>
+<span class="k">interface</span> <span class="n">Storage</span>(<span class="n">I</span>) =
+   <span class="n">get</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">I</span>, <span class="n">key</span>)
+
+<span class="cm">// or even shorter</span>
+<span class="k">interface</span> <span class="n">Storage</span>(<span class="n">I</span>) =
+   <span class="n">get</span>(<span class="n">I</span>, <span class="n">key</span>)
+</pre></div>
+</div>
+<p><strong>Generic function can be declared only inside interface. They can not be declared twice</strong></p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Storage</span> =
+   <span class="n">get</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">Storage</span>, <span class="n">key</span>)
+
+<span class="k">interface</span> <span class="n">Key</span> =
+   <span class="cm">// this is error, function get already declared above</span>
+   <span class="n">get</span>(<span class="n">storage</span>, <span class="n">key</span> <span class="k">of</span> <span class="n">Key</span>)
+   <span class="cm">// instead define reference with `use` expression</span>
+   <span class="k">use</span> <span class="n">get</span>(<span class="n">storage</span>, <span class="n">key</span> <span class="k">of</span> <span class="n">Key</span>)
+</pre></div>
+</div>
+<p>Interfaces do not create namespaces, our function <tt class="code docutils literal"><span class="pre">get</span></tt>
+will be available as <tt class="code docutils literal"><span class="pre">get</span></tt>, not as <tt class="code docutils literal"><span class="pre">Storage:get</span></tt></p>
+<p><strong>Generic function will dispatch only on arguments for whom interfaces are declared.</strong></p>
+<p>Interfaces in Arza perform two important functions</p>
+<ul>
+<li><p class="first">Formalisation of type behavior. Consider Arza&#8217;s pattern matching.
+If custom type used as first argument in <tt class="code docutils literal"><span class="pre">first</span></tt> and <tt class="code docutils literal"><span class="pre">rest</span></tt> generics,
+it can be destructured by <tt class="code docutils literal"><span class="pre">x::xs</span> <span class="pre">and</span> <span class="pre">[x,</span> <span class="pre">x1,</span> <span class="pre">...xs]</span></tt> patterns.</p>
+<p>Because in prelude  there is interface</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Seq</span> =
+    <span class="n">first</span>(<span class="n">Seq</span>)
+    <span class="n">rest</span>(<span class="n">Seq</span>)
+</pre></div>
+</div>
+<p>Compiler just perform this check <tt class="code docutils literal"><span class="pre">arza:is_implemented(customtype,</span> <span class="pre">Seq)</span> <span class="pre">==</span> <span class="pre">True</span></tt></p>
+<p>Also consider complex program with a lot of multimethods. In some point you may want to ensure that specific
+generics implemented for specifice types</p>
+</li>
+<li><p class="first">Limit number of arguments to perform multiple dispatch.
+Multiple dispatch is a costly procedure, especially for dynamic languages.
+Even with cache strategies substantial amount of methods can degrade performance.
+By limiting number of dispatch arguments compiler can more easily fall back to single dispatch.</p>
+<p>function <tt class="code docutils literal"><span class="pre">put</span></tt> has one of the biggest call rate in Arza
+and because this function defined only with one interface it&#8217;s call time is more optimised</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Put</span>(<span class="n">I</span>) =
+    <span class="n">put</span>(<span class="n">I</span>, <span class="n">key</span>, <span class="n">value</span>)
+</pre></div>
+</div>
+</li>
+</ul>
+<p><strong>One interface can have multiple roles in one generic function</strong></p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Eq</span>(<span class="n">I</span>) =
+   ==(<span class="n">I</span>, <span class="n">I</span>)
+   !=(<span class="n">I</span>, <span class="n">I</span>)
+</pre></div>
+</div>
+<p>Only types that have both first and second roles in <strong>==</strong> and <strong>!=</strong> generics will implement <strong>Eq</strong> interface</p>
+<p>Interfaces can be concatenated</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Put</span>(<span class="n">I</span>) =
+    <span class="n">put</span>(<span class="n">I</span>, <span class="n">key</span>, <span class="n">value</span>)
+
+<span class="k">interface</span> <span class="n">At</span>(<span class="n">I</span>) =
+    <span class="n">at</span>(<span class="n">I</span>, <span class="n">key</span>)
+    <span class="n">has</span>(<span class="n">I</span>, <span class="n">key</span>)
+
+<span class="cm">// you can combine interfaces</span>
+<span class="k">interface</span> <span class="n">Coll</span> <span class="k">is</span> (<span class="n">Put</span>, <span class="n">At</span>)
+</pre></div>
+</div>
+<p>In some specific case there is a need to dispatch not on type of the argument but on argument value.
+Example is the <tt class="code docutils literal"><span class="pre">cast</span></tt> function.</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Cast</span>(<span class="n">I</span>) =
+    <span class="n">cast</span>(<span class="n">I</span>, <span class="k">valueof</span> <span class="n">to</span>_<span class="n">what</span>)
+
+<span class="k">interface</span> <span class="n">Castable</span>(<span class="n">I</span>) =
+    <span class="k">use</span> <span class="n">cast</span>(<span class="n">what</span>, <span class="n">I</span>)
+</pre></div>
+</div>
+<p>To specify that we need to dispatch on value keyword <tt class="code docutils literal"><span class="pre">valueof</span></tt> is used.</p>
+<p>Afterwards we can use it like</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">import</span> <span class="n">affirm</span>
+
+<span class="k">type</span> <span class="n">Robot</span>(<span class="n">battery</span>_<span class="n">power</span>)
+
+<span class="k">def</span> <span class="n">cast</span>(<span class="n">r</span> <span class="k">of</span> <span class="n">Robot</span>, <span class="k">type</span> <span class="n">Int</span>) = <span class="n">r</span>.<span class="n">battery</span>_<span class="n">power</span>
+
+<span class="k">def</span> <span class="n">cast</span>(<span class="n">r</span> <span class="k">of</span> <span class="n">Robot</span>, <span class="k">interface</span> <span class="n">Seq</span>) = [<span class="n">r</span> <span class="k">as</span> <span class="n">Int</span>]
+
+<span class="k">def</span> <span class="n">cast</span>(<span class="n">r</span> <span class="k">of</span> <span class="n">Robot</span>, <span class="k">interface</span> <span class="n">Str</span>) = <span class="s">&quot;Robot&quot;</span>
+
+<span class="k">def</span> <span class="n">at</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Robot</span>, <span class="n">el</span>) <span class="n">when</span> <span class="n">el</span> == <span class="s">#battery_power</span>  =
+    <span class="cm">// casting back to Record type to avoid infinite loop</span>
+    (<span class="n">s</span> <span class="k">as</span> <span class="n">Record</span>).<span class="n">battery</span>_<span class="n">power</span> + 1
+
+
+<span class="k">fun</span> <span class="n">test</span>() =
+    <span class="k">let</span>
+        <span class="n">r</span> = <span class="n">Robot</span>(42)
+    <span class="k">in</span>
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">r</span>.<span class="n">battery</span>_<span class="n">power</span>, 43)
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">r</span> <span class="k">as</span> <span class="n">Int</span>, 43)
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">r</span> <span class="k">as</span> <span class="n">Seq</span>, [43])
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">r</span> <span class="k">as</span> <span class="n">Str</span>, <span class="s">&quot;Robot&quot;</span>)
+</pre></div>
+</div>
+<p>If concrete type defines custom method for <tt class="code docutils literal"><span class="pre">at</span></tt> generic
+then to access it&#8217;s internal structure you must cast it to parent Record type.
+Like in example above</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">def</span> <span class="n">at</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Robot</span>, <span class="n">el</span>) <span class="n">when</span> <span class="n">el</span> == <span class="s">#battery_power</span>  =
+    <span class="cm">// casting back to Record type to avoid infinite loop</span>
+    (<span class="n">s</span> <span class="k">as</span> <span class="n">Record</span>).<span class="n">battery</span>_<span class="n">power</span> + 1
+</pre></div>
+</div>
+<p>Most of the times our programs can be easily implemented with single dispatch.
+In some cases especially for mathematical operations  double dispatch is very usefull.
+But sometimes there is a need for even bigger arity of dispatch function.</p>
+<p>I never actually encounter them in my own work,
+but here I found this example of <a class="reference internal" href="examples.html#triple-dispatch-label"><em>Triple Dispatch</em></a> on the internet</p>
+</div>
+<div class="section" id="defining-methods">
+<h2>Defining methods<a class="headerlink" href="#defining-methods" title="Permalink to this headline">¶</a></h2>
+<p>To define new method for generic function use <tt class="code docutils literal"><span class="pre">def</span></tt> expression</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Num</span> =
+    <span class="cm">//interface must be in both roles</span>
+    <span class="n">add</span>(<span class="n">Num</span>, <span class="n">Num</span>)
+    <span class="cm">// only first argument</span>
+    <span class="n">sub</span>(<span class="n">Num</span>, <span class="n">other</span>)
+
+
+<span class="k">type</span> <span class="n">Vec</span>2(<span class="n">x</span>, <span class="n">y</span>)
+
+<span class="k">def</span> <span class="n">add</span>(<span class="n">v</span>1 <span class="k">of</span> <span class="n">Vec</span>2, <span class="n">v</span>2 <span class="k">of</span> <span class="n">Vec</span>2) = <span class="n">Vec</span>2(<span class="n">v</span>1.<span class="n">x</span> + <span class="n">v</span>2.<span class="n">x</span>, <span class="n">v</span>1.<span class="n">y</span> + <span class="n">v</span>2.<span class="n">y</span>)
+
+<span class="cm">//However this would be an error</span>
+<span class="cm">// because we define second argument to have specific type</span>
+<span class="k">def</span> <span class="n">sub</span>(<span class="n">v</span>1 <span class="k">of</span> <span class="n">Vec</span>2, <span class="n">v</span>2 <span class="k">of</span> <span class="n">Vec</span>2) = <span class="n">Vec</span>2(<span class="n">v</span>1.<span class="n">x</span> - <span class="n">v</span>2.<span class="n">x</span>, <span class="n">v</span>1.<span class="n">y</span> - <span class="n">v</span>2.<span class="n">y</span>)
+
+<span class="cm">// This is correct</span>
+<span class="k">def</span> <span class="n">sub</span>(<span class="n">v</span>1 <span class="k">of</span> <span class="n">Vec</span>2, <span class="n">v</span>2) =
+    <span class="k">match</span> <span class="n">v</span>2
+    | <span class="n">Vec</span>2(<span class="n">x</span>, <span class="n">y</span>) = <span class="n">Vec</span>2(<span class="n">v</span>1.<span class="n">x</span> - <span class="n">x</span>, <span class="n">v</span>1.<span class="n">y</span> - <span class="n">y</span>)
+</pre></div>
+</div>
+<p>Method definition can be simple function and two level functions but not case function.</p>
+<p>Also method definition can have guards</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">Racer</span>(<span class="n">R</span>) =
+    <span class="n">race</span>_<span class="n">winner</span>(<span class="n">v</span>1 <span class="k">of</span> <span class="n">R</span>, <span class="n">v</span>2 <span class="k">of</span> <span class="n">R</span>)
+
+<span class="k">type</span> <span class="n">Car</span> (<span class="n">speed</span>)
+<span class="k">type</span> <span class="n">Plane</span> (<span class="n">speed</span>)
+
+<span class="k">fun</span> <span class="n">faster</span>(<span class="n">v</span>1, <span class="n">v</span>2) = <span class="n">v</span>1.<span class="n">speed</span> &gt; <span class="n">v</span>2.<span class="n">speed</span>
+
+<span class="k">def</span> <span class="n">race</span>_<span class="n">winner</span>(<span class="n">c</span>1 <span class="k">of</span> <span class="n">Car</span>, <span class="n">c</span>2 <span class="k">of</span> <span class="n">Car</span>)
+    | (<span class="n">c</span>1, <span class="n">c</span>2) <span class="n">when</span> <span class="n">faster</span>(<span class="n">c</span>1, <span class="n">c</span>2)  = <span class="n">c</span>1
+    | (<span class="n">c</span>1, <span class="n">c</span>2) <span class="n">when</span> <span class="n">arza</span>:<span class="n">at</span>(<span class="n">c</span>1, <span class="s">#speed)</span> &lt; <span class="n">c</span>2.<span class="n">speed</span> = <span class="n">c</span>2
+    | (<span class="n">c</span>1, <span class="n">c</span>2) <span class="n">when</span> <span class="n">c</span>1.<span class="n">speed</span> == <span class="n">c</span>2.<span class="n">speed</span> = <span class="n">c</span>1
+
+<span class="cm">// plane always wins</span>
+<span class="cm">// Double dispatch</span>
+<span class="k">def</span> <span class="n">race</span>_<span class="n">winner</span>(<span class="n">c</span> <span class="k">of</span> <span class="n">Car</span>, <span class="n">p</span> <span class="k">of</span> <span class="n">Plane</span>) = <span class="n">p</span>
+
+<span class="k">def</span> <span class="n">race</span>_<span class="n">winner</span>(<span class="n">p</span> <span class="k">of</span> <span class="n">Plane</span>, <span class="n">c</span> <span class="k">of</span> <span class="n">Car</span>) = <span class="n">p</span>
+</pre></div>
+</div>
+<p>There is a possibility to declare method not as function but as expression</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">def</span> <span class="n">somegeneric</span>(<span class="n">t</span> <span class="k">of</span> <span class="n">Sometype</span>) <span class="k">as</span> <span class="n">someexpression</span>()
+
+<span class="cm">// often it&#39;s used with functions defined in native modules</span>
+
+<span class="cm">// native module</span>
+<span class="k">import</span> <span class="n">arza</span>:_<span class="n">string</span>
+
+<span class="cm">// assign native functions as methods</span>
+<span class="k">def</span> <span class="n">slice</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">String</span>, _<span class="n">from</span>, _<span class="n">to</span>) <span class="k">as</span> _<span class="n">string</span>:<span class="n">slice</span>
+<span class="k">def</span> <span class="n">drop</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">String</span>, <span class="n">x</span>) <span class="k">as</span> _<span class="n">string</span>:<span class="n">drop</span>
+<span class="k">def</span> <span class="n">take</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">String</span>, <span class="n">x</span>) <span class="k">as</span> _<span class="n">string</span>:<span class="n">take</span>
+</pre></div>
+</div>
+<p>Sometimes there is a need to override existing method</p>
+<p>To do so use <tt class="code docutils literal"><span class="pre">override</span></tt> expression</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">interface</span> <span class="n">F</span> =
+    <span class="n">f</span>1(<span class="n">F</span>)
+
+<span class="k">def</span> <span class="n">f</span>1(<span class="n">i</span> <span class="k">of</span> <span class="n">Int</span>)
+    | 1 = <span class="s">#one</span>
+    | <span class="n">i</span> = <span class="n">i</span>
+
+<span class="cm">// overriding</span>
+<span class="cm">// expression (_) after override means that we do not need previous method</span>
+<span class="k">override</span>(_) <span class="n">f</span>1(<span class="n">i</span> <span class="k">of</span> <span class="n">Int</span>) = 21
+
+<span class="cm">// here we bind previous method to name super and call it in our new method</span>
+<span class="k">override</span>(<span class="n">super</span>) <span class="n">f</span>1(<span class="n">i</span> <span class="k">of</span> <span class="n">Int</span>) = <span class="n">super</span>(<span class="n">i</span>) + 21
+
+<span class="cm">// this can be done indefinitely</span>
+<span class="k">override</span>(<span class="n">super</span>) <span class="n">f</span>1(<span class="n">i</span> <span class="k">of</span> <span class="n">Int</span>) = <span class="n">super</span>(<span class="n">i</span>) + 42
+
+
+<span class="k">type</span> <span class="n">Val</span>(<span class="n">val</span>)
+
+<span class="cm">// specifying builtin operator +</span>
+<span class="k">def</span> + (<span class="n">v</span>1 <span class="k">of</span> <span class="n">Val</span>, <span class="n">v</span>2 <span class="k">of</span> <span class="n">Val</span>) = <span class="n">v</span>1.<span class="n">val</span> + <span class="n">v</span>2.<span class="n">val</span>
+
+<span class="cm">//overriding</span>
+<span class="k">override</span> (<span class="n">super</span>) + (<span class="n">v</span>1 <span class="k">of</span> <span class="n">Val</span>, <span class="n">v</span>2 <span class="k">of</span> <span class="n">Val</span>) = <span class="n">super</span>(<span class="n">v</span>1, <span class="n">v</span>2) * 2
+
+<span class="k">fun</span> <span class="n">test</span>() =
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">signatures</span>(<span class="n">f</span>1), [[<span class="n">Int</span>]])
+    <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">all</span>(<span class="n">f</span>1(1), <span class="n">f</span>1(0), <span class="n">f</span>1(10000), <span class="n">f</span>1(-1223), 84)
+
+    <span class="k">let</span>
+        <span class="n">v</span>1 = <span class="n">Val</span>(1)
+        <span class="n">v</span>2 = <span class="n">Val</span>(2)
+    <span class="k">in</span>
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>((<span class="n">v</span>1 + <span class="n">v</span>2), 6)
+</pre></div>
+</div>
+</div>
+<div class="section" id="ensuring-interface-implementation">
+<h2>Ensuring interface implementation<a class="headerlink" href="#ensuring-interface-implementation" title="Permalink to this headline">¶</a></h2>
+<p>After implementing all interface roles
+type will put reference to interface in it&#8217;s list of implemented interfaces.</p>
+<p>But if there is a need to ensuring that this type(types) implements one or more interfaces you
+can assert this with <tt class="code docutils literal"><span class="pre">describe</span></tt> expression.</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">describe</span> <span class="n">Symbol</span> <span class="k">as</span>  <span class="n">Concat</span>
+
+<span class="k">describe</span> <span class="n">String</span> <span class="k">as</span> (<span class="n">Eq</span>, <span class="n">Repr</span>,
+     <span class="n">Len</span>, <span class="n">Coll</span>,
+     <span class="n">Prepend</span>, <span class="n">Append</span>, <span class="n">Concat</span>, <span class="n">Cons</span>,
+     <span class="n">ToSeq</span>, <span class="n">Slice</span>, <span class="n">Empty</span>)
+
+<span class="k">describe</span> (<span class="n">Triple</span>, <span class="n">Pair</span>) <span class="k">as</span> <span class="n">Serializable</span>
+
+<span class="k">describe</span> (<span class="n">Dictionary</span>, <span class="n">Array</span>, <span class="n">Pair</span>, <span class="n">Triple</span>, <span class="n">Single</span>, <span class="n">SecondAndThird</span>) <span class="k">as</span> (<span class="n">Storage</span>, <span class="n">GetSet</span>)
+</pre></div>
+</div>
+<p>If some of the types does not implement even one of the interfaces then exception will be thrown.</p>
+</div>
+<div class="section" id="traits">
+<h2>Traits<a class="headerlink" href="#traits" title="Permalink to this headline">¶</a></h2>
+<p>Trait in Arza is a function that can work on types. This function consist of one or more
+<tt class="code docutils literal"><span class="pre">def</span> <span class="pre">instance</span> <span class="pre">override</span></tt> expressions. <tt class="code docutils literal"><span class="pre">instance</span></tt> expression is a trait application to specific
+number of types.</p>
+<p>Traits are tools for code reuse and expressiveness.
+If subtype-supertype relationship between types is unwanted traits can help to share behavior between them.</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// creating trait</span>
+<span class="cm">// trait excepts two types and defines for them two methods</span>
+<span class="k">trait</span> <span class="n">TEq</span>(<span class="n">T</span>1, <span class="n">T</span>2) =
+    <span class="k">def</span> <span class="n">equal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> == <span class="n">second</span>
+    <span class="k">def</span> <span class="n">notequal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> != <span class="n">second</span>
+
+
+<span class="cm">// applying previously defined trait to couple of types</span>
+<span class="k">instance</span> <span class="n">TEq</span>(<span class="n">Int</span>, <span class="n">Int</span>)
+<span class="k">instance</span> <span class="n">TEq</span>(<span class="n">Float</span>, <span class="n">Float</span>)
+<span class="k">instance</span> <span class="n">TEq</span>(<span class="n">Int</span>, <span class="n">Float</span>)
+<span class="k">instance</span> <span class="n">TEq</span>(<span class="n">Float</span>, <span class="n">Int</span>)
+</pre></div>
+</div>
+<p>Arza has special syntax for applying trait immidiatelly after it&#8217;s declaration</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">trait</span> <span class="n">TValue</span>(<span class="n">T</span>) <span class="k">for</span> <span class="n">MyType</span> =
+    <span class="k">def</span> <span class="n">val</span>(<span class="n">v</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">v</span>.<span class="n">value</span>
+
+<span class="cm">// to apply this to trait to more than one type</span>
+
+<span class="k">trait</span> <span class="n">TValue</span>(<span class="n">T</span>) <span class="k">for</span> [<span class="n">MyType</span>1, <span class="n">MyType</span>1, <span class="n">MyType</span>3] =
+    <span class="k">def</span> <span class="n">val</span>(<span class="n">v</span> <span class="k">of</span> <span class="n">T</span>) = <span class="n">v</span>.<span class="n">value</span>
+
+<span class="cm">// in case of more arguments</span>
+<span class="k">trait</span> <span class="n">TEq</span>(<span class="n">T</span>1, <span class="n">T</span>2) <span class="k">for</span> (<span class="n">Int</span>, <span class="n">Float</span>) =
+    <span class="k">def</span> <span class="n">equal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> == <span class="n">second</span>
+    <span class="k">def</span> <span class="n">notequal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> != <span class="n">second</span>
+
+ <span class="cm">// or to cover all relations</span>
+<span class="k">trait</span> <span class="n">TEq</span>(<span class="n">T</span>1, <span class="n">T</span>2)
+        <span class="k">for</span> [(<span class="n">Int</span>, <span class="n">Float</span>), (<span class="n">Int</span>, <span class="n">Int</span>), (<span class="n">Float</span>, <span class="n">Float</span>), (<span class="n">Float</span>, <span class="n">Int</span>)] =
+    <span class="k">def</span> <span class="n">equal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> == <span class="n">second</span>
+    <span class="k">def</span> <span class="n">notequal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> != <span class="n">second</span>
+</pre></div>
+</div>
+<div class="section" id="anonymous-traits">
+<h3>Anonymous traits<a class="headerlink" href="#anonymous-traits" title="Permalink to this headline">¶</a></h3>
+<p>If we do not care about reusing trait after declaration we can ommit trait name</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">trait</span> (<span class="n">T</span>1, <span class="n">T</span>2)
+        <span class="k">for</span> [(<span class="n">Int</span>, <span class="n">Float</span>), (<span class="n">Int</span>, <span class="n">Int</span>), (<span class="n">Float</span>, <span class="n">Float</span>), (<span class="n">Float</span>, <span class="n">Int</span>)] =
+    <span class="k">def</span> <span class="n">equal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> == <span class="n">second</span>
+    <span class="k">def</span> <span class="n">notequal</span> (<span class="n">first</span> <span class="k">of</span> <span class="n">T</span>1, <span class="n">second</span> <span class="k">of</span> <span class="n">T</span>2) = <span class="n">first</span> != <span class="n">second</span>
+
+<span class="cm">// applying anonymous trait to multiple types in serial order</span>
+<span class="k">trait</span> (<span class="n">T</span>) <span class="k">for</span> [<span class="n">Float</span>, <span class="n">Int</span>] =
+    <span class="cm">// applying trait inside trait</span>
+    <span class="k">instance</span> <span class="n">TEq</span>(<span class="n">T</span>, <span class="n">T</span>)
+    <span class="k">def</span> - (<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span>) <span class="k">as</span> _<span class="n">number</span>:<span class="n">sub</span>
+    <span class="k">def</span> + (<span class="n">x</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">y</span>) <span class="k">as</span> _<span class="n">number</span>:<span class="n">add</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Interfaces and multimethods</a><ul>
+<li><a class="reference internal" href="#interfaces">Interfaces</a></li>
+<li><a class="reference internal" href="#defining-methods">Defining methods</a></li>
+<li><a class="reference internal" href="#ensuring-interface-implementation">Ensuring interface implementation</a></li>
+<li><a class="reference internal" href="#traits">Traits</a><ul>
+<li><a class="reference internal" href="#anonymous-traits">Anonymous traits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="funcs.html"
+                        title="previous chapter">Functions and partial application</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="immutable.html"
+                        title="next chapter">Working with immutable state</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/multi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="immutable.html" title="Working with immutable state"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="funcs.html" title="Functions and partial application"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

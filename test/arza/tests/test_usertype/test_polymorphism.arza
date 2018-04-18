@@ -1,48 +1,36 @@
 import affirm
 
 type L(l)
-type None
+type Nil
 type Some(val)
 
-interface =
-    fun eq(self, other)
+interface E =
+    eq(this of E, other of E)
 
 trait(T) for L =
-    def len(self of T) = len(self.l)
+    def len(this of T) = len(this.l)
 
-    def is_empty(self of T) = is_empty(self.l)
+    def is_empty(this of T) = is_empty(this.l)
 
-    def first(self of T) = self
+    def first(this of T) = this
 
-    def rest(self of T) = self
+    def rest(this of T) = this
 
 
-def eq (self of Some, val of Some) = val == None
-def eq (self of Some, _) = False
+def eq (this of Some, val of Some) = val == Nil
+def eq (this of Some, _) = False
 
-//extend Some with
-//(
-//    def eq
-//        | (self, val of Some) = val == None
-//        | (self, _) = False
-//)
 
-def eq (self of None, {val} of Some) = val == None
-def eq (self of None, _ of None) = True
+def eq (this of Nil, {val} of Some) = val == Nil
+def eq (this of Nil, _ of Nil) = True
 
-//extend None with
-//(
-//    def eq
-//        | (self, {val} of Some) = val == None
-//        | (self, _ of None) = True
-//)
 
 fun test () =
     let
-        s = Some(None)
+        s = Some(Nil)
     in
-        affirm:is_true(None `eq` s)
-        affirm:is_false(s `eq` None)
+        affirm:is_true(Nil `eq` s)
+        affirm:is_false(s `eq` Nil)
 
 
     let

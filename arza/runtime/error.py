@@ -66,9 +66,9 @@ def throw_7(symbol_unistr, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
 
 
-def affirm_iterable(it, condition):
+def affirm_iterable(it, condition, expected=None):
     for i in it:
-        affirm_type(i, condition)
+        affirm_type(i, condition, expected)
 
 
 def affirm_type(obj, condition, expected=None):
@@ -76,7 +76,7 @@ def affirm_type(obj, condition, expected=None):
         if expected:
             expected_str = u"expected %s" % expected
         else:
-            expected_str = u""
+            expected_str = u"got %s" % obj.__class__.__name__
         return throw_2(Errors.TYPE_ERROR, space.safe_w(obj),
                        space.newstring(u"Wrong object type %s" % expected_str))
     return True
@@ -131,11 +131,10 @@ class Errors:
     VALUE_ERROR = u"ValueError"
     SLICE_ERROR = u"SliceError"
     INDEX_ERROR = u"IndexError"
-    INVOKE_ERROR = u"InvokeError"
     INVALID_ARG_COUNT_ERROR = u"InvalidArgCount"
-    METHOD_INVOKE_ERROR = u"MethodInvokeError"
-    METHOD_NOT_IMPLEMENTED_ERROR = u"MethodNotImplementedError"
-    METHOD_SPECIALIZE_ERROR = u"MethodSpecializeError"
+    INVOKE_ERROR = u"InvokeError"
+    NOT_IMPLEMENTED_ERROR = u"NotImplementedError"
+    SPECIALIZE_ERROR = u"SpecializeError"
     COMPILE_ERROR = u"CompileError"
     PARSE_ERROR = u"ParseError"
     ZERO_DIVISION_ERROR = u"ZeroDivisionError"
@@ -143,9 +142,8 @@ class Errors:
     MATH_DOMAIN_ERROR = u"MathDomainError"
     UNPACK_SEQUENCE_ERROR = u"UnpackSequenceError"
     FIBER_FLOW_ERROR = u"FiberFlowError"
-    NOT_IMPLEMENTED_ERROR = u"NotImplementedError"
     MATCH_ERROR = u"MatchError"
-    FUNCTION_MATCH_ERROR = u"FunctionArgumentsMatchError"
+    FUNCTION_MATCH_ERROR = u"FunctionMatchError"
     EXCEPTION_MATCH_ERROR = u"ExceptionMatchError"
     EXPORT_ERROR = u"ExportError"
     IMPLEMENTATION_ERROR = u"ImplementationError"

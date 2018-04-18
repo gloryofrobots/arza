@@ -48,7 +48,7 @@ class Stack:
     def push(self, element):
         from arza.types.space import isany
         if not isany(element):
-            raise RuntimeError(u"Not Any product", element)
+            raise RuntimeError(u"Product of Any expected", element)
 
         i = self.pointer()
         size = self.size()

@@ -1,7 +1,9 @@
 import tests:test_dispatch:test_inheritance:test_structural
 import tests:test_dispatch:test_inheritance:test_behavioral
+import tests:test_dispatch:test_inheritance:test_type
 
 
 fun test () =
     test_structural:test()
     test_behavioral:test()
+    test_type:test()

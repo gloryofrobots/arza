@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User types and subtyping &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Conditions and pattern matching" href="flow.html" />
+    <link rel="prev" title="Builtin types" href="stdtypes.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="flow.html" title="Conditions and pattern matching"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="stdtypes.html" title="Builtin types"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="user-types-and-subtyping">
+<h1>User types and subtyping<a class="headerlink" href="#user-types-and-subtyping" title="Permalink to this headline">¶</a></h1>
+<p>In Arza programmer can define abstract and concrete types</p>
+<div class="section" id="abstract-types">
+<h2>Abstract types<a class="headerlink" href="#abstract-types" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">type</span> <span class="n">None</span>
+<span class="k">type</span> <span class="n">Bool</span>
+<span class="k">type</span> <span class="n">One</span>
+<span class="k">type</span> <span class="n">LessThan</span>
+<span class="k">type</span> <span class="n">GreaterThan</span>
+</pre></div>
+</div>
+<p>Such types has an instances of themselves and can be used as singleton values
+For example in ML family languages one could write</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="n">data</span> <span class="n">Maybe</span> <span class="n">a</span> = <span class="n">Just</span> <span class="n">a</span> | <span class="n">Nothing</span>
+</pre></div>
+</div>
+<p>in Arza it would be just</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">type</span> <span class="n">Maybe</span>
+<span class="cm">// this is subtyping</span>
+<span class="k">type</span> <span class="n">Nothing</span> <span class="k">is</span> <span class="n">Maybe</span>
+<span class="k">type</span> <span class="n">Just</span>(<span class="n">val</span>)  <span class="k">is</span> <span class="n">Maybe</span>
+
+<span class="cm">// now use this type as pattern</span>
+<span class="cm">// all clauses will be successful here</span>
+<span class="k">match</span> <span class="n">Just</span>(1)
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Maybe</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Just</span>
+| {<span class="n">val</span>} <span class="k">of</span> <span class="n">Just</span>
+| {<span class="n">val</span>=1 <span class="k">as</span> <span class="n">value</span>} <span class="k">of</span> <span class="n">Just</span>
+<span class="cm">// treating types as Tuples</span>
+| <span class="n">Just</span>(<span class="n">val</span>)
+| <span class="n">Just</span>(1)
+<span class="cm">// Treating types as maps</span>
+| <span class="n">Just</span>{<span class="n">val</span>=1 <span class="k">as</span> <span class="n">value</span>}
+
+<span class="k">match</span> <span class="n">Nothing</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Maybe</span>
+| <span class="n">maybe</span> <span class="k">of</span> <span class="n">Nothing</span>
+| <span class="k">type</span> <span class="n">Nothing</span> <span class="cm">//need to distinguish between name and empy typeS</span>
+<span class="cm">// TODO make simpler type literal</span>
+| <span class="n">x</span> <span class="n">when</span> <span class="n">x</span> == <span class="n">Nothing</span>
+
+<span class="cm">// now  lets write some function</span>
+<span class="k">fun</span> <span class="n">operation</span>(<span class="n">data</span>) =
+    <span class="k">if</span> <span class="n">can</span>_<span class="n">do</span>_<span class="n">something</span>(<span class="n">data</span>) <span class="k">then</span>
+        <span class="k">let</span> <span class="n">val</span> = <span class="n">do</span>_<span class="n">something</span>(<span class="n">data</span>)
+        <span class="n">Just</span>(<span class="n">val</span>)
+    <span class="k">else</span>
+        <span class="n">Nothing</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="concrete-types">
+<h2>Concrete types<a class="headerlink" href="#concrete-types" title="Permalink to this headline">¶</a></h2>
+<p>Type <tt class="code docutils literal"><span class="pre">Just</span></tt> from example above is a concrete type. Such types when called like functions create records.
+Records in Arza are something like structs in C or named tuples. Internally they differ from tuples because they
+provide more efficient data sharing between mutated copies.</p>
+<p>Records support both access by name and by field index.</p>
+<p>It is forbidden to add new fields to records. You only create copy of existing ones with different values</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">let</span> <span class="n">t</span> = (1, 2, 3)
+<span class="cm">//this is highly undesirable</span>
+<span class="k">let</span> <span class="n">t</span>1 = <span class="n">put</span>(<span class="n">t</span>, 0, 42)
+<span class="cm">// instead</span>
+<span class="k">type</span> <span class="n">Three</span>(<span class="n">x</span>, <span class="n">y</span>, <span class="n">z</span>)
+<span class="k">let</span> <span class="n">t</span>2 = <span class="n">Three</span>(1, 2, 3)
+<span class="cm">// much more efficient</span>
+<span class="k">let</span> <span class="n">t</span>3 = <span class="n">put</span>(<span class="n">t</span>2, 0, 42)
+</pre></div>
+</div>
+<p>By default concrete types initalize fields in order of declaration in constructor, but programmer
+can create custom initalizer. Such initializer is function defined with <tt class="code docutils literal"><span class="pre">init</span></tt> keyword.</p>
+<p>Initializer receives uninitialized record as first argument and must set all of it&#8217;s declared fields.
+If any of the fields will not be set then exception will be thrown</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">type</span> <span class="n">Library</span>(<span class="n">available</span>_<span class="n">books</span>, <span class="n">loaned</span>_<span class="n">books</span>)
+     <span class="cm">//initializer</span>
+     <span class="k">init</span>(<span class="n">lib</span>, <span class="n">books</span> <span class="k">of</span> <span class="n">List</span>) =
+          <span class="cm">// here lib variable is an empty record with uninitialized fields</span>
+          <span class="cm">// returning modified copy of lib</span>
+          <span class="n">lib</span>.{<span class="n">available</span>_<span class="n">books</span> = <span class="n">books</span>, <span class="n">loaned</span>_<span class="n">books</span>}
+
+ <span class="cm">// lets write function for borrowing book from library</span>
+ <span class="k">fun</span> <span class="n">loan</span>_<span class="n">book</span>(<span class="n">library</span>, <span class="n">book</span>_<span class="n">index</span>) =
+     <span class="k">let</span> <span class="n">book</span> = <span class="n">library</span>.<span class="n">available</span>_<span class="n">books</span>.[<span class="n">book</span>_<span class="n">index</span>]
+     <span class="n">new</span>_<span class="n">lib</span> = <span class="n">library</span>.{<span class="n">available</span>_<span class="n">books</span> = <span class="n">seq</span>:<span class="n">delete</span>(@, <span class="n">book</span>), <span class="n">loaned</span>_<span class="n">books</span> = <span class="n">book</span>::@}
+     <span class="cm">//return tuple with book and modified library</span>
+     (<span class="n">new</span>_<span class="n">lib</span>, <span class="n">book</span>)
+
+ <span class="cm">// reverse process</span>
+ <span class="k">fun</span> <span class="n">return</span>_<span class="n">book</span>(<span class="n">library</span>, <span class="n">book</span>) =
+     <span class="n">library</span>.{
+           <span class="n">available</span>_<span class="n">books</span> = <span class="n">book</span>::@,
+           <span class="n">loaned</span>_<span class="n">books</span> = <span class="n">seq</span>:<span class="n">selete</span>(@, <span class="n">book</span>)
+     }
+</pre></div>
+</div>
+</div>
+<div class="section" id="subtyping">
+<h2>Subtyping<a class="headerlink" href="#subtyping" title="Permalink to this headline">¶</a></h2>
+<p>Arza supports nominal subtyping for abstract and concrete types. Type can have only one supertype and
+supertype can have multiple subtypes.</p>
+<p>Concrete types can not be used as supetypes for abstract types.</p>
+<p>Subtypes inherit behavior from supertypes and can be used in multiple dispatch in same roles.</p>
+<p>When defining subtype from concrete supertype fields of supertype
+will be added to fields of would be subtype</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">type</span> <span class="n">Vec</span>2(<span class="n">x</span>, <span class="n">y</span>)
+<span class="k">type</span> <span class="n">Vec</span>3 <span class="k">is</span> <span class="n">Vec</span>2 (<span class="n">z</span>)
+<span class="cm">// Vec3 will have fields(x, y, z)</span>
+<span class="cm">// defining generic method</span>
+<span class="k">def</span> <span class="n">sum</span>(<span class="n">v</span> <span class="k">of</span> <span class="n">Vec</span>2) = <span class="n">v</span>.<span class="n">x</span> + <span class="n">v</span>.<span class="n">y</span>
+<span class="k">let</span> <span class="n">v</span>2 = <span class="n">Vec</span>2(1, 2)
+<span class="k">let</span> <span class="n">v</span>3 = <span class="n">Vec</span>2(1, 2, 3)
+<span class="cm">// because sum not defined for Vec3</span>
+<span class="n">sum</span>(<span class="n">v</span>2) == <span class="n">sum</span>(<span class="n">v</span>3)
+<span class="cm">//but after</span>
+<span class="k">def</span> <span class="n">sum</span>(<span class="n">v</span> <span class="k">of</span> <span class="n">Vec</span>3) = <span class="n">v</span>.<span class="n">x</span> + <span class="n">v</span>.<span class="n">y</span> + <span class="n">v</span>.<span class="n">z</span>
+<span class="n">sum</span>(<span class="n">v</span>3) == 6 != <span class="n">sum</span>(<span class="n">v</span>2)
+</pre></div>
+</div>
+<p>If you don&#8217;t need behavioral subtyping but want to reuse fields from other types you can paste type in
+field declaration</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">type</span> <span class="n">Vec</span>2 (<span class="n">x</span>, <span class="n">y</span>)
+<span class="cm">// paste fields from Vec2</span>
+<span class="k">type</span> <span class="n">Vec</span>3 (...<span class="n">Vec</span>2, <span class="n">z</span>)
+<span class="cm">// Vec2 and Vec3 are unrelated</span>
+
+<span class="cm">// More complex example</span>
+ <span class="k">type</span> <span class="n">AB</span>(<span class="n">a</span>, <span class="n">b</span>)
+ <span class="k">type</span> <span class="n">C</span>(<span class="n">c</span>)
+ <span class="k">type</span> <span class="n">DE</span>(<span class="n">d</span>, <span class="n">e</span>)
+ <span class="k">type</span> <span class="n">FGH</span>(<span class="n">f</span>, <span class="n">g</span>, <span class="n">h</span>)
+
+ <span class="cm">// paste multiple types in multiple position</span>
+ <span class="k">type</span> <span class="n">Alphabet</span> (...<span class="n">AB</span>, ...<span class="n">C</span>, ...<span class="n">DE</span>, ...<span class="n">FGH</span>, <span class="n">i</span>, <span class="n">j</span>, <span class="n">k</span>)
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User types and subtyping</a><ul>
+<li><a class="reference internal" href="#abstract-types">Abstract types</a></li>
+<li><a class="reference internal" href="#concrete-types">Concrete types</a></li>
+<li><a class="reference internal" href="#subtyping">Subtyping</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="stdtypes.html"
+                        title="previous chapter">Builtin types</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="flow.html"
+                        title="next chapter">Conditions and pattern matching</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/types.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="flow.html" title="Conditions and pattern matching"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="stdtypes.html" title="Builtin types"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,9 +1,20 @@
+// TODO think about deleting lenses and fibers and focus on processes
+
 import io
 import affirm
 import seq
-import tests
+import list
+import generic
+include tests (run as test)
+//include examples:storage (test)
+//include tests:test_coro (test as test)
+//include tests:test_process (test as test)
+
 
 fun main() =
-    tests:run()
+    test()
     #endprogram
+
+
+
 

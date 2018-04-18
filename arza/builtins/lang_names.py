@@ -1,15 +1,16 @@
-
-PREFIX = "arza:lang:"
+from arza.types import space
+PREFIX = "arza:"
+PREFIXU = u"arza:"
 
 NOT = PREFIX + "not"
-ELEM = PREFIX + "elem"
+HAS = PREFIX + "has"
 IS = PREFIX + "is"
 IS_EMPTY = PREFIX + "is_empty"
 LOAD_MODULE = PREFIX + "load_module"
 
 ISNOT = PREFIX + "isnot"
 KINDOF = PREFIX + "kindof"
-IS_IMPLEMENTED = PREFIX + "is_implemented"
+IS_IMPLEMENTED = PREFIX + "isimplemented"
 
 # functions used by compiler in code gen
 DESCRIBE = PREFIX + "describe"
@@ -33,14 +34,12 @@ RECEIVE_HELPER = PREFIX + "__receive__"
 
 AFFIRM_TYPE_DECORATOR = PREFIX + "__affirm_type_decorator__"
 
-SLICE = PREFIX + "slice"
-DROP = PREFIX + "drop"
-TAKE = PREFIX + "take"
-
 AT = PREFIX + "at"
 PUT = PREFIX + "put"
 PUT_DEFAULT = PREFIX + "put_default"
 
+DROP = PREFIX + "drop"
+TAKE = PREFIX + "take"
 REST = PREFIX + "rest"
 FIRST = PREFIX + "first"
 CONS = PREFIX + "cons"
@@ -68,10 +67,21 @@ TSTRING = PREFIX + "String"
 TLIST = PREFIX + "List"
 TTUPLE = PREFIX + "Tuple"
 TMAP = PREFIX + "Map"
-TAny = PREFIX + "Any"
-TDatatype = PREFIX + "Datatype"
+TANY = PREFIX + "Any"
+TRECORD = PREFIX + "Record"
+TABSTRACT = PREFIX + "Abstract"
+TDATATYPE = PREFIX + "Datatype"
 
 SVALUEOF = "VALUEOF"
 
 SKIP_ON_AUTO_EXPORT_START = "_"
 SKIP_ON_AUTO_EXPORT_MIDDLE = ":"
+
+
+def get_lang_symbol(process, suffix):
+    assert isinstance(suffix, unicode)
+    name = PREFIXU + suffix
+    return space.newsymbol(process, name)
+
+
+

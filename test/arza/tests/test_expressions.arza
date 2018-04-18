@@ -54,8 +54,8 @@ fun test_base_expressions() =
         a2_4 = #four
         a2 = [0, 1, 2, a2_4]
     in
-        affirm:is_true(#four `elem` a2)
-        affirm:is_true(a2_4 `elem` a2)
+        affirm:is_true(a2 `has` #four)
+        affirm:is_true(a2 `has` a2_4)
 
     affirm:is_equal("name", #name)
     affirm:is_equal(#name, "name")
@@ -175,7 +175,7 @@ fun test_whitespaces_in_expressions() =
               (fun
                  | 5 = 25
                  | 6 = 45),
-              (fun x = 25),
+              (fun (x) = 25),
               25)
     in
         affirm:is_equal(T1.1(5), 25)

@@ -81,12 +81,12 @@ INDENTS_RECEIVE = [TT_RECEIVE, TT_CASE, TT_ASSIGN] + INDENTS_CODE
 INDENTS_USE = [TT_USE, TT_IN]
 INDENTS_FUN = [TT_FUN, TT_WHEN, TT_CASE, TT_ASSIGN] + INDENTS_CODE
 INDENTS_INIT = [TT_INIT, TT_WHEN, TT_CASE, TT_ASSIGN] + INDENTS_CODE
-INDENTS_DEF = [TT_DEF, TT_ASSIGN, TT_WHEN] + INDENTS_CODE
+INDENTS_DEF = [TT_DEF, TT_ASSIGN, TT_WHEN, TT_CASE] + INDENTS_CODE
 INDENTS_INTERFACE = [TT_INTERFACE, TT_ASSIGN, TT_IS]
 INDENTS_DESCRIBE = [TT_DESCRIBE]
 INDENTS_TYPE = [TT_TYPE, TT_LPAREN, TT_INIT]
 INDENTS_TRAIT = [TT_TRAIT, TT_FOR, TT_ASSIGN]
-INDENTS_DECORATOR = [TT_FUN, TT_DEF, TT_DEF_PLUS] + INDENTS_CODE
+INDENTS_DECORATOR = [TT_FUN, TT_DEF, TT_OVERRIDE] + INDENTS_CODE
 
 
 # if you want to remove ASSIGN
@@ -96,9 +96,9 @@ def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
+                           space.newstring(line),
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
-                           space.newstring(line)
                        ]))
 
 
@@ -110,9 +110,10 @@ def parse_error(parser, message, token):
 
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
-                           space.newtuple([tokens.token_position(token),
-                                           tokens.token_line(token),
-                                           tokens.token_column(token)]),
+                           space.newtuple([
+                               tokens.token_line(token),
+                               tokens.token_column(token),
+                               tokens.token_position(token)]),
                            # tokens.token_to_string(token),
                            space.newstring(message),
                            space.newstring(line)

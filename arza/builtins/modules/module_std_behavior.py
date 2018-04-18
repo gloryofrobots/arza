@@ -4,13 +4,14 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_std_behavior')
+    from arza.builtins import lang_names
+    _module_name = lang_names.get_lang_symbol(process, u"_std")
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'len', length, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     api.put_native_function(process, _module, u'put', put, 3)
     api.put_native_function(process, _module, u'at', at, 2)
-    api.put_native_function(process, _module, u'elem', elem, 2)
+    api.put_native_function(process, _module, u'has', has, 2)
     api.put_native_function(process, _module, u'del', delete, 2)
     api.put_native_function(process, _module, u'equal', equal, 2)
     api.put_native_function(process, _module, u'not_equal', not_equal, 2)
@@ -38,68 +39,60 @@ def is_empty(process, routine):
 
 @complete_native_routine
 def put(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
     arg2 = routine.get_arg(2)
 
-    arg1 = routine.get_arg(1)
-
-    arg0 = routine.get_arg(0)
-
-    return api.put(arg2, arg0, arg1)
+    return api.put(arg0, arg1, arg2)
 
 
 @complete_native_routine
 def at(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.at(arg1, arg0)
+    return api.at(arg0, arg1)
 
 
 @complete_native_routine
 def cast(process, routine):
-    arg1 = routine.get_arg(1)
-
     arg0 = routine.get_arg(0)
-    if not space.islist(arg0):
-        arg0 = space.newlist([arg0])
-    return space.newmirror(arg1, arg0)
+    arg1 = routine.get_arg(1)
+    error.affirm_type(arg0, lambda x: space.isrecord(x) or space.isabstracttype(x))
+    error.affirm_type(arg1, space.isdatatype)
+    return api.cast(process, arg0, arg1)
 
 
 @complete_native_routine
-def elem(process, routine):
+def has(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.contains(arg1, arg0)
+    return api.contains(arg0, arg1)
 
 
 @complete_native_routine
 def delete(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.delete(arg1, arg0)
+    return api.delete(arg0, arg1)
 
 
 @complete_native_routine
 def equal(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.equal(arg1, arg0)
+    return api.equal(arg0, arg1)
 
 
 @complete_native_routine
 def not_equal(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.not_equal(arg1, arg0)
+    return api.not_equal(arg0, arg1)
 
 
 @complete_native_routine

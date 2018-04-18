@@ -1,0 +1,257 @@
+import arza:_string
+import std
+import seq
+
+
+trait __TStringEq(T) for [String, Char, Symbol] =
+    instance std:TEq(T)
+    instance std:TStr(T)
+
+
+trait __TString(S) for String =
+    def at (s of S, k) as std_behavior:at
+    def put (s of S, k, v) as std_behavior:put
+    def del (s of S, el) as std_behavior:del
+    def has (s of S, el) as std_behavior:has
+    def is_empty (s of S) as std_behavior:is_empty
+    def len (s of S) as std_behavior:len
+
+    def append(s of S, v) as _string:append
+    def prepend(s of S, v) as _string:prepend
+    def to_seq(s of S) as _string:to_list
+    def slice(s of S, _from, _to) as _string:slice
+    def drop(s of S, x) as _string:drop
+    def take(s of S, x) as _string:take
+
+    def cons (value of Char, s of S) = _string:append(s, value)
+    def empty(s of S) = ""
+
+
+def ++ (s1 of String, s2 of String) = _string:concat(s1, s2)
+def ++ (s1 of String, s2 of Symbol) = _string:concat(s1, str(s2))
+def ++ (s1 of Symbol, s2 of String) = _string:concat(str(s1), s2)
+def ++ (s1 of Symbol, s2 of Symbol) = symbol(_string:concat(str(s1), str(s2)))
+
+
+describe (Symbol, Char) as (Eq, Repr)
+
+
+describe Symbol as  Concat
+
+
+describe String as (Eq, Repr,
+       Len, Coll,
+       Prepend, Append, Concat, Cons,
+       ToSeq, Slice, Empty)
+
+
+
+fun concat (str1 of String, str2 of String) =
+    _string:concat(str1, str2)
+
+
+fun replace_first (_str of String, _old of String, _new of String) =
+    _string:replace_first(_str, _old, _new)
+
+
+fun replace (_str of String, _old of String, _new of String) =
+    _string:replace(_str, _old, _new)
+
+
+fun reverse(_str) = _string:reverse(_str)
+
+
+fun joiner(_sep, _func) =
+    ((s, acc) ->
+        if acc != "" then
+            acc ++ _sep ++  _func(s)
+        else
+            _func(s)
+    )
+
+fun join_strict(_str, _coll) =
+    let _seq = to_seq(_coll)
+    in seq:foldl(_seq, "", joiner(_str, identity))
+
+fun all(...args) =
+    join("", args)
+
+fun join(_str, _coll) =
+    let _seq = to_seq(_coll)
+    in seq:foldl(_seq, "", joiner(_str, str))
+
+fun join_with(_str, _coll, _func) =
+    let _seq = to_seq(_coll)
+    in seq:foldl(_seq, "", joiner(_str, _func))
+
+fun split(_str, _sep) = _string:split(_str, _sep)
+
+//fun count _has _str = throw NotImplementedError ()
+//
+//fun index_of _str _other = throw NotImplementedError ()
+//fun index_of_from _str _other _start _end = index_of (slice _str _start _end) _other
+//
+//fun last_index_of _str _other = throw NotImplementedError ()
+//fun last_index_of_from _str _other _start _end = last_index_of (slice _str _start _end) _other
+
+//fun format _str = throw NotImplementedError ()
+//
+//fun to_lower _str = throw NotImplementedError ()
+//fun to_upper _str = throw NotImplementedError ()
+//fun is_alphanum _str = throw NotImplementedError ()
+//fun is_digit _str = throw NotImplementedError ()
+//fun is_lower _str = throw NotImplementedError ()
+//fun is_upper _str = throw NotImplementedError ()
+//fun is_space _str = throw NotImplementedError ()
+//
+//
+//
+////numberFormat(number, [ decimals=0, decimalSeparator='.', orderSeparator=',']) => string
+////numberFormat(1000, 2);
+////// => "1,000.00"
+////numberFormat(123456789.123, 5, ".", ",");
+////// => "123,456,789.12300"
+//fun format_number _num _options = throw NotImplementedError ()
+//
+//
+////levenshtein("kitten", "kittah");
+////// => 2
+//fun levenshtein _str1 _str2 = throw NotImplementedError ()
+//
+//
+//
+////capitalize("foo Bar");
+//// => "Foo Bar"
+//fun capitalize _str = throw NotImplementedError ()
+//
+////capitalize_lrest("FOO Bar", true);
+//// => "Foo bar"
+//fun capitalize_lrest _str = throw NotImplementedError ()
+//
+//fun capitalize_words _str = throw NotImplementedError ()
+//
+////decapitalize("Foo Bar");
+//// => "foo Bar"
+//fun decapitalize _str = throw NotImplementedError ()
+//
+//
+////chop("whitespace", 3);
+//// => ["whi", "tes", "pac", "e"]
+//
+//fun chop _step _str = throw NotImplementedError ()
+//
+////Trim and replace multiple spaces with a single space.
+////clean(" foo    bar   ");
+//// => "foo bar"
+//fun clean _str = throw NotImplementedError ()
+//
+//fun chars _str = to_seq _str
+//
+//
+//
+////splice(string, index, howmany, substring) => string
+////
+////Like an array splice.
+////
+////splice("https://edtsech@bitbucket.org/edtsech/underscore.strings", 30, 7, "epeli");
+////// => "https://edtsech@bitbucket.org/epeli/underscore.strings"
+//fun splice _str  index, howmany, substring = throw NotImplementedError ()
+//
+//fun is_prefix _prefix _str = throw NotImplementedError ()
+//fun is_suffix _suffix _str = throw NotImplementedError ()
+//
+//trim(string, [characters]) => string
+//fun trim _characters _str = throw NotImplementedError ()
+//fun trim_ws _str = throw NotImplementedError ()
+//
+//fun ltrim _characters _str = throw NotImplementedError ()
+//fun ltrim_ws _str = throw NotImplementedError ()
+//
+//fun rtrim _characters _str = throw NotImplementedError ()
+//fun rtrim_ws _str = throw NotImplementedError ()
+//
+////truncate("Hello world", 5);
+//// => "Hello..."
+////truncate("Hello", 10);
+//// => "Hello"
+//fun truncate _truncate_str _lenght _str =  throw NotImplementedError ()
+//
+//
+//fun words _str = split /\s+/ _str
+//
+////lpad("1", 8, "0");
+//// => "00000001"
+//fun lpad _padstr _length _str =  throw NotImplementedError ()
+//
+////rpad("1", 8, "0");
+//// => "10000000"
+//fun rpad _padstr _length _str =  throw NotImplementedError ()
+//
+////pad("1", 8, "bleepblorp");
+//// => "bbbb1bbb"
+//fun pad _padstr _length _str =  throw NotImplementedError ()
+//
+////Parse string to number. Returns NaN if string can't be parsed to number.
+////toNumber("2.556");
+////// => 3
+////toNumber("2.556", 1);
+////// => 2.6
+////toNumber("999.999", -1);
+////// => 990
+//
+//fun to_number _str  = throw NotImplementedError ()
+//fun to_number_decimals _decimals  _str  = throw NotImplementedError ()
+//
+//
+////strRight(string, pattern) => string
+////
+////Searches a string from left to right for a pattern and
+//// returns a substring consisting of the characters in the string
+//// that are to the right of the pattern or all string if no match found.
+////
+////strRight("This_is_a_test_string", "_");
+////// => "is_a_test_string"
+////
+////strRightBack(string, pattern) => string
+////
+////Searches a string from right to left
+////for a pattern and returns a substring consisting of the characters
+////in the string that are to the right of the pattern or all string if no match found.
+////
+////strRightBack("This_is_a_test_string", "_");
+////// => "string"
+////
+////strLeft(string, pattern) => string
+////
+////Searches a string from left to right for a pattern and returns a substring consisting of the characters in the string that are to the left of the pattern or all string if no match found.
+////
+////strLeft("This_is_a_test_string", "_");
+////// => "This";
+////
+////strLeftBack(string, pattern) => string
+////
+////Searches a string from right to left for a pattern and returns a substring consisting of the characters in the string that are to the left of the pattern or all string if no match found.
+////
+////strLeftBack("This_is_a_test_string", "_");
+////// => "This_is_a_test";
+//
+//fun repeat _count _str = throw NotImplementedError
+//
+////surround("foo", "ab");
+//// => "abfooab"
+//fun surround _wrap _str = throw NotImplementedError
+//
+////Quotes a string. quoteChar defaults to ".
+////quote("foo", '"');
+//// => '"foo"';
+//fun quoted _char _str = throw NotImplementedError
+//
+////unquote(string, quoteChar) => string
+////Unquotes a string. quoteChar defaults to ".
+////unquote('"foo"');
+////// => "foo"
+////unquote("'foo'", "'");
+////// => "foo"
+//fun unquoted _char _str = throw NotImplementedError
+//
+

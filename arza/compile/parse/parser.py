@@ -159,7 +159,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
-        prefix(self, TT_FUN, None, prefix_nameless_fun, layout=layout_fun)
+        prefix(self, TT_FUN, None, prefix_expression_fun, layout=layout_fun)
 
         prefix(self, TT_MATCH, None, prefix_match, layout=layout_match)
         prefix(self, TT_RECEIVE, None, prefix_receive, layout=layout_receive)
@@ -173,6 +173,7 @@ class ExpressionParser(BaseParser):
 
         infix(self, TT_OF, NT_OF, 15, led_infix)
         infix(self, TT_AS, NT_AS, 20, led_infix)
+        infix(self, TT_OF, NT_OF, 20, led_infix)
         infix(self, TT_OR, NT_OR, 25, led_infix)
         infix(self, TT_AND, NT_AND, 30, led_infix)
         infix(self, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
@@ -229,6 +230,7 @@ class PatternParser(BaseParser):
         prefix(self, TT_TYPE, NT_TYPE, prefix_nud, 100)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
+        infix(self, TT_LCURLY, None, 95, infix_lcurly_pattern, layout=layout_lcurly)
         infix(self, TT_AS, None, 15, infix_bind)
         infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
@@ -275,7 +277,7 @@ class DefPatternParser(PatternParser):
         prefix(self, TT_OF, None, prefix_def_of)
 
 
-def def_plus_super_parser_init(parser):
+def override_super_parser_init(parser):
     literal(parser, TT_NAME, NT_NAME)
     literal(parser, TT_WILDCARD, NT_WILDCARD)
     return parser
@@ -289,14 +291,14 @@ class DefParser(BaseParser):
         self.fun_pattern_parser = DefPatternParser()
         self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
-        self.def_plus_super_parser = def_plus_super_parser_init(BaseParser())
+        self.override_super_parser = override_super_parser_init(BaseParser())
 
         self.add_subparsers([
             self.expression_parser,
             self.fun_pattern_parser,
             self.guard_parser,
             self.name_parser,
-            self.def_plus_super_parser
+            self.override_super_parser
         ])
 
 
@@ -314,7 +316,7 @@ class TraitParser(BaseParser):
 
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
-        prefix(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
+        prefix(self, TT_OVERRIDE, None, stmt_override, layout=layout_def)
         prefix(self, TT_INSTANCE, None, prefix_instance)
         # infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
@@ -356,15 +358,13 @@ class TraitSignatureParser(BaseParser):
         literal(self, TT_NAME, NT_NAME)
 
 
-# two parser mechanics intermingled here, one for interface with name
-# and other for (interface = ) statement
-
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        prefix(self, TT_FUN, None, prefix_interface_fun)
+        prefix(self, TT_NAME, NT_NAME, prefix_interface_fun)
+        prefix(self, TT_OPERATOR, NT_NAME, prefix_interface_fun)
+
         prefix(self, TT_USE, None, prefix_interface_use)
-        self.generic_parser = InterfaceGenericParser()
         self.function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
@@ -372,7 +372,6 @@ class InterfaceParser(BaseParser):
         symbol(self, TT_RPAREN)
         self.add_subparsers([
             self.function_parser,
-            self.generic_parser,
             self.name_parser
         ])
 
@@ -387,29 +386,6 @@ class InterfaceFunctionParser(BaseParser):
         # literal(self, TT_WILDCARD, NT_WILDCARD)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-
-def interface_generic_signature_parser_init(parser):
-    prefix(parser, TT_VALUEOF, None, prefix_interface_valueof)
-    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
-    literal(parser, TT_WILDCARD, NT_WILDCARD)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
-    return parser
-
-
-# interface = statement
-class InterfaceGenericParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.generic_signature_parser = interface_generic_signature_parser_init(BaseParser())
-        self.name_parser = name_parser_init(BaseParser())
-
-        prefix(self, TT_FUN, None, prefix_interface_generic_fun)
-        symbol(self, TT_RPAREN)
-
-        self.add_subparsers([
-            self.name_parser,
-            self.generic_signature_parser,
-        ])
 
 
 class ModifyKeyParser(BaseParser):
@@ -498,7 +474,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
         stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
-        stmt(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
+        stmt(self, TT_OVERRIDE, None, stmt_override, layout=layout_def)
         stmt(self, TT_IMPORT, None, stmt_import)
         stmt(self, TT_INCLUDE, None, stmt_include)
         stmt(self, TT_EXPORT, None, stmt_export)

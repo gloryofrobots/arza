@@ -1,0 +1,52 @@
+import arza:_tuple
+import string
+import std
+import io
+
+
+trait (T) for Tuple =
+    instance std:TEq(T)
+
+    def put (tup of T, k, v) as std_behavior:put
+    def del (tup of T, el) as std_behavior:del
+    def has (tup of T, el) as std_behavior:has
+    def is_empty (tup of T) as std_behavior:is_empty
+    def len (tup of T) as std_behavior:len
+
+    def ++ (t1 of T, t2 of T) as _tuple:concat
+    def prepend(tup of T, v) as _tuple:prepend
+    def append(tup of T, v) as _tuple:append
+    def to_seq(tup of T) as _tuple:to_list
+    def slice(tup of T, first, last) as _tuple:slice
+    def drop(tup of T, x) as _tuple:drop
+    def take(tup of T, x) as _tuple:take
+
+    def index_of(tup of T, el) as _tuple:index_of
+
+    def repr(tup of T) =
+        if len(tup) == 1 then
+            "(" ++ repr(at(tup, 0)) ++ ",)"
+        else
+            "(" ++ string:join_with(", ", to_seq(tup), repr) ++ ")"
+
+    def str(tup of T) =
+        if len(tup) == 1 then
+            "(" ++ str(at(tup, 0)) ++ ",)"
+        else
+            "(" ++ string:join_with(", ", to_seq(tup), str) ++ ")"
+
+
+describe Tuple as (Eq, Repr,
+       Len, Coll,
+       Prepend, Concat, Indexed,
+       ToSeq, Slice)
+
+
+fun ensure_tuple
+    | t of Tuple = t
+    | v = (v,)
+
+
+fun split
+    | ((x)) = (x, ())
+    | ((x, ...rest)) = (x, rest)

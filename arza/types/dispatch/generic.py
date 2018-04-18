@@ -34,8 +34,8 @@ class W_Generic(W_Hashable):
         W_Hashable.__init__(self)
         self.name = name
         self.arity = arity
-        self.dispatch_indexes = [i for i in range(len(args_signature))]
-        self.dispatch_arity = len(self.dispatch_indexes)
+        self.dispatch_arity = len(args_signature)
+        self.dispatch_indexes = []
         # self.interfaces = plist.empty()
         self.arity = api.length_i(args_signature)
         self.args_signature = args_signature
@@ -46,6 +46,12 @@ class W_Generic(W_Hashable):
         self.cache_mask = cache_mask
         self.dag = None
         self.cache = space.newassocarray()
+
+    def register_dispatch_index(self, index):
+        if index in self.dispatch_indexes:
+            return
+        self.dispatch_indexes.append(index)
+        self.dispatch_indexes = list(sorted(self.dispatch_indexes))
 
     def get_types(self):
         types = plist.empty()
@@ -82,12 +88,17 @@ class W_Generic(W_Hashable):
         #     res = self.hot_path.apply(process, args)
         #     if res is not None:
         #         return res
+        if len(self.dispatch_indexes) == 0:
+            return error.throw_2(error.Errors.INVOKE_ERROR,
+                                 space.newstring(u"Generic defined without interfaces"),
+                                 self)
+
         _types = []
-        for i in range(len(args)):
+        for i in self.dispatch_indexes:
             arg = args[i]
             cache_mask = self.cache_mask[i]
             if cache_mask == 0:
-                _type = api.get_type(process, arg)
+                _type = api.dispatched(process, arg)
             else:
                 _type = arg
             _types.append(_type)
@@ -97,7 +108,7 @@ class W_Generic(W_Hashable):
         if space.isvoid(cache_method):
             method = self.dag.evaluate(process, args)
             if not method:
-                return error.throw_4(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
+                return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR,
                                      self,
                                      tuples.types_tuple(process, args),
                                      args,
@@ -174,116 +185,55 @@ class W_Generic(W_Hashable):
         # print "NODES", index, nodes
         return nodes
 
-    def _sort_signatures(self, sig1, sig2):
-        w1 = sig1.get_weight()
-        w2 = sig2.get_weight()
-        if w1 > w2:
-            return -1
-        elif w2 > w1:
-            return 1
-        else:
-            return 0
-
     def _make_method_node(self, process, sigs):
-        signatures = sorted(sigs, self._sort_signatures)
-        sig = signatures[0]
-        if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
-            method = conflict_resolver(process, self, signatures)
+        sig = sigs[0]
+        if len(sigs) != 1:
+            return error.throw_3(error.Errors.SPECIALIZE_ERROR,
+                                 self,
+                                 space.newlist(sigs),
+                                 space.newstring(u"Ambiguous generic specialisation"))
+            # method = conflict_resolver(process, self, signatures)
         else:
             method = sig.method
 
-        # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
-        #                      self,
-        #                      space.newlist(signatures),
-        #                      space.newstring(u"Ambiguous generic specialisation"))
         unique = newuniquesignature(process, sig, method)
         self.unique_signatures.append(unique)
         return [LeafNode(sig, method)]
 
 
-class ConflictResolverCallback(W_Root):
-    def __init__(self, signatures, fn, args):
-        self.fn = fn
-        self.args = args
-        self.signatures = signatures
-        self.waiting = False
-
-    def on_complete(self, process, result):
-        if self.waiting:
-            return result
-        # print "ON COMPL", result
-        idx = api.to_i(result)
-        method = self.signatures[idx].method
-        # print "COMPL", idx, method
-        self.waiting = True
-        return process.call_object(method, self.args)
-
-    def _to_routine_(self, stack, args):
-        from arza.runtime.routine.routine import create_callback_routine
-        routine = create_callback_routine(stack, self.on_complete, None, self.fn, args)
-        return routine
-
-
-class ConflictResolver(W_Root):
-    def __init__(self, signatures, fn):
-        self.fn = fn
-        self.signatures = signatures
-
-    def _call_(self, process, args):
-        fn = space.newfunc_from_source(self.fn, process.modules.prelude)
-        process.call_object(ConflictResolverCallback(self.signatures, fn, args), args)
-
-    def _to_string_(self):
-        return api.to_s(self.fn)
-
-
-def conflict_resolver(process, gf, signatures):
-    funcs = []
-    for i, sig in enumerate(signatures):
-        # put outers in generics compile environment
-        for t in sig.outers:
-            name = api.first(t)
-            obj = api.second(t)
-            api.put(gf.env, name, obj)
-
-        body = nodes.create_int_node(nodes.node_token(sig.pattern), i)
-        # body = nodes.create_literal_node(sig.pattern, sig.method)
-
-        funcs.append(nodes.list_node([
-            sig.pattern, nodes.list_node([body])
-        ]))
-    fn_node = nodes.create_fun_node(nodes.node_token(signatures[0].pattern),
-                                    nodes.empty_node(),
-                                    nodes.list_node(funcs))
-    fn = compiler.compile_function_ast(process, gf.env, fn_node)
-    return ConflictResolver(signatures, fn)
-
-
 def _make_signature(process, gf, types, method, pattern, outers):
-    any = process.std.interfaces.Any
+    any = process.std.types.Any
 
-    _types = space.newlist([
-                               any if space.isvoid(_type) else _type for _type in types
-                               ])
+    _types = []
+    for i, _type in enumerate(types):
+        if not space.isvoid(_type) and _type is not any:
+            if i not in gf.dispatch_indexes:
+                return error.throw_3(error.Errors.SPECIALIZE_ERROR,
+                                     gf,
+                                     space.newstring(u"No interface defined for argument in position"), space.newint(i))
+            else:
+                _types.append(_type)
+        else:
+            _types.append(any)
 
+    _types = space.newlist(_types)
     if gf.dispatch_arity != api.length_i(types):
-        return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
+        return error.throw_2(error.Errors.SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Generic function arity inconsistent with specialisation arguments"))
 
     if gf.arity != method.arity:
         # print gf, method, gf.arity, method.arity
-        return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
+        return error.throw_2(error.Errors.SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
     return newsignature(process, _types, method, pattern, outers)
 
 
 def specify(process, gf, types, method, pattern, outers):
+    error.affirm_type(gf, space.isgeneric)
     sig = _make_signature(process, gf, types, method, pattern, outers)
     gf.add_signature(process, sig)
-    # for index, _type in zip(gf.dispatch_indexes, _types):
-    #     _type.register_generic(gf, space.newint(index))
 
 
 def override(process, gf, types, method, pattern, outers):
@@ -327,7 +277,7 @@ def generic(process, name, signature):
     arity = api.length_i(signature)
 
     if arity == 0:
-        error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
+        error.throw_1(error.Errors.SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
 
     cache_mask = []
     args = []
@@ -338,7 +288,7 @@ def generic(process, name, signature):
             if api.equal_b(argtype, space.newsymbol_s(process, lang_names.SVALUEOF)):
                 argcache = 1
             else:
-                return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR,
+                return error.throw_1(error.Errors.SPECIALIZE_ERROR,
                                      space.newstring(u"Invalid generic signature param"))
         else:
             argcache = 0

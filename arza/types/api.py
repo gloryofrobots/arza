@@ -116,7 +116,7 @@ def at(obj, k):
     v = obj._at_(k)
     assert v is not None
     if space.isvoid(v):
-        return error.throw_2(error.Errors.KEY_ERROR, k, obj)
+        return error.throw_2(error.Errors.KEY_ERROR, obj, k)
     return v
 
 
@@ -213,6 +213,8 @@ def isempty(obj):
 Traits
 """
 
+def dispatched(process, obj):
+    return obj._dispatch_(process)
 
 def get_type(process, obj):
     return obj._type_(process)
@@ -256,7 +258,7 @@ def kindof_b(process, obj, kind):
 
 def interface_b(process, obj, iface):
     error.affirm_type(iface, space.isinterface, u"<Interface>")
-    if space.issingletondatatype(obj):
+    if space.isabstracttype(obj):
         result = obj.is_interface_implemented(iface)
         if result:
             return result
@@ -277,12 +279,18 @@ def typeof_b(process, obj, _type):
         return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
 
     # if Nothing kindof Nothing
-    if space.issingletondatatype(obj) and space.isuserdatatype(_type):
+    if space.isabstracttype(obj) and space.isuserdatatype(_type):
         if equal_b(obj, _type):
             return True
 
     obj_type = get_type(process, obj)
-    return equal_b(obj_type, _type)
+    while space.isdatatype(obj_type):
+        if equal_b(obj_type, _type):
+            return True
+
+        obj_type = obj_type.supertype
+
+    return False
 
 
 """
@@ -326,6 +334,10 @@ def not_equal(obj, other):
     return space.newbool(not v)
 
 
+def cast(process, obj, _type):
+    return obj._cast_(process, _type)
+
+
 # def compare(process, obj, other):
 #     if space.isuniquetype(obj):
 #         return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"Unique expected"))
@@ -361,6 +373,10 @@ put helpers
 
 def put_symbol(process, obj, k, v):
     put(obj, space.newsymbol(process, k), v)
+
+
+def put_symbol_s(process, obj, k, v):
+    put(obj, space.newsymbol(process, unicode(k)), v)
 
 
 def put_native_function(process, obj, name, func, arity):

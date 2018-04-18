@@ -1044,6 +1044,11 @@ def _compile_AS(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
+def _compile_OF(compiler, code, node):
+    simplified = simplify.simplify_of(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+
 def _compile_LET(compiler, code, node):
     simplified = simplify.simplify_let(compiler, code, node)
     _compile(compiler, code, simplified)
@@ -1074,8 +1079,8 @@ def _compile_GENERIC(compiler, code, node):
     _compile(compiler, code, generic)
 
 
-def _compile_DEF_PLUS(compiler, code, node):
-    simplified = simplify.simplify_def_plus(compiler, code, node)
+def _compile_OVERRIDE(compiler, code, node):
+    simplified = simplify.simplify_override(compiler, code, node)
     _compile(compiler, code, simplified)
 
 
@@ -1096,8 +1101,8 @@ def _emit_HEAD(compiler, code, node):
 
 def _emit_DROP(compiler, code, node, drop):
     count = node_first(drop)
-    _compile(compiler, code, count)
     _compile(compiler, code, node)
+    _compile(compiler, code, count)
     _emit_call(compiler, code, node, 2, lang_names.DROP)
 
 
@@ -1114,8 +1119,8 @@ def _compile_LOOKUP(compiler, code, node):
     elif expr_type == NT_DROP:
         return _emit_DROP(compiler, code, obj, expr)
 
-    _compile(compiler, code, expr)
     _compile(compiler, code, obj)
+    _compile(compiler, code, expr)
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
 
@@ -1274,8 +1279,8 @@ def _compile_node(compiler, code, node):
         _compile_MODULE(compiler, code, node)
     elif NT_DEF == ntype:
         _compile_DEF(compiler, code, node)
-    elif NT_DEF_PLUS == ntype:
-        _compile_DEF_PLUS(compiler, code, node)
+    elif NT_OVERRIDE == ntype:
+        _compile_OVERRIDE(compiler, code, node)
     elif NT_INTERFACE == ntype:
         _compile_INTERFACE(compiler, code, node)
     elif NT_GENERIC == ntype:
@@ -1303,6 +1308,8 @@ def _compile_node(compiler, code, node):
         _compile_CONS(compiler, code, node)
     elif NT_AS == ntype:
         _compile_AS(compiler, code, node)
+    elif NT_OF == ntype:
+        _compile_OF(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
     elif NT_DESCRIBE == ntype:

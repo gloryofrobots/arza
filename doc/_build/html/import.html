@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Import and export &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Metaprogramming" href="meta.html" />
+    <link rel="prev" title="Working with immutable state" href="immutable.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="meta.html" title="Metaprogramming"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="immutable.html" title="Working with immutable state"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="import-and-export">
+<h1>Import and export<a class="headerlink" href="#import-and-export" title="Permalink to this headline">¶</a></h1>
+<p>Arza uses files as modules. Modules in Arza could be used as top level objects with methods but
+most of the time there are no need for this. Instead arza treats modules as namespaces or mixins.
+You include names from one module to another and give to this names specific prefix to avoid conflicts</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// import qualified names (prefixed by module name)</span>
+<span class="k">import</span> <span class="n">seq</span>
+<span class="k">import</span> <span class="n">io</span>
+
+<span class="cm">// Afterwards, all exported names from this modules available as qualified names</span>
+<span class="k">let</span> _ = <span class="n">io</span>:<span class="n">print</span>(<span class="n">seq</span>:<span class="n">reverse</span>([1,2,4,5]))
+
+<span class="cm">// import other module</span>
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1
+
+<span class="cm">// only last part of module identifier used as qualifier</span>
+<span class="k">let</span> <span class="n">three</span> = <span class="n">module</span>1:<span class="n">add</span>(1, 2)
+
+<span class="cm">// use aliases to resolve name conflicts</span>
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1
+<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1_1
+
+<span class="k">let</span> <span class="n">x</span> = <span class="n">mod</span>1:<span class="n">add</span>(<span class="n">mod</span>1_1:<span class="n">add</span>(1, 2), 3)
+
+<span class="cm">// import only required qualified names</span>
+<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 (<span class="n">f</span>1 <span class="k">as</span> <span class="n">f</span>1_1, <span class="n">f</span>2 <span class="k">as</span> <span class="n">f</span>2_1)
+<span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>1_1()
+<span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>2_1()
+
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1 (<span class="n">f</span>1, <span class="n">f</span>2)
+<span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>1()
+<span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>2()
+
+<span class="k">import</span> <span class="n">my</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1 (<span class="n">f</span>1 <span class="k">as</span> <span class="n">f</span>1_1, <span class="n">f</span>2 <span class="k">as</span> <span class="n">f</span>2_1)
+<span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>1_1()
+<span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>2_1()
+
+<span class="cm">// binding funcs from two modules to same name if there are no conflicts between them</span>
+<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">ts</span>:<span class="n">module</span>_<span class="n">s</span> <span class="k">as</span> <span class="n">s</span>
+<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">ts</span>:<span class="n">module</span>_<span class="n">t</span> <span class="k">as</span> <span class="n">s</span>
+
+<span class="cm">// hiding names</span>
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1  <span class="n">hiding</span> (<span class="n">CONST</span>)
+<span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>1()
+<span class="k">let</span> _ = <span class="n">module</span>1:<span class="n">f</span>2()
+
+<span class="k">import</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="k">as</span> <span class="n">mod</span>1 <span class="n">hiding</span> (<span class="n">f</span>1)
+<span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">f</span>2()
+<span class="k">let</span> _ = <span class="n">mod</span>1:<span class="n">CONST</span>
+
+<span class="k">import</span> <span class="n">tests</span>:<span class="n">lib</span>_<span class="n">az</span>:<span class="n">abc</span>:<span class="n">module</span>_<span class="n">ab</span> <span class="k">as</span> <span class="n">ab</span>5 <span class="n">hiding</span> (<span class="n">f</span>_<span class="n">ab</span>, <span class="n">CONST</span>)
+
+<span class="cm">/// UNQUALIFIED IMPORT</span>
+<span class="cm">// import specified unqualified names</span>
+<span class="k">include</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 (<span class="n">f</span>1, <span class="n">f</span>2, <span class="n">CONST</span> <span class="k">as</span> <span class="n">const</span>)
+<span class="k">let</span> _ = <span class="n">f</span>1()
+<span class="k">let</span> <span class="n">x</span> = <span class="n">f</span>2() + <span class="n">const</span>
+
+<span class="cm">// import all unqualified names from module</span>
+
+<span class="k">include</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1
+
+<span class="cm">// hiding specific names</span>
+<span class="k">include</span> <span class="n">my</span>:<span class="n">modules</span>:<span class="n">module</span>1 <span class="n">hiding</span> (<span class="n">CONST</span>)
+<span class="k">let</span> <span class="n">x</span> = <span class="n">f</span>1() * <span class="n">f</span>2()
+</pre></div>
+</div>
+<p>Also module can specify export list to forbid acces to private values</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="cm">// By default all names except operators can be imported outside</span>
+<span class="cm">// You can limit it with export expression</span>
+<span class="k">let</span> <span class="n">CONST</span> = 41
+<span class="k">fun</span> <span class="n">f</span>_<span class="n">ab</span> () = <span class="n">CONST</span> + 1
+<span class="k">fun</span> <span class="n">f</span>_<span class="n">ab</span>_2 = <span class="n">f</span>_<span class="n">ab</span>()
+
+<span class="n">export</span> (<span class="n">f</span>_<span class="n">ab</span>, <span class="n">f</span>_<span class="n">ab</span>_2, <span class="n">CONST</span>)
+</pre></div>
+</div>
+<div class="section" id="loading-order">
+<h2>Loading Order<a class="headerlink" href="#loading-order" title="Permalink to this headline">¶</a></h2>
+<p>Lets consider what happens when running such arza like</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="n">python</span> <span class="n">arza</span>.<span class="n">py</span> /<span class="n">root</span>/<span class="n">home</span>/<span class="n">coder</span>/<span class="n">dev</span>/<span class="n">main</span>.<span class="n">arza</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>compiler imports module prelude.arza
+If prelude is absent execution will be terminated.
+All names from prelude will be available as builtins for other modules</li>
+<li>compiler imports rest of standart library (list, tuple, map, ...etc)</li>
+<li>interpeter compiles file <tt class="code docutils literal"><span class="pre">/root/home/coder/dev/main.arza</span></tt>, finds in this script function
+<tt class="code docutils literal"><span class="pre">fun</span> <span class="pre">main()</span></tt> and executes it</li>
+</ul>
+<p>How do Arza resolve module imports?
+When compiler parses expression <tt class="code docutils literal"><span class="pre">import(include)</span> <span class="pre">module1.module2.mymodule</span></tt>
+it tries to find this module in global cache.
+If module is absent compiler  transforms it&#8217;s name to path &#8220;module1/module2/mymodule.arza&#8221;.
+Then it will look for this path in specific order</p>
+<ul class="simple">
+<li>Main program folder. If you ran arza as <tt class="code docutils literal"><span class="pre">python</span> <span class="pre">arza.py</span> <span class="pre">/root/home/coder/dev/main.arza</span></tt>
+this directory would be <tt class="code docutils literal"><span class="pre">/root/home/coder/dev/</span></tt></li>
+<li>Lib folder. This is directory __lib__ inside script folder  <tt class="code docutils literal"><span class="pre">/root/home/coder/dev/__lib__</span></tt></li>
+<li>Arza standart library. This is directory from environment variable ARZASTD. If this var is empty
+all required modules must be located in __lib__ directory</li>
+</ul>
+<p>If file is found Arza will load it, compile it and store it in global state.
+Modules always have unique names throughout all program.
+Relative imports are not possible. Modules are loaded only once.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Import and export</a><ul>
+<li><a class="reference internal" href="#loading-order">Loading Order</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="immutable.html"
+                        title="previous chapter">Working with immutable state</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="meta.html"
+                        title="next chapter">Metaprogramming</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/import.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="meta.html" title="Metaprogramming"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="immutable.html" title="Working with immutable state"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

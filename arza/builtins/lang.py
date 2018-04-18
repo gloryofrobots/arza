@@ -9,6 +9,7 @@ from arza.misc import fs
 from arza.compile import compiler
 
 from arza.builtins import lang_names
+import random
 
 
 def put_lang_func(process, module, name, func, arity):
@@ -44,7 +45,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 3)
+    put_lang_func(process, module, lang_names.TYPE, __type, 4)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
     put_lang_func(process, module, lang_names.AFFIRM_TYPE_DECORATOR, __affirm_type_decorator, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
@@ -53,7 +54,11 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, u"interfaces", __interfaces, 1)
     put_lang_func(process, module, u"vector", __vector, -1)
     put_lang_func(process, module, u"array", __array, -1)
+    put_lang_func(process, module, u"randi", __randi, 2)
 
+    api.put_symbol_s(process, module, lang_names.TABSTRACT, process.std.types.Abstract)
+    api.put_symbol_s(process, module, lang_names.TRECORD, process.std.types.Record)
+    api.put_symbol_s(process, module, lang_names.TANY, process.std.types.Any)
 
 # 15.1.2.2
 
@@ -123,6 +128,12 @@ def __vector(process, routine):
     args = routine._args.to_l()
     return space.newpvector(args)
 
+@complete_native_routine
+def __randi(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+    i = random.randint(api.to_i(arg0), api.to_i(arg1))
+    return space.newint(i)
 
 @complete_native_routine
 def __array(process, routine):
@@ -183,9 +194,10 @@ def __not(process, routine):
 @complete_native_routine
 def __type(process, routine):
     name = routine.get_arg(0)
-    fields = routine.get_arg(1)
-    construct = routine.get_arg(2)
-    _datatype = space.newdatatype(process, name, fields, construct)
+    supertype = routine.get_arg(1)
+    fields = routine.get_arg(2)
+    construct = routine.get_arg(3)
+    _datatype = space.newdatatype(process, name, supertype, fields, construct)
     return _datatype
 
 
@@ -236,7 +248,6 @@ def __method(process, routine):
     error.affirm_iterable(types, space.isspecializable)
     return generic.get_method(process, fn, types)
 
-
 @complete_native_routine
 def __signatures(process, routine):
     fn = routine.get_arg(0)
@@ -256,7 +267,7 @@ def __describe(process, routine):
 def __affirm_type_decorator(process, routine):
     data = routine.get_arg(0)
 
-    error.affirm_type(data, lambda x: space.istuple(x) and api.length_i(data) == 2, u"Tuple(type_fields, type_init)")
+    error.affirm_type(data, lambda x: space.istuple(x) and api.length_i(data) == 3, u"Tuple(supertype, type_fields, type_init)")
     return data
 
 
@@ -335,7 +346,7 @@ def is_dict(process, routine):
     if api.kindof_b(process, v1, process.std.interfaces.Dict):
         return space.newbool(True)
 
-    if api.kindof_b(process, v1, process.std.interfaces.Instance):
+    if api.kindof_b(process, v1, process.std.types.Record):
         return space.newbool(True)
 
     return space.newbool(False)
@@ -376,3 +387,4 @@ def __interfaces(process, routine):
         return datatype.get_interfaces(process, obj)
     else:
         return datatype.get_interfaces(process, api.get_type(process, obj))
+

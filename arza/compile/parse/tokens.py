@@ -133,7 +133,7 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('is'), TT_IS),
     (keyword('let'), TT_LET),
-    (token('def\+'), TT_DEF_PLUS),
+    (keyword('override'), TT_OVERRIDE),
     (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),
     (keyword('valueof'), TT_VALUEOF),

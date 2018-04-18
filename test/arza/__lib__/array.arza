@@ -1,0 +1,122 @@
+import arza:_array
+import string
+import io
+import std
+
+
+trait TArray(A) for Array =
+    instance std:TEq(A)
+
+    def at (a of A, k) as std_behavior:at
+    def put (a of A, k, v) as std_behavior:put
+    def del (a of A, el) as std_behavior:del
+    def has (a of A, el) as std_behavior:has
+    def is_empty (a of A) as std_behavior:is_empty
+    def len (a of A) as std_behavior:len
+
+    def ++ (a1 of A, a2 of A) as _array:concat
+
+    def prepend(a of A, v) as _array:prepend
+    def append(a of A, v) as _array:append
+
+    def slice(a of A, first, last) as _array:slice
+    def drop(a of A, x) as _array:drop
+    def take(a of A, x) as _array:take
+
+    def index_of(a of A, el) as _array:index_of
+
+    def repr(a of A) =
+        if len(a) == 1 then
+            "Array(" ++ repr(at(a, 0)) ++ ",)"
+        else
+            "Array(" ++ string:join_with(", ", to_seq(a), repr) ++ ")"
+
+    def str(a of A) =
+        if len(a) == 1 then
+            "Array(" ++ str(at(a, 0)) ++ ",)"
+        else
+            "Array(" ++ string:join_with(", ", to_seq(a), str) ++ ")"
+
+//    def cast(Seq, a of A) = to_seq(a)
+--------------------------------------------------
+
+type ArraySeq (arr, index, dest)
+type ArraySeqEmpty (dest)
+
+trait TArraySeq(A) for ArraySeq =
+
+    def to_seq(a of A) = a
+
+    def first({arr, index} of A) = arr.[index]
+
+    def rest(A(arr, index, dest)) =
+        let
+            l = len(arr) - index
+        in
+            if l <= 0 then
+                ArraySeqEmpty(dest)
+            else
+                A(arr, index + 1, dest)
+
+
+    def is_empty({arr, index} of A) = index >= len(arr)
+
+    def empty(a of A) = ArraySeqEmpty(a.dest)
+
+    def len({arr, index} of A) =
+        let
+            l = len(arr) - index
+        in
+            if l < 0 then 0
+            else l
+
+    def cons(v, A(arr, index, dest)) =
+        A(arr, index+1, prepend(dest, v))
+
+
+describe ArraySeq as (Seq, Len, Empty)
+
+--------------------------------------------------
+
+trait TArraySeqEmpty(A) for ArraySeqEmpty =
+    def to_seq(a of A) = a
+    def first(a of A) = throw EmptySeqError("ArraySequence is empty")
+
+    def rest(a of A) =
+        throw EmptySeqError("ArraySequence is empty")
+
+    def empty(a of A) = a
+
+    def is_empty(a of A) = True
+
+    def len(a of A) = 0
+
+    def cons(v, a of A) =
+        prepend(a.dest, v)
+        a
+
+    def from_seq(a of A) = a.dest
+
+describe ArraySeqEmpty as (Seq, Len)
+
+--------------------------------------------------
+
+def to_seq(a of Array) = ArraySeq(a, 0, array())
+
+fun map (f, arr of Array) =
+    let
+        size = len(arr)
+        fun _map
+            | (index, result) when index >= size = result
+            | (index, result) =
+                _map(
+                    index + 1,
+                    append(result, f(arr.[index]))
+                )
+    in
+        _map(0, array())
+
+describe Array as (Eq, Repr,
+       Len, Coll,
+       Prepend, Append, Concat, Indexed,
+       ToSeq, Slice)

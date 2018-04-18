@@ -1,0 +1,281 @@
+include arza:_coro (spawn, is_complete, is_initialised,
+                            is_terminated, is_active, is_passive,
+                            is_finished)
+import tuple
+import io
+import seq
+
+//////////////////////////////////////
+
+
+trait TCoro(C) for Coroutine =
+    def is_empty(co of C) as std_behavior:is_empty
+
+    def len(co of C) = throw NotImplementedError ("Coroutine can't define len")
+
+    def first(co of C) =
+        if not is_empty(co) then
+            co ()
+        else
+            throw FiberFlowError("Coroutine is closed")
+
+    def rest(co of C) =
+        if not is_empty(co) then
+            co
+        else
+            []
+
+    def to_seq(co of C) = co
+    def from_seq(co of C) = co
+    def empty(co of C) = []
+
+describe Coroutine as (Len, ToSeq, Seq, Empty)
+
+// REFS
+type Reference (val)
+
+fun ref(v) =
+    let co = spawn(
+                (fun (yield, v) =
+                    (fun loop(v) =
+                            (let msg = yield(v))
+                            (match msg
+                                | #Read = loop(v)
+                                | (#Write, new_val) =
+                                    loop(new_val)
+                            )
+                    )
+                    loop(v)
+                )
+          )
+    co(v)
+    Reference(co)
+
+trait TReference(R) for Reference =
+    def repr(r of R) = str(r)
+
+    def &(r of R) = r.val(#Read)
+
+    def :=(r of R, value) = r.val((#Write, value))
+
+    def ==(r of R, other) = r.val == other.val
+
+    def str(r of R) = "Var"
+
+describe Reference as (Repr, Ref)
+///////////////////////////////////////////////////////
+
+// helper for creating looping generators
+// example
+// Infinite increment
+//fun enum_from(num) =
+//    coro:loop(
+//        //first function remembers looper
+//        (looper) ->
+//             //second function sends data to looper each iteration
+//             num -> looper(num + 1)
+//        ,
+//        num - 1
+//    )
+// instead of yield it gets looper function which do actual yielding back to receiver
+// WARNING expects function as first argument which returns actual worker
+// TASK of first function is to remember looper in its scope, so worker can access it
+
+// common code
+fun _loop(yield_argument, init_fn, args) =
+    let
+        co = spawn(
+            (fun (yield) =
+                (let
+                    fn = init_fn(
+                        fun (...args) =
+                            yield(...yield_argument(args))
+                            fn(...args)
+                    )
+                in
+                    yield()
+                    fn(...args)
+                )
+            )
+        )
+    in
+       co()
+       co
+
+fun loop(...a) =
+    let
+        (init_fn, args) = tuple:split(a)
+    in _loop(identity, init_fn, args)
+
+// the same but with reduce interface
+// useful when there are no need to yielding all looper arguments
+
+fun loop_reduce(init_fn, x, acc) =
+    _loop(fst >> tuple:ensure_tuple, init_fn, (x, acc))
+
+////////////////////////////////////////////////////
+// SEQUENCES
+////////////////////////////////////////////////////
+
+let
+    take = seq:take
+    take_while = seq:take_while
+
+// CORO is stateful so you cant use PATTERN_MATCHIN for it
+fun nth(co, n) when n >= 0 =
+    if n == 0 then co
+    elif n == 1 then
+        let hd::tl = co
+        in hd
+    else
+        let hd::tl = co
+        in nth(tl, n - 1)
+
+fun filter(predicate, coll) =
+    spawn(
+        fun (yield) =
+            (fun _filter
+                | (p, []) = empty(coll)
+                | (p, x::xs) =
+                    (if p(x) then
+                        yield(x)
+                        _filter(p, xs)
+                    else
+                        _filter(p, xs)
+                    )
+            )
+            _filter(coll, predicate)
+    )
+
+
+fun map(co, fn) =
+    spawn(
+        fun (yield) =
+            seq:foreach(
+                co,
+                (x) -> yield(fn(x))
+            )
+    )
+
+
+fun drop(co, count) =
+    spawn(
+        fun (yield) =
+            (let
+                (fun _drop
+                    | ([], _) =
+                        empty(co)
+                    | (s, 0) =
+                        seq:traverse(map(s, yield))
+                    | (x::xs, n) =
+                        _drop(xs, n-1)
+                )
+
+            in
+                _drop(co, count)
+            )
+    )
+
+fun drop_while(co, fn) =
+    spawn(
+        fun (yield) =
+            (let
+                (fun _drop_while
+                    | ([], p) =
+                        empty(co)
+                    | ([x, ...xs1] as xs, p) =
+                        (if p(x) then
+                            _drop_while(xs1, p)
+                        else
+                            seq:traverse(map(xs, yield))
+                        )
+                 )
+            in
+                _drop_while(co, fn)
+            )
+    )
+
+
+fun each(co) =
+    spawn(
+        fun (yield) =
+            (fun | [] = empty(co)
+                 | s = seq:traverse(map(s, yield))
+            )(co)
+    )
+
+
+fun to_list(co) =
+    seq:map(co, identity)
+
+
+fun scanl(co, acc, fn) =
+    spawn(
+        fun (yield) =
+            (let
+                (fun _scanl
+                    | ([], acc, f) = empty(co)
+                    | (x::xs, acc, f) =
+                        (let v = f(x, acc)
+                        in
+                            yield(v)
+                            _scanl(xs, v, f)
+                        )
+                )
+            in
+                _scanl(co, acc, fn)
+            )
+    )
+
+
+fun intersperse(co, val) =
+    spawn(
+        fun (yield) =
+            seq:foreach(
+                co,
+                (fun (x) =
+                    yield(x)
+                    yield(val)
+                )
+            )
+    )
+
+
+fun zipwith(co1, co2, fn) =
+    spawn(
+        fun (yield) =
+                (let (fun _zip
+                        | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                            []
+                        | (x::co1, y::co2) =
+                            (if is_empty(co1) or is_empty(co2) then
+                                fn(x,y)
+                            else
+                                yield(fn(x,y))
+                                _zip(co1, co2)
+                            )
+                     )
+                in
+                    _zip(co1, co2)
+                )
+    )
+
+fun zip(co1, co2) =
+    spawn(
+        fun (yield) =
+                (fun _zip
+                        | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                            []
+                        | (x::co1, y::co2) =
+                            (if is_empty(co1) or is_empty(co2) then
+                                (x,y)
+                            else
+                                yield((x,y))
+                                _zip(co1, co2)
+                            )
+                     )
+                _zip(co1, co2)
+    )
+///////////////////////////////////////////////////////
+
+

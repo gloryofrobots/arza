@@ -1,0 +1,58 @@
+//////////////////////////////////////////////////
+// Lense
+//////////////////////////////////////////////////
+
+fun get_branch(l of Lense) =
+    let
+        {source, getter} = __unpack(l)
+    in getter(source)
+
+fun __unpack(l) =
+    match asrecord(l)
+        | {source, getter, setter} as result = result
+
+trait (L) for Lense =
+    def &(l of L) = asrecord(l).source
+    def &&(l of L) = get_branch(l)
+
+    def <-(l of L, value) =
+        let
+            {source, getter, setter} = __unpack(l)
+            new_source = setter(value, source)
+        in L(new_source, getter, setter)
+
+    def put(l of L, key, value) =
+        let
+            {source, getter, setter} = __unpack(l)
+            branch = get_branch(l)
+            new_value = put(branch, key, value)
+        in
+            l <- new_value
+
+    def at(l of L, key) =
+        let
+            {source, getter, setter} = __unpack(l)
+            branch = get_branch(l)
+        in
+            at(branch, key)
+
+    def has(l of L, key) =
+        let
+            {source, getter, setter} = __unpack(l)
+            branch = get_branch(l)
+        in
+            has(branch, key)
+
+    def str(l of L) = str(get_branch(l))
+    def repr(l of L) = "<Lense:" ++ str(l) ++ " >"
+
+    def call(l of L, args) =
+        match args
+        | (value) = l <- value
+        | () = &&l
+
+//    def call(l of L, args)
+//        | (l, (value)) = l <- value
+//        | (l, ()) = &&l
+
+describe Lense as (Coll, Replace, Extract, Ref, Repr, Call)

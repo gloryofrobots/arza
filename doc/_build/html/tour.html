@@ -1,0 +1,412 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quick tour &mdash; arza 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="arza 0.1 documentation" href="index.html" />
+    <link rel="next" title="Indentantions and layouts" href="indents.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="indents.html" title="Indentantions and layouts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="quick-tour">
+<h1>Quick tour<a class="headerlink" href="#quick-tour" title="Permalink to this headline">¶</a></h1>
+<p>This is simple but absolutely useless program that help to illustrate some of the most important
+Arza features</p>
+<div class="highlight-arza"><div class="highlight"><pre><span class="k">import</span> <span class="n">io</span> (<span class="n">print</span>)
+<span class="k">import</span> <span class="n">affirm</span>
+<span class="k">include</span> <span class="n">list</span> (<span class="n">range</span>_<span class="n">to</span> <span class="k">as</span> <span class="n">range</span>)
+<span class="k">import</span> <span class="n">seq</span>
+
+<span class="k">interface</span> <span class="n">GetSet</span>(<span class="n">I</span>) =
+    <span class="n">get</span>(<span class="n">I</span>, <span class="n">key</span>)
+    <span class="n">set</span>(<span class="n">I</span>, <span class="n">key</span>, <span class="n">value</span>)
+
+<span class="k">interface</span> <span class="n">Storage</span>(<span class="n">I</span>) =
+    <span class="n">contains</span>(<span class="n">I</span>, <span class="n">key</span>)
+    <span class="k">use</span> <span class="n">get</span>(<span class="n">I</span>, <span class="n">key</span>)
+    <span class="k">use</span> <span class="n">set</span>(<span class="n">I</span>, <span class="n">key</span>, <span class="n">value</span>)
+    <span class="n">size</span>(<span class="n">I</span>)
+
+<span class="k">interface</span> <span class="n">StorageKey</span>(<span class="n">I</span>) =
+    <span class="k">use</span> <span class="n">get</span>(<span class="n">storage</span>, <span class="n">I</span>)
+    <span class="k">use</span> <span class="n">set</span>(<span class="n">storage</span>, <span class="n">I</span>, <span class="n">value</span>)
+
+<span class="k">interface</span> <span class="n">Serializable</span>(<span class="n">I</span>) =
+    <span class="n">serialize</span>(<span class="n">storage</span> <span class="k">of</span> <span class="n">I</span>, <span class="n">serializer</span>)
+
+<span class="k">interface</span> <span class="n">Serializer</span>(<span class="n">I</span>) =
+    <span class="k">use</span> <span class="n">serialize</span>(<span class="n">storage</span>, <span class="n">serializer</span> <span class="k">of</span> <span class="n">I</span>)
+
+<span class="cm">//abstract type</span>
+
+
+<span class="k">type</span> <span class="n">Nothing</span>
+<span class="k">def</span> <span class="n">str</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Nothing</span>) = <span class="s">&quot;(novalue)&quot;</span>
+
+<span class="k">type</span> <span class="n">First</span>
+<span class="k">type</span> <span class="n">Second</span>
+<span class="k">type</span> <span class="n">Third</span>
+
+<span class="cm">// parens here mean that this is record type</span>
+<span class="cm">// it will inherit standart behavior like at, put, has, ==, != ...etc</span>
+<span class="k">type</span> <span class="n">Collection</span>()
+
+<span class="k">type</span> <span class="n">Single</span> <span class="k">is</span> <span class="n">Collection</span>
+    (<span class="n">first</span>)
+    <span class="k">init</span>(<span class="n">s</span>) = <span class="n">s</span>.{<span class="n">first</span> = <span class="n">Nothing</span>}
+
+<span class="k">def</span> <span class="n">set</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Single</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">First</span>, <span class="n">val</span>) =
+    <span class="n">s</span>.{<span class="n">first</span> = <span class="n">val</span>}
+
+<span class="k">def</span> <span class="n">get</span>({<span class="n">first</span>} <span class="k">of</span> <span class="n">Single</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">First</span>) = <span class="n">first</span>
+
+<span class="k">def</span> <span class="n">size</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Single</span>) = 1
+
+<span class="cm">//////////////////////////////////////////////////////////////</span>
+
+<span class="k">type</span> <span class="n">Pair</span> <span class="k">is</span> <span class="n">Single</span>
+    (<span class="n">second</span>)
+    <span class="k">init</span>(<span class="n">p</span>) =
+        <span class="n">super</span>(<span class="n">Single</span>, <span class="n">p</span>).{<span class="n">second</span> = <span class="n">Nothing</span>}
+
+<span class="cm">// define trait and apply it immidiately to Pair</span>
+<span class="k">trait</span> <span class="n">TPair</span>(<span class="n">T</span>) <span class="k">for</span> <span class="n">Pair</span> =
+    <span class="k">def</span> <span class="n">set</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">Second</span>, <span class="n">val</span>) =
+        <span class="n">s</span>.{<span class="n">second</span> = <span class="n">val</span>}
+    <span class="k">def</span> <span class="n">get</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">Second</span>) = <span class="n">s</span>.<span class="n">second</span>
+
+
+<span class="cm">// cast Pair to its supertype Single</span>
+<span class="k">def</span> <span class="n">size</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Pair</span>) = <span class="n">size</span>(<span class="n">s</span> <span class="k">as</span> <span class="n">Single</span>) + 1
+
+<span class="cm">//////////////////////////////////////////////////////////////</span>
+
+<span class="k">type</span> <span class="n">Triple</span> <span class="k">is</span> <span class="n">Pair</span>
+    (<span class="n">third</span>)
+    <span class="k">init</span>(<span class="n">t</span>) =
+        <span class="n">super</span>(<span class="n">Pair</span>, <span class="n">t</span>).{<span class="n">third</span> = <span class="n">Nothing</span>}
+
+<span class="k">trait</span> <span class="n">TTriple</span>(<span class="n">T</span>) <span class="k">for</span> <span class="n">Triple</span> =
+    <span class="k">def</span> <span class="n">set</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">Third</span>, <span class="n">val</span>) =
+        <span class="n">s</span>.{<span class="n">third</span> = <span class="n">val</span>}
+    <span class="k">def</span> <span class="n">get</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">Third</span>) = <span class="n">s</span>.<span class="n">third</span>
+
+
+<span class="k">def</span> <span class="n">size</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Triple</span>) = <span class="n">size</span>(<span class="n">s</span> <span class="k">as</span> <span class="n">Pair</span>) + 1
+
+<span class="cm">//////////////////////////////////////////////////////////////</span>
+
+<span class="cm">// lets create completely unrelated type to Single :&gt; Pair :&gt; Triple</span>
+<span class="cm">// but use traits for pair and triple to avoid code dublication</span>
+
+<span class="k">type</span> <span class="n">SecondAndThird</span> <span class="k">is</span> <span class="n">Collection</span> (<span class="n">second</span>, <span class="n">third</span>)
+
+<span class="k">instance</span> <span class="n">TPair</span>(<span class="n">SecondAndThird</span>)
+
+<span class="k">instance</span> <span class="n">TTriple</span>(<span class="n">SecondAndThird</span>)
+
+<span class="k">def</span> <span class="n">size</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">SecondAndThird</span>) = 2
+
+<span class="cm">//////////////////////////////////////////////////////</span>
+
+<span class="k">type</span> <span class="n">Dictionary</span> <span class="k">is</span> <span class="n">Collection</span> (<span class="n">items</span>)
+    <span class="k">init</span>(<span class="n">d</span>) =
+        <span class="n">d</span>.{ <span class="n">items</span> = {} }
+
+<span class="cm">// do not subtype from Dictionary but use its structure</span>
+<span class="k">type</span> <span class="n">Array</span> <span class="k">is</span> <span class="n">Collection</span>
+    (<span class="n">size</span>, ...<span class="n">Dictionary</span>)
+    <span class="k">init</span>(<span class="n">s</span>, <span class="n">size</span>) =
+        <span class="cm">//silly idea of arrays implemented as lists</span>
+        <span class="n">s</span>.{<span class="n">items</span> = <span class="n">seq</span>:<span class="n">consmany</span>([], <span class="n">Nothing</span>, <span class="n">size</span>), <span class="n">size</span>=<span class="n">size</span>}
+
+<span class="cm">// create anonymous trait and apply it serially to list of types</span>
+<span class="k">trait</span> (<span class="n">T</span>) <span class="k">for</span> [<span class="n">Dictionary</span>, <span class="n">Array</span>] =
+    <span class="k">def</span> <span class="n">size</span>({<span class="n">items</span>} <span class="k">of</span> <span class="n">T</span>) = <span class="n">len</span>(<span class="n">items</span>)
+
+<span class="k">trait</span> <span class="n">TStorageWithItems</span>(<span class="n">T</span>, <span class="n">KeyType</span>) =
+    <span class="k">def</span> <span class="n">set</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">KeyType</span>, <span class="n">val</span>) =
+        <span class="n">s</span>.{
+            <span class="n">items</span> = @.{ (<span class="n">k</span>) = <span class="n">val</span> }
+        }
+
+    <span class="k">def</span> <span class="n">get</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">T</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">KeyType</span>) = <span class="n">s</span>.<span class="n">items</span>.[<span class="n">k</span>]
+
+<span class="k">instance</span> <span class="n">TStorageWithItems</span>(<span class="n">Dictionary</span>, <span class="n">Symbol</span>)
+<span class="k">instance</span> <span class="n">TStorageWithItems</span>(<span class="n">Dictionary</span>, <span class="n">StorageKey</span>)
+<span class="k">instance</span> <span class="n">TStorageWithItems</span>(<span class="n">Array</span>, <span class="n">Int</span>)
+
+<span class="cm">//redefine array size to avoid list</span>
+<span class="k">override</span> (<span class="n">prev</span>) <span class="n">size</span>(<span class="n">a</span> <span class="k">of</span> <span class="n">Array</span>) =
+    <span class="n">a</span>.<span class="n">size</span>
+
+<span class="k">type</span> <span class="n">InvalidKeyError</span> <span class="k">is</span> <span class="n">Error</span>
+
+<span class="cm">// redefine set function for Array</span>
+<span class="cm">// to avoid index out of range problems</span>
+<span class="cm">// prev is previous method</span>
+<span class="cm">// override expression do not adds this method to specific signature set(Array, Int)</span>
+<span class="cm">// but replaces it completely</span>
+<span class="cm">// so only indexes &gt; 0 and &lt; size will be accepted</span>
+<span class="k">override</span> (<span class="n">prev</span>) <span class="n">set</span>(<span class="n">arr</span> <span class="k">of</span> <span class="n">Array</span>, <span class="n">i</span> <span class="k">of</span> <span class="n">Int</span>, <span class="n">val</span>)
+    | ({<span class="n">size</span>}, <span class="n">i</span>, <span class="n">val</span>) <span class="n">when</span> <span class="n">i</span> &gt;= 0 <span class="k">and</span> <span class="n">i</span> &lt; <span class="n">size</span> = <span class="n">prev</span>(<span class="n">arr</span>, <span class="n">i</span>, <span class="n">val</span>)
+    | (_, <span class="n">i</span>, _) = <span class="k">throw</span> <span class="n">InvalidKeyError</span>(<span class="n">i</span>)
+
+
+<span class="k">def</span> ==(<span class="n">d</span> <span class="k">of</span> <span class="n">Dictionary</span>, <span class="n">m</span> <span class="k">of</span> <span class="n">Map</span>) = <span class="n">d</span>.<span class="n">items</span> == <span class="n">m</span>
+
+<span class="k">def</span> ==(<span class="n">m</span> <span class="k">of</span> <span class="n">Map</span>, <span class="n">d</span> <span class="k">of</span> <span class="n">Dictionary</span>) = <span class="n">d</span>.<span class="n">items</span> == <span class="n">m</span>
+
+<span class="cm">//////////////////////////////////////////////////////</span>
+
+<span class="cm">// define method for parent subtype</span>
+<span class="k">def</span> <span class="n">contains</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Collection</span>, <span class="n">k</span>) =
+    <span class="k">let</span> <span class="n">val</span> =
+        <span class="cm">// if method is not implemented for specific key it will throw NotImplementedError exception</span>
+        <span class="cm">// we catch it and tell user key not exists</span>
+        <span class="k">try</span>
+            <span class="n">get</span>(<span class="n">s</span>, <span class="n">k</span>)
+        <span class="k">catch</span>
+            | <span class="n">e</span> <span class="k">of</span> <span class="n">NotImplementedError</span> = <span class="n">Nothing</span>
+            | <span class="n">e</span> = <span class="k">throw</span> <span class="n">e</span>
+
+    <span class="k">match</span> <span class="n">val</span>
+        | <span class="k">type</span> <span class="n">Nothing</span> = <span class="n">False</span>
+        | _ = <span class="n">True</span>
+
+<span class="cm">/// there are other more preferable way to implement such behavior</span>
+<span class="cm">//// this method will be called if specific get(Storage, Key) was undefined</span>
+<span class="cm">//// for example get(Single, Second) will otherwise crash with not implemented error</span>
+<span class="k">def</span> <span class="n">get</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Collection</span>, <span class="n">k</span> <span class="k">of</span> <span class="n">Any</span>) = <span class="n">Nothing</span>
+<span class="cm">// after this declaration NotImplementedError will never be thrown in get generic</span>
+
+
+
+<span class="cm">//////////////////////////////////////////////////////</span>
+
+<span class="cm">//ensure that all types are satisfiing interface</span>
+<span class="k">describe</span> (<span class="n">Dictionary</span>, <span class="n">Array</span>, <span class="n">Pair</span>, <span class="n">Triple</span>, <span class="n">Single</span>, <span class="n">SecondAndThird</span>) <span class="k">as</span> (<span class="n">Storage</span>, <span class="n">GetSet</span>)
+
+<span class="k">def</span> <span class="n">serialize</span>({<span class="n">first</span>, <span class="n">second</span>} <span class="k">of</span> <span class="n">Pair</span>, <span class="n">serializer</span> <span class="k">of</span> <span class="n">Dictionary</span>) =
+    <span class="n">serializer</span>
+        |&gt; <span class="n">set</span>(_, <span class="n">First</span>, <span class="n">first</span>)
+        |&gt; <span class="n">set</span>(_, <span class="n">Second</span>, <span class="n">second</span>)
+
+<span class="k">def</span> <span class="n">serialize</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Triple</span>, <span class="n">serializer</span> <span class="k">of</span> <span class="n">Dictionary</span>) =
+    <span class="n">serializer</span>
+        |&gt; <span class="n">serialize</span>(<span class="n">s</span> <span class="k">as</span> <span class="n">Pair</span>, _)
+        |&gt; <span class="n">set</span>(_, <span class="n">Third</span>, <span class="n">s</span>.<span class="n">third</span>)
+
+<span class="k">def</span> <span class="n">serialize</span>(<span class="n">s</span> <span class="k">of</span> <span class="n">Array</span>, <span class="n">serializer</span> <span class="k">of</span> <span class="n">List</span>) =
+    <span class="n">seq</span>:<span class="n">concat</span>(<span class="n">s</span>.<span class="n">items</span>, <span class="n">serializer</span>)
+
+<span class="k">describe</span> (<span class="n">Triple</span>, <span class="n">Pair</span>) <span class="k">as</span> <span class="n">Serializable</span>
+<span class="k">describe</span> <span class="n">Dictionary</span> <span class="k">as</span> <span class="n">Serializer</span>
+<span class="k">describe</span> <span class="n">Array</span>  <span class="k">as</span> <span class="n">Serializable</span>
+
+<span class="k">fun</span> <span class="n">array</span>_<span class="n">map</span>({<span class="n">items</span>} <span class="k">as</span> <span class="n">arr</span>, <span class="n">fn</span>) =
+    <span class="cm">// lets pretend this Array implementation is not based on lists</span>
+    <span class="cm">// and write some ridiculously slow map implementation</span>
+    <span class="cm">// there are zip in seq module</span>
+    <span class="cm">// but lets define our own here</span>
+    <span class="k">fun</span> <span class="n">zip</span>(<span class="n">seq</span>1, <span class="n">seq</span>2)
+        | (<span class="n">x</span>::<span class="n">xs</span>, <span class="n">y</span>::<span class="n">ys</span>) = (<span class="n">x</span>, <span class="n">y</span>) :: <span class="n">zip</span>(<span class="n">xs</span>, <span class="n">ys</span>)
+        | (_, _) = []
+
+    <span class="cm">// same with foldl but here we call set directly</span>
+    <span class="k">fun</span> <span class="n">fold</span>
+        | ([], <span class="n">acc</span>) = <span class="n">acc</span>
+        | (<span class="n">hd</span>::<span class="n">tl</span>, <span class="n">acc</span>) =
+            <span class="k">let</span>
+                (<span class="n">index</span>, <span class="n">item</span>) = <span class="n">hd</span>
+                <span class="n">new</span>_<span class="n">acc</span> = <span class="n">set</span>(<span class="n">acc</span>, <span class="n">index</span>, <span class="n">fn</span>(<span class="n">item</span>))
+            <span class="k">in</span>
+                <span class="n">fold</span>(<span class="n">tl</span>, <span class="n">new</span>_<span class="n">acc</span>)
+
+    <span class="k">let</span>
+        <span class="n">arrsize</span> = <span class="n">size</span>(<span class="n">arr</span>)
+        <span class="n">indexes</span> = <span class="n">range</span>(<span class="n">arrsize</span>)
+    <span class="k">in</span>
+        <span class="n">fold</span>(
+            <span class="n">seq</span>:<span class="n">zip</span>(<span class="n">indexes</span>, <span class="n">items</span>),
+            <span class="n">Array</span>(<span class="n">arrsize</span>)
+        )
+
+
+<span class="k">fun</span> <span class="n">test</span>() =
+    <span class="k">let</span>
+        <span class="n">single</span> = <span class="n">Single</span>()
+            |&gt; <span class="n">set</span>(_, <span class="n">First</span>, <span class="s">#one)</span>
+
+        <span class="n">pair</span> = <span class="n">Pair</span>()
+            |&gt; <span class="n">set</span>(_, <span class="n">First</span>, <span class="s">#one)</span>
+            |&gt; <span class="n">set</span>(_, <span class="n">Second</span>, <span class="s">#two)</span>
+
+        <span class="n">triple</span> = <span class="n">Triple</span>()
+            |&gt; <span class="n">set</span>(_, <span class="n">First</span>, <span class="s">#one)</span>
+            |&gt; <span class="n">set</span>(_, <span class="n">Second</span>, <span class="s">#nottwo)</span>
+            |&gt; <span class="n">set</span>(_, <span class="n">Third</span>, <span class="s">#three)</span>
+
+        <span class="n">arr</span> = <span class="n">Array</span>(10)
+            |&gt; <span class="n">set</span>(_, 0, <span class="s">#zero)</span>
+            |&gt; <span class="n">set</span>(_, 5, <span class="s">#five)</span>
+            |&gt; <span class="n">set</span>(_, 8, <span class="s">#eight)</span>
+
+        <span class="n">dict</span> =
+            <span class="n">Dictionary</span>()
+            |&gt; <span class="n">set</span>(_, <span class="s">#one,</span> 0)
+            <span class="cm">// update</span>
+            |&gt; <span class="n">set</span>(_, <span class="s">#one,</span> 1)
+            |&gt; <span class="n">set</span>(_, <span class="s">#two,</span> 2)
+    <span class="k">in</span>
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>_<span class="n">all</span>(
+            <span class="n">get</span>(<span class="n">single</span>, <span class="n">First</span>),
+            <span class="n">get</span>(<span class="n">pair</span>, <span class="n">First</span>),
+            <span class="n">get</span>(<span class="n">triple</span>, <span class="n">First</span>),
+            <span class="s">#one</span>
+        )
+
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">not</span>_<span class="n">equal</span>(<span class="n">get</span>(<span class="n">triple</span>,  <span class="n">Second</span>), <span class="n">get</span>(<span class="n">pair</span>, <span class="n">Second</span>))
+
+        <span class="k">let</span>
+            <span class="n">dict</span>1 = <span class="n">dict</span>.{ <span class="n">items</span> = @.{<span class="n">three</span> = [1,2,3]} }
+            <span class="cm">//deeply nested update</span>
+            <span class="n">dict</span> = <span class="n">dict</span>1.{<span class="n">items</span>.<span class="n">three</span> = 0::@}
+        <span class="k">in</span>
+            <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">dict</span> == {<span class="n">one</span>=1, <span class="n">two</span>=2, <span class="n">three</span>=[0,1,2,3]})
+
+        <span class="cm">// this is old dict value</span>
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">dict</span> == {<span class="n">one</span>=1, <span class="n">two</span>=2})
+        <span class="k">let</span>
+            <span class="cm">// lets try some function composition</span>
+            <span class="n">fn</span> = (`++` .. <span class="s">&quot;Val-&gt;&quot;</span>) &lt;&lt; <span class="n">str</span>
+            <span class="cm">// this is equivalent to</span>
+            <span class="n">fn</span>2 = (<span class="n">x</span>) -&gt; <span class="s">&quot;Val-&gt;&quot;</span> ++ <span class="n">str</span>(<span class="n">x</span>)
+            <span class="cm">//where (args) -&gt; expression is lambda expression</span>
+            <span class="n">arr</span>_<span class="n">str</span> = <span class="n">array</span>_<span class="n">map</span>(<span class="n">arr</span>, <span class="n">fn</span>)
+            <span class="n">arr</span>_<span class="n">str</span>2 = <span class="n">array</span>_<span class="n">map</span>(<span class="n">arr</span>, <span class="n">fn</span>2)
+        <span class="k">in</span>
+            <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">equal</span>(<span class="n">arr</span>_<span class="n">str</span>.<span class="n">items</span>, <span class="n">arr</span>_<span class="n">str</span>2.<span class="n">items</span>)
+
+        <span class="k">let</span>
+            <span class="n">dict</span>_<span class="n">ser</span> = <span class="n">serialize</span>(<span class="n">triple</span>, <span class="n">dict</span>)
+        <span class="k">in</span>
+            <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">dict</span>_<span class="n">ser</span> == {(<span class="n">First</span>) = <span class="s">#one,</span> (<span class="n">Second</span>) = <span class="s">#nottwo,</span> (<span class="n">Third</span>) = <span class="s">#three,</span>  <span class="n">one</span>=1, <span class="n">two</span>=2})
+
+            <span class="cm">// using func like infix operator</span>
+            <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">dict</span>_<span class="n">ser</span> `<span class="n">contains</span>` <span class="n">First</span>)
+            <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">dict</span>_<span class="n">ser</span> `<span class="n">contains</span>` <span class="s">#two)</span>
+
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">single</span> `<span class="n">contains</span>` <span class="n">First</span>)
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">false</span>(<span class="n">single</span> `<span class="n">contains</span>` <span class="n">Second</span>)
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">pair</span> `<span class="n">contains</span>` <span class="n">Second</span>)
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">triple</span> `<span class="n">contains</span>` <span class="n">Third</span>)
+
+        <span class="k">let</span> <span class="n">arr</span>2 =
+            <span class="k">try</span>
+                <span class="n">set</span>(<span class="n">arr</span>, 10, 10)
+            <span class="k">catch</span> <span class="n">e</span> <span class="k">of</span> <span class="n">InvalidKeyError</span> = <span class="n">Nothing</span>
+            <span class="k">finally</span>
+                <span class="n">set</span>(<span class="n">arr</span>, 9, 42)
+
+        <span class="n">affirm</span>:<span class="n">is</span>_<span class="n">true</span>(<span class="n">get</span>(<span class="n">arr</span>2, 9) == 42)
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="indents.html"
+                        title="next chapter">Indentantions and layouts</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tour.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="indents.html" title="Indentantions and layouts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">arza 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, gloryofrobots.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

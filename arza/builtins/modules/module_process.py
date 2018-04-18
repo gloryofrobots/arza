@@ -3,7 +3,8 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_process')
+    from arza.builtins import lang_names
+    _module_name = lang_names.get_lang_symbol(process, u"_process")
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'spawn', __process, 2)
     api.put_native_function(process, _module, u'self', __self, 0)
@@ -24,6 +25,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'send', send_message, 2)
     api.put_native_function(process, _module, u'push', push, 2)
     api.put_native_function(process, _module, u'pause', pause, 1)
+    api.put_native_function(process, _module, u'kill', kill, 2)
     api.put_native_function(process, _module, u'resume', resume, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     _module.export_all()
@@ -48,6 +50,8 @@ def start(process, routine):
 def __process(process, routine):
     fn = routine.get_arg(0)
     args = routine.get_arg(1)
+    if not space.istuple(args):
+        args = space.newtuple([args])
     return process.scheduler.spawn(fn, args)
 
 
@@ -169,4 +173,11 @@ def get_active_processes(process, routine):
 def pause(process, routine):
     pid = routine.get_arg(0)
     pid.process.pause()
+    return space.newunit()
+
+@complete_native_routine
+def kill(process, routine):
+    pid = routine.get_arg(0)
+    arg = routine.get_arg(1)
+    pid.process.exit(arg)
     return space.newunit()

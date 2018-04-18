@@ -4,7 +4,8 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    name = space.newsymbol(process, u'arza:lang:_io')
+    from arza.builtins import lang_names
+    name = lang_names.get_lang_symbol(process, u"_io")
     _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'stdin', _stdin, 0)
     api.put_native_function(process, _module, u'stdout', _stdout, 0)

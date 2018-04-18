@@ -1,133 +1,4 @@
 [
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "T"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "type",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "x",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "x"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "y",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "y"
-                }
-              ]
-            }
-          ]
-        ]
-      },
-      {
-        "_ntype": "NT_FUN",
-        "_value": "construct",
-        "children": [
-          {
-            "empty": true
-          },
-          [
-            [
-              {
-                "_ntype": "NT_TUPLE",
-                "_value": "(",
-                "children": [
-                  [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "self"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "x"
-                    }
-                  ]
-                ]
-              },
-              [
-                {
-                  "_ntype": "NT_MODIFY",
-                  "_value": ".{",
-                  "children": [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "self"
-                    },
-                    [
-                      {
-                        "_ntype": "NT_ASSIGN",
-                        "_value": "x",
-                        "children": [
-                          {
-                            "_ntype": "NT_SYMBOL",
-                            "_value": "x",
-                            "children": [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "x"
-                              }
-                            ]
-                          },
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "x"
-                          }
-                        ]
-                      },
-                      {
-                        "_ntype": "NT_ASSIGN",
-                        "_value": "24",
-                        "children": [
-                          {
-                            "_ntype": "NT_SYMBOL",
-                            "_value": "y",
-                            "children": [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "y"
-                              }
-                            ]
-                          },
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "24"
-                          }
-                        ]
-                      }
-                    ]
-                  ]
-                },
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "self"
-                },
-                {
-                  "_ntype": "NT_INT",
-                  "_value": "42"
-                }
-              ]
-            ]
-          ]
-        ]
-      }
-    ]
-  },
   [
     [
       {
@@ -136,7 +7,7 @@
         "children": [
           {
             "_ntype": "NT_NAME",
-            "_value": "t"
+            "_value": "=="
           },
           {
             "_ntype": "NT_LIST",
@@ -155,11 +26,49 @@
                 },
                 {
                   "_ntype": "NT_SYMBOL",
-                  "_value": "X",
+                  "_value": "y",
                   "children": [
                     {
                       "_ntype": "NT_NAME",
-                      "_value": "X"
+                      "_value": "y"
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "_ntype": "NT_GENERIC",
+        "_value": "interface",
+        "children": [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "!="
+          },
+          {
+            "_ntype": "NT_LIST",
+            "_value": "interface",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "x",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "y",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
                     }
                   ]
                 }
@@ -175,7 +84,7 @@
       "children": [
         {
           "_ntype": "NT_NAME",
-          "_value": "X"
+          "_value": "Eq"
         },
         {
           "_ntype": "NT_LIST",
@@ -184,16 +93,32 @@
             [
               {
                 "_ntype": "NT_TUPLE",
-                "_value": "1",
+                "_value": "0",
                 "children": [
                   [
                     {
                       "_ntype": "NT_NAME",
-                      "_value": "t"
+                      "_value": "=="
                     },
                     {
                       "_ntype": "NT_INT",
-                      "_value": "1"
+                      "_value": "0"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "0",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "!="
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "0"
                     }
                   ]
                 ]
@@ -206,6 +131,84 @@
           "_value": "interface",
           "children": [
             []
+          ]
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "==",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "=="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "==",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "x",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "y",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "!=",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "!="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "!=",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "x",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "y",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
           ]
         }
       ]

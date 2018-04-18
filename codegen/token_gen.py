@@ -23,7 +23,7 @@ TOKENS = [
   ("TT_WHILE", "while"),
 
   ("TT_DEF", "def"),
-  ("TT_DEF_PLUS", "def+"),
+  ("TT_OVERRIDE", "override"),
   ("TT_TYPE", "type"),
 
   ("TT_IF", "if"),

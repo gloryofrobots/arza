@@ -14,6 +14,8 @@ fun nbn_1() =
            1
         else
             seq:foldl(
+                list:range(2, g),
+                1,
                 (fun(q, res) =
                     let x =
                         if q > n - g then
@@ -22,60 +24,58 @@ fun nbn_1() =
                             _loop(n-g, q)
                     in
                         res + x
-                ),
-                1,
-                list:range(2, g)
+                )
             )
 
     in
         string:join(
+            "\n",
             seq:map(
+                list:range(1, 25),
                 fun (n) =
-                    string:join_cast(
+                    string:join(
+                       " ",
                        seq:map(
-                            g -> _loop(n, g),
-                            list:range(1, n)
-                       ),
-                       " "
-                    ),
-                 list:range(1, 25)
-             ),
-             "\n"
+                            list:range(1, n),
+                            g -> _loop(n, g)
+                       )
+                    )
+             )
         )
 
 
 fun nbn_2 () =
     string:join(
+        "\n",
         seq:map(
-            fun(n) =
-                string:join_cast(
-                   seq:map(
+            list:range(1, 25),
+            (fun(n) =
+                string:join(
+                    " ",
+                    seq:map(
+                        list:range(1, n),
                         (fun (g) =
                             let
                                 fun _loop (n, g) =
                                     if g == 1 or n < g then 1
                                     else
                                         seq:foldl(
+                                            list:range(2, g),
+                                            1,
                                             (fun (q, res) =
                                                 if q > n - g  then
                                                     res
                                                 else
                                                     res + _loop(n-g, q)
-                                            ),
-                                            1,
-                                            list:range(2, g)
+                                            )
                                         )
 
                             in _loop(n, g)
-                        ),
-                        list:range(1, n)
-                   ),
-                   " "
+                        )
+                    )
                 )
-           ,
-           list:range(1, 25)
-        ),
-        "\n"
+            )
+        )
     )
 
 fun run () =

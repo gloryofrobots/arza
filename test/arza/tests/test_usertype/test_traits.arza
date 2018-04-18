@@ -7,16 +7,16 @@ type LT
 type Val(v)
 type Val2(v)
 
-interface =
-    fun eq(x, y)
-    fun ne(x, y)
-    fun le(x, y)
-    fun lt(x, y)
-    fun ge(x, y)
-    fun gt(x, y)
-    fun cmp(x, y)
-    fun max(x, y)
-    fun min(x, y)
+interface I =
+    eq(I, I)
+    ne(I, I)
+    le(I, I)
+    lt(I, I)
+    ge(I, I)
+    gt(I, I)
+    cmp(I, I)
+    max(I, I)
+    min(I, I)
 
 trait TEq(T1, T2) =
     def eq (x of T1, y of T2) = not ne(x, y)
@@ -54,16 +54,16 @@ def ne(v1 of Val2, v2) = v1.v != v2.v
 instance TOrder(Val, Val)
 instance TMaxMin(Val, Val)
 
-def cmp(self of Val, other of Val) =
-    if self.v == other.v then EQ
-    elif self.v <= other.v then LT
+def cmp(this of Val, other of Val) =
+    if this.v == other.v then EQ
+    elif this.v <= other.v then LT
     else GT
 
 instance TOrder(Val2, Val2)
 instance TCmp(Val2, Val2)
 instance TMaxMin(Val2, Val2)
 
-def le(self of Val2, other of Val2) = self.v <= other.v
+override(_) le(this of Val2, other of Val2) = this.v <= other.v
 
 fun test () =
     let

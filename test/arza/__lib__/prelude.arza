@@ -1,0 +1,422 @@
+import arza:_std as std_behavior
+
+import arza:_datatype
+include arza:_datatype(supertype)
+
+import arza:_process
+
+include arza:_types (Any, Abstract, Record, Number, Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+                              Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
+                              Module, Array, AssocArray, PID,
+                              Error, MatchError, ExceptionMatchError, FunctionMatchError)
+
+
+include arza:_bit (bitand, bitor, bitxor, bitnot, lshift, rshift)
+include arza:_number (abs)
+
+
+"""
+super BUG
+io:print(
+    #b,
+    match 2
+        | x = #c
+  )
+"""
+
+
+"""
+SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
+Precedence    Operator
+    100           : .
+    95           x() .{ .[ ->
+    60           :: :::
+    55           **
+    50           *  /
+    40           +  - ++
+    35           ==  !=  <  <=  >  >=
+    30           and
+    25           or << >>
+    20           |>
+    15           " ." as of <| <-
+    10           = :=
+"""
+
+infixr (:=, :=, 10)
+// infix @ as of -> 15
+infixr (<-, <-, 15)
+infixr (!, __send__, 15)
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+// infix or -> 25
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+// infix and -> 30
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+// use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
+prefix (-, arza:negate, 55)
+// infix :: -> 60
+infixl (**, **, 60)
+// prefix # -> 70
+prefix (&, &, 70)
+prefix (&&, &&, 70)
+infixl (.., .., 90)
+// infix (  .{ .[ -> 95
+prefix (~, ~, 96)
+// infix . : -> 100
+
+
+
+////////////////////////////////////////////////////////////
+///////////////// INTERFACES ///////////////////////////////
+////////////////////////////////////////////////////////////
+
+interface Eq(I) =
+    ==(I, I)
+    !=(I, I)
+
+interface Comparable(I) =
+    cmp(I, I)
+
+interface LessEq(I) is Eq =
+    <=(I, I)
+
+interface Ord(I) =
+    use <=(I, I)
+    use cmp(I, I)
+    <(I, I)
+    >=(I, I)
+    >(I, I)
+    max(I, I)
+    min(I, I)
+
+interface Num(I) =
+    -(I, I)
+    +(I, I)
+    *(I, I)
+    /(I, I)
+    mod(I, I)
+    // unary -
+    negate(I)
+
+interface Pow(I) =
+    **(I, I)
+
+interface Str =
+    str(Str)
+
+interface Repr(I) is Str =
+    repr(I)
+
+interface Len =
+    len(Len)
+
+interface IsEmpty(I) =
+    is_empty(I)
+
+interface Put(I) =
+    put(I, key, value)
+
+interface Del(I) =
+    del(I, obj)
+
+interface At(I) =
+    at(I, key)
+    has(I, key)
+
+interface Coll is (Put, At, Del)
+
+interface Dict(I) is Coll =
+    keys(d of I)
+    values(I)
+
+interface Seq =
+    first(Seq)
+    rest(Seq)
+
+interface Empty(I) =
+    empty(I)
+
+interface Cons(I) =
+    cons(value, I)
+
+interface Consable(I) =
+    use cons(value of I, seq)
+
+interface Prepend(I) =
+    prepend(I, value)
+
+interface Append(I) =
+    append(I, value)
+
+interface Concat(I) =
+    ++(I, I)
+
+interface Indexed(I) =
+    index_of(I, obj)
+
+interface ToSeq(I) =
+    to_seq(I)
+
+interface FromSeq(I) =
+    from_seq(I)
+
+interface Slice(I) =
+    slice (I, first, last)
+    drop(I, count)
+    take(I, count)
+
+interface Bound(I) =
+    lower_bound(I)
+    upper_bound(I)
+
+interface Range(I) =
+    range(I, I)
+    range_by (I, I, I)
+    range_from(I)
+    range_from_by(I, I)
+
+interface Ref(I) =
+    &(I)
+
+interface MutRef(I) =
+    use &(I)
+    :=(I, value)
+
+interface Replace(I) =
+    <- (I, value)
+
+interface Extract(I) =
+    &&(I)
+
+interface Call(I) =
+    call(I, args)
+
+interface Cast(I) =
+    cast(I, valueof to_what)
+
+interface Castable(I) =
+    use cast(what, I)
+
+interface Close(I) =
+    close(I)
+
+// Bootstrap interfaces behavior
+
+
+trait (T) for Record =
+    def index_of (this of T, val) as _datatype:record_index_of
+    def keys(this of T) as _datatype:record_keys
+    def values(this of T) as _datatype:record_values
+
+    def put (this of T, k, v) as std_behavior:put
+    def at (this of T, k) as std_behavior:at
+    def del (this of T, el) as std_behavior:del
+    def has (this of T, el) as std_behavior:has
+    def len (this of T) as std_behavior:len
+    def is_empty (this of T) as std_behavior:is_empty
+    def cast(this of T, to_what) as std_behavior:cast
+
+    def != (this of T, other of T) = not (this == other)
+    def repr(this of T) = str(this)
+
+
+trait (T) for Any =
+
+    def == (this of T, other of T) as std_behavior:equal
+    def != (this of T, other of T) as std_behavior:not_equal
+
+    def str (this of T) as std_behavior:str
+    def repr (this of T) as std_behavior:repr
+
+
+def at (this of Module, k) as std_behavior:at
+def at (this of Map, k) as std_behavior:at
+def at (this of Tuple, el) as std_behavior:at
+
+
+////////////////////////////////////////////////////////////
+///////////////// TYPES ////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+type LT
+type GT
+type EQ
+type Some (val)
+type None
+// type used as signal for abortinf recursive processes
+type End
+
+// Various Errors
+type MessageMatchError is Error
+type ImportError is Error
+type RuntimeError is Error
+type TypeError is Error
+type NotImplementedError is Error
+type ZeroDivisionError is Error
+type MathDomainError is Error
+type ReferenceError is Error
+type ConstructorError is Error
+type KeyError is Error
+type ValueError is Error
+type SliceError is Error
+type IndexError is Error
+type InvokeError is Error
+type InvalidArgCount is Error
+type SpecializeError is Error
+type CompileError is Error
+type ParseError is Error
+type UnpackSequenceError is Error
+type FiberFlowError is Error
+type ClosedPIDError is Error
+type ExportError is Error
+type ImplementationError is Error
+type ConstraintError is Error
+type EmptySeqError is Error
+type OverflowError is Error
+type RangeError is Error
+type CoroutineEmpty is Error
+
+////////////////////////////////////////////////////////////
+///////////////// FUNCTIONS ////////////////////////////////
+////////////////////////////////////////////////////////////
+
+fun put_default(coll, key, default) =
+    if has(coll, key) then
+        coll
+    else
+        put(coll, key, default)
+
+type Lense(source, getter, setter)
+
+fun lense(source, getter, setter) =
+    let
+        branch = getter(source)
+    in
+        if not kindof(branch, Coll) then
+            throw TypeError("Branch is not a Coll")
+        else
+            Lense(source, getter, setter)
+
+fun lookup (key, default, coll) =
+    try
+        at(coll, key)
+    catch
+        | e of KeyError = default
+        | e = throw e
+
+fun elem(el, coll) = has(coll, el)
+fun not_elem(x, c) = not elem(x, c)
+
+fun identity(x) = x
+
+fun ~ (func) = curry(func)
+fun .. (f, g) = curry(f)(g)
+
+fun |>(x, f) = f(x)
+fun <|(f, x) = f(x)
+fun >>(f, g) = x -> g(f(x))
+fun <<(f, g) = x -> f(g(x))
+
+
+fun twice(f) = f >> f
+fun flip(f) = (x, y) -> f(y, x)
+
+fun even(x) = mod(x, 2) == 0
+fun odd(x) = not even(x)
+fun inc(x) = x + 1
+fun dec(x) = x - 1
+
+fun last(coll) = at(coll, len(coll) - 1)
+
+fun asrecord(any) = any as Record
+
+let
+    fst = at(_, 0)
+    snd = at(_, 1)
+    thrd = at(_, 2)
+    frth = at(_, 3)
+
+let
+    self = _process:self
+    spawn = _process:spawn
+
+
+fun extends((supertype, fields, _init), parent) =
+    let
+        new_init =
+            match _init
+                | () = _datatype:get_init(parent)
+                | fn = fn
+        new_super =
+            match supertype
+                | type Abstract = Record
+                | _ = supertype
+    in
+        (new_super, _datatype:get_fields(parent) ++ fields, new_init)
+
+
+fun setfield((supertype, fields, _init), field, value) =
+    let
+        fun _wrap(...args) =
+            let
+                data = _init(...args)
+            in
+                data.{(field) = value}
+    in
+        (supertype, fields, _wrap)
+
+
+fun super(_type, obj, ...args) =
+    if _datatype:has_init(_type) then
+        let _init = _datatype:get_init(_type)
+        in _init(obj, ...args)
+    else
+        let
+            l = len(args)
+            fun _loop(obj, index, args) =
+                if index >= l then
+                    obj
+                else
+                    _loop(obj.{(index) = args.[index]}, index + 1, args)
+        in
+            _loop(obj, 0, args)
+
+
+// special __at__ method which can be used for default access in case of overloading at
+let __at__ = std_behavior:at
+
+fun __send__ (p of PID, msg) = _process:send(p, msg)
+
+def <- (p of PID, msg) as __send__
+
+fun __override__(generic, types, func) = func(method(generic, types))
+
+
+fun __receive__(fn) =
+    let
+        proc = self()
+//        _ = PL("__RECEIVE__", proc)
+        fun _loop() =
+            if not _process:is_empty(proc) == False then
+                _process:pause(proc)
+                _loop()
+            else
+                let
+                    msg = _process:pop(proc)
+                in
+//                    PL("@@POP", proc, msg, _process:mailbox(proc))
+                    fn(msg)
+    in
+        _loop()
+

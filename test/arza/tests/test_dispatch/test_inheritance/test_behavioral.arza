@@ -2,8 +2,8 @@ import affirm
 
 type A(a)
 
-interface =
-    fun f(v)
+interface F =
+    f(F)
 
 trait T_A(T) for A =
     def f(v of T) = v.a
@@ -12,7 +12,7 @@ type AB(...A, b)
 
 trait T_B(T) for AB =
     instance T_A(T)
-    def+(super) f(v of T) = super(v) ++ v.b
+    override(super) f(v of T) = super(v) ++ v.b
 
 
 fun test() =

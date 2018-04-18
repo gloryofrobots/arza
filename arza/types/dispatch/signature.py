@@ -248,29 +248,10 @@ class UniqueSignature(W_Root):
             if strictmode:
                 return False
             return api.contains_b(interfaces, current)
-        return api.equal_b(_type, current)
+        return _type.is_subtype_of(current)
 
     def _to_string_(self):
         return "<unique signature %s> " % (", ".join([str(arg) for arg in self.args]))
-
-
-DEFAULT_RANK = 1
-GUARD_RANK = 2
-LITERAL_RANK = 10
-WILDCARD_RANK = -5
-RANKS = {
-    nt.NT_INT: LITERAL_RANK,
-    nt.NT_FLOAT: LITERAL_RANK,
-    nt.NT_STR: LITERAL_RANK,
-    nt.NT_CHAR: LITERAL_RANK,
-    nt.NT_MULTI_STR: LITERAL_RANK,
-    nt.NT_TRUE: LITERAL_RANK,
-    nt.NT_FALSE: LITERAL_RANK,
-    nt.NT_LIST: LITERAL_RANK,
-    nt.NT_MAP: LITERAL_RANK,
-    nt.NT_TUPLE: LITERAL_RANK,
-    nt.NT_UNIT: LITERAL_RANK,
-}
 
 
 class Signature(UniqueSignature):
@@ -282,38 +263,21 @@ class Signature(UniqueSignature):
     def _to_string_(self):
         return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
 
-    def get_weight(self):
-        weight = 0
-        pattern = self.pattern
-        if nodes.is_guarded_pattern(self.pattern):
-            weight += GUARD_RANK
-            pattern = nodes.node_first(self.pattern)
-
-        args = nodes.tuple_node_to_list(pattern)
-        for arg in args:
-            ntype = nodes.node_type(arg)
-            weight = RANKS.get(ntype, DEFAULT_RANK)
-
-        return weight
-
 
 def _get_value_predicate(process, value, index):
     return ArgumentValue(index, value)
 
 
 def _get_interface_predicate(process, interface, index):
-    interfaces = process.std.interfaces
-
-    if interfaces.Any is interface:
-        arg = ArgumentAny(index)
-    else:
-        arg = ArgumentInterface(index, interface)
-
+    arg = ArgumentInterface(index, interface)
     return arg
 
 
 def _get_type_predicate(process, _type, index):
-    arg = ArgumentType(index, _type)
+    if process.std.types.Any is _type:
+        arg = ArgumentAny(index)
+    else:
+        arg = ArgumentType(index, _type)
     # types = process.std.types
     # if types.List is _type:
     #     arg = PredicateArgument(index, space.islist)

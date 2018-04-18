@@ -1,0 +1,136 @@
+// this program will implement mutable state via processes
+
+import process
+import decor
+
+type State(pid)
+
+// special error
+type StateError is Error
+
+// because State will implement at generic all calls like state.key or
+// matches {key1, key2} will be infinitely recursive
+// to avoid this we need to cast state to parent Record type
+// asrecord defined in prelude like fun asrecord(r) = r as Record
+fun pid(s) = asrecord(s).pid
+
+
+fun is_valid(s) =
+    not process:is_finished(pid(s))
+
+fun __ensure_process(s) =
+    if not is_valid(s) then
+        throw StateError("Process inactive")
+    else
+        s
+
+// creating assertion decorators as partially applied function decor:call_first
+let ensure1 = decor:call_first(_, 1, __ensure_process)
+let ensure2 = decor:call_first(_, 2, __ensure_process)
+let ensure3 = decor:call_first(_, 3, __ensure_process)
+
+// trait is function which can operate on types
+// traits have global side effects
+// they used to specify behavior for one or more types
+// and can be applied to different set of types with 'instance' expression
+// this is anonymous trait. They are used just for convinience to avoid typing long type names
+
+trait (T) for State =
+    // T means State
+    def close(s of T) =
+        process:kill(pid(s), 0)
+
+    // all ensure decorators assert that state process is not dead
+    @ensure3
+    def put(s of T, key, value) =
+        // sending tuple to process
+        // #put is symbol specifiing type of action
+        pid(s) ! (#put, key, value)
+        // returning itself
+        s
+
+    @ensure2
+    def at(s of T, key) =
+        // sending request
+        pid(s) ! (#at, self(), key)
+        // and receiving reply
+        receive (#at, val) = val
+
+    @ensure1
+    def &(s of T) =
+        pid(s) ! (#get, self())
+        receive (#get, val) = val
+
+    @ensure2
+    def := (s of T, val) =
+        pid(s) ! (#set, val)
+        s
+
+    @ensure2
+    def del(s of T, el) =
+        pid(s) ! (#del, el)
+        s
+
+    @ensure2
+    def has(s of T, el) =
+        pid(s) ! (#has, self(), el)
+        receive (#has, val) = val
+
+    @ensure1
+    def arza:len (s of T) =
+        pid(s) ! (#len, self())
+        receive (#len, val) = val
+
+    @ensure2
+    def ==(s of T, data) = &s == data
+
+    @ensure1
+    def arza:is_empty(s of T) = len(s) > 0
+
+
+// this is actual process
+fun _loop(data) =
+    // this block will receive messages from other processes
+    receive
+        | (#set, new_data) =
+            // just replace data
+            _loop(new_data)
+
+        | (#get, pid) =
+            // receiving action with receiver
+            // replying to receiver
+            pid ! (#get, data)
+            // going to loop again because otherwise process will be finished
+            _loop(data)
+
+        | (#at, pid, key) =
+            pid ! (#at, data.[key])
+            _loop(data)
+
+        | (#has, pid, key) =
+            // calling has generic func  as has operator
+            pid ! (#has, data `has` key)
+            _loop(data)
+
+        | (#len, pid) =
+            pid ! (#len, len(data))
+            _loop(data)
+
+        | (#put, key, val) = _loop(data.{(key)=val})
+
+        | (#del, key) = _loop(del(data, key))
+        | msg = throw (#InvalidMessage, msg)
+
+//constructor function
+/*
+    you can use this module like
+    import state
+    let s = state:new({x=1, y=2, z=3})
+    updates state structure
+    s.{x=2}
+    replaces state value
+    s:=1
+*/
+fun new(data) =
+    let pid = spawn(_loop, data)
+    State(pid)

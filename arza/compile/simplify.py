@@ -15,26 +15,42 @@ def simplify_error(compiler, code, node, message):
 
 def simplify_type(compiler, code, node):
     name_node = node_first(node)
-    fields = node_second(node)
-    construct = node_third(node)
+    supertype = node_second(node)
+    fields = node_third(node)
+    construct = node_fourth(node)
 
     name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
-    if is_empty_node(fields):
-        fields_2_arg = nodes.create_empty_list_node(nodes.node_token(node))
+    if is_empty_node(supertype):
+        supertype_2_arg = _get_default_supertype(nodes.node_token(node), fields)
     else:
-        fields_2_arg = fields
+        supertype_2_arg = supertype
+
+    if is_empty_node(fields):
+        fields_3_arg = nodes.create_empty_list_node(nodes.node_token(node))
+    else:
+        fields_3_arg = fields
 
     if is_empty_node(construct):
-        construct_3_arg = nodes.create_unit_node(nodes.node_token(node))
+        construct_4_arg = nodes.create_unit_node(nodes.node_token(node))
     else:
-        construct_3_arg = construct
+        construct_4_arg = construct
 
-    return _generate_type_call(nodes.node_token(node), name_node, name_1_arg, fields_2_arg, construct_3_arg)
+    return _generate_type_call(nodes.node_token(node), name_node, name_1_arg, supertype_2_arg, fields_3_arg,
+                               construct_4_arg)
 
 
-def _generate_type_call(token, name_node, name_1_arg, fields_2_arg, construct_3_arg):
+def _get_default_supertype(token, fields):
+    if is_empty_node(fields):
+        name = lang_names.TABSTRACT
+    else:
+        name = lang_names.TRECORD
+
+    return nodes.create_name_node_s(token, name)
+
+
+def _generate_type_call(token, name_node, name_1_arg, supertype_2_arg, fields_3_arg, construct_4_arg):
     call_node = nodes.create_call_node_s(token, lang_names.TYPE,
-                                         [name_1_arg, fields_2_arg, construct_3_arg])
+                                         [name_1_arg, supertype_2_arg, fields_3_arg, construct_4_arg])
     assign_node = nodes.create_assign_node(token, name_node, call_node)
     return assign_node
 
@@ -68,7 +84,13 @@ def simplify_cons(compiler, code, node):
 def simplify_as(compiler, code, node):
     source = node_first(node)
     interfaces = node_second(node)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [interfaces, source])
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [source, interfaces])
+
+
+def simplify_of(compiler, code, node):
+    source = node_first(node)
+    _type = node_second(node)
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.KINDOF, [source, _type])
 
 
 def simplify_describe(compiler, code, node):
@@ -101,7 +123,7 @@ def _replace_name(node, level, names):
     return node
 
 
-def simplify_def_plus(compiler, code, node):
+def simplify_override(compiler, code, node):
     super_name = nodes.node_first(node)
     def_method = nodes.node_second(node)
     func, signature, method, ast, outers_list = _simplify_def(compiler, code, def_method)
@@ -162,6 +184,14 @@ def _simplify_def(compiler, code, node):
     else:
         outers_list = nodes.create_empty_list_node(nodes.node_token(pattern))
 
+    # sig = []
+    # _any = nodes.create_name_node_s(nodes.node_token(node), lang_names.TANY)
+    # for arg in signature:
+    #     if space.isvoid(arg):
+    #         sig.append(_any)
+    #     else:
+    #         sig.append(arg)
+
     ast = nodes.create_literal_node(nodes.node_token(pattern), pattern)
     return func, signature, method, ast, outers_list
 
@@ -210,7 +240,7 @@ def simplify_lense(compiler, code, node):
     transforms
     $(d.s1.s2)
     into
-    arza:lang:lense(d, (source) -> source.s1.s2, (value, source) -> source.{s1.s2 = value})
+    arza:lense(d, (source) -> source.s1.s2, (value, source) -> source.{s1.s2 = value})
     """
 
     source = node_first(node)
@@ -369,7 +399,7 @@ def _transform_modify(compiler, node, funcs, source, modifications):
         func = _choose_modify_func(ntype, funcs)
         return _transform_modify(compiler, node,
                                  funcs,
-                                 nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
+                                 nodes.create_call_node_3(nodes.node_token(node), func, source, new_key, new_value),
                                  tail)
     # else:
     #     # ensure symbol
@@ -381,7 +411,7 @@ def _transform_modify(compiler, node, funcs, source, modifications):
     func = _choose_modify_func(ntype, funcs)
     return _transform_modify(compiler, node,
                              funcs,
-                             nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+                             nodes.create_call_node_3(nodes.node_token(node), func, source, key, value),
                              tail)
 
 
@@ -425,8 +455,8 @@ def simplify_decorator(compiler, code, node):
         return _decorate_fun(decorated, decorators)
     elif ntype == nt.NT_DEF:
         return _decorate_def(decorated, decorators)
-    elif ntype == nt.NT_DEF_PLUS:
-        return _decorate_def_plus(decorated, decorators)
+    elif ntype == nt.NT_OVERRIDE:
+        return _decorate_override(decorated, decorators)
     elif ntype == nt.NT_TYPE:
         return _decorate_type(decorated, decorators)
     else:
@@ -435,8 +465,12 @@ def simplify_decorator(compiler, code, node):
 
 def _decorate_type(subj, decorators):
     name_node = nodes.node_first(subj)
-    fields = nodes.node_second(subj)
-    init = nodes.node_third(subj)
+    supertype = nodes.node_second(subj)
+    fields = nodes.node_third(subj)
+    init = nodes.node_fourth(subj)
+
+    if is_empty_node(supertype):
+        supertype = _get_default_supertype(nodes.node_token(subj), fields)
 
     if is_empty_node(fields):
         fields = nodes.create_empty_list_node(nodes.node_token(subj))
@@ -445,7 +479,7 @@ def _decorate_type(subj, decorators):
         init = nodes.create_unit_node(nodes.node_token(subj))
 
     token = node_token(subj)
-    dec_arg = nodes.create_tuple_node(token, [fields, init])
+    dec_arg = nodes.create_tuple_node(token, [supertype, fields, init])
 
     decorator_call = _make_decorator_call_chain(dec_arg, decorators)
     temp_name = nodes.create_random_type_decorator_name(token)
@@ -454,9 +488,10 @@ def _decorate_type(subj, decorators):
     assign = nodes.create_assign_node(token, temp_name, checked_call)
 
     name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
-    fields_2_arg = nodes.create_lookup_index_node(token, temp_name, 0)
-    construct_3_arg = nodes.create_lookup_index_node(token, temp_name, 1)
-    type_call = _generate_type_call(token, name_node, name_1_arg, fields_2_arg, construct_3_arg)
+    supertype_2_arg = nodes.create_lookup_index_node(token, temp_name, 0)
+    fields_3_arg = nodes.create_lookup_index_node(token, temp_name, 1)
+    construct_4_arg = nodes.create_lookup_index_node(token, temp_name, 2)
+    type_call = _generate_type_call(token, name_node, name_1_arg, supertype_2_arg, fields_3_arg, construct_4_arg)
     return list_node([assign, type_call])
 
 
@@ -469,12 +504,12 @@ def _decorate_def(subj, decorators):
     return nodes.node_4(nt.NT_DEF, node_token(subj), func, signature, decorator_call, pattern)
 
 
-def _decorate_def_plus(decorated, decorators):
+def _decorate_override(decorated, decorators):
     super_name = node_first(decorated)
     subj = node_second(decorated)
 
     method = _decorate_def(subj, decorators)
-    return nodes.node_2(nt.NT_DEF_PLUS, node_token(decorated), super_name, method)
+    return nodes.node_2(nt.NT_OVERRIDE, node_token(decorated), super_name, method)
 
 
 def _decorate_fun(subj, decorators):

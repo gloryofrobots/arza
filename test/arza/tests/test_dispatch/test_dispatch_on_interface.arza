@@ -3,13 +3,13 @@ import affirm
 type Val(val)
 
 interface Pos =
-    fun pos(Pos)
+    pos(Pos)
 
 interface Neg =
-    fun neg(Neg)
+    neg(Neg)
 
 interface Abs is (Pos, Neg) =
-    fun abs(Abs)
+    abs(Abs)
 
 def neg(v of Val) = -v.val
 def pos(v of Val) = v.val
@@ -34,9 +34,9 @@ fun test() =
     let
         v1 = Val(-1)
     in
-        affirm:is_true(Val `is_implemented` Abs)
-        affirm:is_true(Val `is_implemented` Pos)
-        affirm:is_true(Val `is_implemented` Neg)
+        affirm:is_true(Val `isimplemented` Abs)
+        affirm:is_true(Val `isimplemented` Pos)
+        affirm:is_true(Val `isimplemented` Neg)
         affirm:is_equal(abs(v1), 1)
         affirm:is_equal(1 + v1, 2)
         affirm:is_equal(v1 + 1, 102)

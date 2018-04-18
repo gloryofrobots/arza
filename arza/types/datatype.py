@@ -9,6 +9,7 @@ class W_Record(W_Hashable):
         W_Hashable.__init__(self)
         self.values = values
         self.type = type
+        self.current_type = type
 
     def _call_(self, process, args):
         new_args = space.newtuple([self, args])
@@ -34,8 +35,24 @@ class W_Record(W_Hashable):
 
         return "<record: %s (%s)>" % (api.to_r(self.type), ", ".join(res))
 
+    def _cast_(self, process, _type):
+        if api.equal_b(self.type, _type):
+            # do not return self because current_type may be downcasted
+            return W_Record(self.type, self.values)
+
+        supertype = self.type.supertype
+        while space.isdatatype(supertype):
+            if api.equal_b(supertype, _type):
+                rec = W_Record(self.type, self.values)
+                rec.current_type = _type
+                return rec
+
+            supertype = supertype.supertype
+
+        return error.throw_3(error.Errors.TYPE_ERROR, space.newstring(u"Invalid cast operation"), self.type, _type)
+
     def _type_(self, process):
-        return self.type
+        return self.current_type
 
     def _at_(self, name):
         if space.isint(name):
@@ -104,15 +121,29 @@ def descriptors(fields):
 
 
 class W_BaseDatatype(W_Hashable):
-    def __init__(self, name, interfaces):
+    def __init__(self, name, supertype, interfaces):
         W_Hashable.__init__(self)
         # list of all known interfaces
         self.interfaces = space.newlist([])
         # 'is_implemented' lookup cache
         self.interfaces_table = space.newassocarray()
         self.name = name
+        self.supertype = supertype
         for interface in interfaces:
             self.register_interface(interface)
+
+    def is_subtype_of(self, _type):
+        if api.equal_b(self, _type):
+            return True
+
+        supertype = self.supertype
+        while space.isdatatype(supertype):
+            if api.equal_b(supertype, _type):
+                return True
+
+            supertype = supertype.supertype
+
+        return False
 
     def _register_interface(self, iface):
         if self._has_interface(iface):
@@ -132,28 +163,22 @@ class W_BaseDatatype(W_Hashable):
         return plist.contains(self.interfaces, iface)
 
     def is_interface_implemented(self, iface):
-        old = api.lookup(self.interfaces_table, iface, space.newvoid())
-        if space.isvoid(old):
-            status = self._can_implement(iface)
-            api.put(self.interfaces_table, iface, space.newbool(status))
-            if status:
-                self.register_interface(iface)
-            return status
-        else:
-            return api.to_b(old)
+        _type = self
+        while space.isdatatype(_type):
+            old = api.lookup(_type.interfaces_table, iface, space.newvoid())
+            if not space.isvoid(old):
+                return api.to_b(old)
+            else:
+                status = _can_implement(_type, iface)
+                api.put(self.interfaces_table, iface, space.newbool(status))
+                if status:
+                    self.register_interface(iface)
+                    return status
 
-    def _can_implement(self, interface):
-        if interface.count_generics() == 0:
-            return False
+            _type = _type.supertype
 
-        interfaces = space.newlist([])
-        for r in interface.generics:
-            generic = api.first(r)
-            position = api.second(r)
-            idx = api.to_i(position)
-            if not generic.is_implemented_for_type(self, interfaces, idx, True):
-                return False
-        return True
+        api.put(self.interfaces_table, iface, space.newbool(False))
+        return False
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
@@ -162,37 +187,40 @@ class W_BaseDatatype(W_Hashable):
         return other is self
 
 
-class W_NativeDatatype(W_BaseDatatype):
-    def __init__(self, name):
-        W_BaseDatatype.__init__(self, name, plist.empty())
+def _can_implement(_type, interface):
+    if interface.count_generics() == 0:
+        return False
+
+    interfaces = space.newlist([])
+    for r in interface.generics:
+        generic = api.first(r)
+        position = api.second(r)
+        idx = api.to_i(position)
+        if not generic.is_implemented_for_type(_type, interfaces, idx, True):
+            return False
+    return True
+
+
+class W_AbstractType(W_BaseDatatype):
+    def __init__(self, name, supertype):
+        W_BaseDatatype.__init__(self, name, supertype, plist.empty())
+
+    def _dispatch_(self, process):
+        return self
 
     def _type_(self, process):
         return process.std.types.Datatype
 
     def _to_string_(self):
-        return "<datatype %s>" % (api.to_s(self.name))
-
-    def _to_repr_(self):
-        return self._to_string_()
-
-
-class W_SingletonType(W_BaseDatatype):
-    def __init__(self, name):
-        W_BaseDatatype.__init__(self, name, plist.empty())
-
-    def _type_(self, process):
-        return process.std.types.Datatype
-
-    def _to_string_(self):
-        return "<SingletonDatatype %s>" % (api.to_s(self.name))
+        return "<abstract type %s>" % (api.to_s(self.name))
 
     def _to_repr_(self):
         return api.to_s(self.name)
 
 
-class W_RecordType(W_BaseDatatype):
-    def __init__(self, name, fields, initializer):
-        W_BaseDatatype.__init__(self, name, plist.empty())
+class W_ConcreteType(W_BaseDatatype):
+    def __init__(self, name, supertype, fields, initializer):
+        W_BaseDatatype.__init__(self, name, supertype, plist.empty())
         self.fields = fields
         self.arity = api.length_i(self.fields)
         self.descriptors = descriptors(self.fields)
@@ -254,12 +282,17 @@ class W_RecordType(W_BaseDatatype):
 
 
 def get_fields(t):
-    error.affirm_type(t, space.isrecordtype)
+    error.affirm_type(t, space.isconcretetype)
     return t.fields
 
 
+def get_supertype(t):
+    error.affirm_type(t, space.isdatatype)
+    return t.supertype
+
+
 def get_init(t):
-    error.affirm_type(t, space.isrecordtype)
+    error.affirm_type(t, space.isconcretetype)
     if t.initializer is None:
         return space.newunit()
 
@@ -267,7 +300,7 @@ def get_init(t):
 
 
 def has_init(t):
-    error.affirm_type(t, space.isrecordtype)
+    error.affirm_type(t, space.isconcretetype)
     return t.initializer is not None
 
 
@@ -323,10 +356,6 @@ def _derive(process, t, interfaces, strictmode):
         # derive according to future interfaces
         new_interfaces = plist.remove(interfaces, interface)
         maybe_interfaces = plist.concat(new_interfaces, old_interfaces)
-        # remove Any
-        maybe_interfaces = plist.remove(maybe_interfaces, process.std.interfaces.Any)
-        # api.d.pbp(bp, "M", maybe_interfaces)
-        # maybe_interfaces = new_interfaces
 
         error.affirm_type(interface, space.isinterface)
         for r in interface.generics:
@@ -350,16 +379,27 @@ def _derive(process, t, interfaces, strictmode):
         t.register_interface(interface)
 
 
-def newnativedatatype(name):
-    return W_NativeDatatype(name)
+def newabstractdatatype(name, supertype):
+    return W_AbstractType(name, supertype)
 
 
-def newtype(process, name, fields, initializer):
+def newrecordtype(name, supertype, fields):
+    if space.isconcretetype(supertype):
+        fields = plist.concat(supertype.fields, fields)
+
+    return W_ConcreteType(name, supertype, fields, None)
+
+
+def newtype(process, name, supertype, fields, initializer):
     real_fields = []
+    if space.isconcretetype(supertype):
+        for f in supertype.fields:
+            real_fields.append(f)
+
     for f in fields:
         if space.issymbol(f):
             real_fields.append(f)
-        elif space.isrecordtype(f):
+        elif space.isconcretetype(f):
             for mf in f.fields:
                 real_fields.append(mf)
         else:
@@ -372,8 +412,13 @@ def newtype(process, name, fields, initializer):
     fields = space.newlist(real_fields)
 
     if plist.is_empty(fields):
-        _type = W_SingletonType(name)
-        _iface = process.std.interfaces.Singleton
+        if not space.isabstracttype(supertype):
+            error.throw_2(
+                error.Errors.COMPILE_ERROR,
+                space.newstring(u"Supertype must be abstract"),
+                supertype,
+            )
+        _type = W_AbstractType(name, supertype)
     else:
         if not plist.is_hetero(fields):
             error.throw_2(
@@ -384,12 +429,7 @@ def newtype(process, name, fields, initializer):
 
         if space.isunit(initializer):
             initializer = None
-        _type = W_RecordType(name, fields, initializer)
-
-        _iface = process.std.interfaces.Instance
-
-    _type.register_interface(process.std.interfaces.Any)
-    _type.register_interface(_iface)
+        _type = W_ConcreteType(name, supertype, fields, initializer)
 
     if process.std.initialized:
         derived = process.std.interfaces.get_derived(_type)

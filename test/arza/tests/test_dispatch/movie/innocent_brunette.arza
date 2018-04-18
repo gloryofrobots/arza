@@ -21,22 +21,18 @@ def behavior:kickass(movie, m of actors:BugEyedMonster, b of actors:InnocentBrun
 
 
 def behavior:run_away(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster)
-                                                when actors:can_escape_from(b, m)
-                                                and pretty_enough(b) =
-     behavior:scream(movie, b)
+    | (movie, b, m)  when actors:can_escape_from(b, m) and pretty_enough(b) =
+        behavior:scream(movie, b)
+    | (movie, b, m) =
+        behavior:scream(movie, b) |>
+        behavior:kickass(_, m, b)
 
 
-def behavior:run_away(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster) =
-    behavior:scream(movie, b) |>
-    behavior:kickass(_, m, b)
+def behavior:scream(movie, b of actors:InnocentBrunette)
+    | (movie, b) when actors:loud_enough(b) =
+        behavior:interact(movie, b, #SCREAM)
+    | (movie, b) = behavior:interact(movie, b, #SCARED)
 
-
-def behavior:scream(movie, b of actors:InnocentBrunette) when actors:loud_enough(b) =
-    behavior:interact(movie, b, #SCREAM)
-
-
-def behavior:scream(movie, b of actors:InnocentBrunette) =
-    behavior:interact(movie, b, #SCARED)
 
 
 describe actors:InnocentBrunette as (behavior:ActionActor)

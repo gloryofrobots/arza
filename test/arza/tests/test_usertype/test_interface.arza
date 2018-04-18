@@ -7,32 +7,54 @@ type T2(v1, v2, v3)
 type T3(v1)
 
 interface Listable(I) =
-    fun to_list(I)
+    to_list(I)
 
 trait(T) for [T1, T2] =
     //Seq iface
-    def first(self of T) = first(to_list(self))
-    def rest(self of T) = rest(to_list(self))
+    def first(this of T) = first(to_list(this))
+    def rest(this of T) = rest(to_list(this))
 
     //not enough for Slice
-    def drop(count, self of T) = seq:drop(count, to_list(self))
-    def take(count, self of T) = seq:take(count, to_list(self))
+    def drop(this of T, count) = seq:drop(to_list(this), count)
+    def take(this of T, count) = seq:take(to_list(this), count)
 
 
-def to_list(self of T1) = [self.v1, self.v2]
+def to_list(this of T1) = [this.v1, this.v2]
 
 trait(T) for T2 =
-    def to_list(self of T) = [self.v1, self.v2]
-    def slice(_from, _to, self of T) = slice(_from, _to, to_list(self))
+    def to_list(this of T) = [this.v1, this.v2]
+    def slice(this of T, _from, _to) = slice(to_list(this), _from, _to)
 
 describe (T1, T2) as (Listable, Seq)
 describe T2 as Slice
 
+////////////////////////////////////////////////////////////////////////////////////////
+
+interface E =
+    e(E, E)
+
+type X(x)
+
+def e(x of X, y of Int) = x.x + y
+def e(x of X, y of X) = x.x + y.x
+
+fun test_multiple_args() =
+    let
+        x1 = X(1)
+        x2 = X(2)
+    affirm:is_true(isimplemented(X, E))
+    affirm:is_equal(e(x1, 1), 2)
+    affirm:is_equal(e(x1, x2), 3)
+
+////////////////////////////////////////////////////////////////////////////////////////
+
 fun test () =
+    test_multiple_args()
+
     let
         t1 = T1(11, 23)
         t2 = T2(
-                fst(take(1, t1)),
+                fst(take(t1, 1)),
                 23,
                 45
              )
@@ -44,7 +66,7 @@ fun test () =
 
         ///////////////////////////////////////////
 
-        affirm:is_equal(take(2, t1), take(2, t2))
+        affirm:is_equal(take(t1, 2), take(t2, 2))
         affirm:is_equal(first(t1), first(t2))
 
         affirm:is_equal(first(rest(t1)), first(rest(t2)))
