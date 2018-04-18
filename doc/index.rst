@@ -6,6 +6,9 @@
 Welcome to arza's documentation!
 ================================
 
+Source code on `GitHub
+<https://github.com/gloryofrobots/arza/>`_
+
 Contents:
 
 .. toctree::

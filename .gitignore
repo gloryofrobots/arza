@@ -1,9 +1,4 @@
-.cproject
-CMakeFiles/*
 .project
-CMakeCache.txt
-cmake_install.cmake
-Makefile
 .idea
 .idea/
 node_modules

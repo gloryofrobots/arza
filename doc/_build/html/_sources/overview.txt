@@ -7,6 +7,10 @@ It can be described like Erlang with a lot of syntactic sugar and some new ideas
 Currently it exists only as a prototype written in Python.
 I am considering either to add RPython jit generation or to rewrite full interpreter in C.
 
+Source code on `GitHub
+<https://github.com/gloryofrobots/arza/>`_
+
+
 
 Most prominent features of arza
 -------------------------------
@@ -65,6 +69,5 @@ Examples
 Examples and tests could be found in :code:`ROOTDIR/test/arza` folder.
 
 Entry point for test suite is :code:`ROOTDIR/test/arza/main.arza`
-
 
 
