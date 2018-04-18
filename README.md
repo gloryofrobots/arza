@@ -3,13 +3,13 @@
 Arza is an experimental programming language supporting multiple dispatch and immutable data out of the box.
 This is a prototype built in relatively 'slow' language python and is not ready for productin in any way.
 
-## Running
+## To run 
 ```
 python targetarza.py test/arza/main.arza
 ```
 or better use pypy
 
-Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
+Currently, compilation via RPython toolchain not supported but it can be done with some effort.
 There are no working REPL at the moment
 
 ## Features
@@ -26,7 +26,7 @@ There are no working REPL at the moment
 * Tools for code reuse - traits and type mixins
 * Special syntax and custom operator for partial application
 * Stackless virtual machine
-* Asymmetric coroutines
+* Asymmetric and symetric coroutines
 
 ## TODO
 
