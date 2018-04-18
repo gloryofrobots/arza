@@ -65,7 +65,7 @@ How to run
 Examples
 --------
 
-Examples and tests could be found in :code:`ROOTDIR/test/arza` folder.
+Examples and tests are in :code:`ROOTDIR/test/arza` folder.
 
 Entry point for test suite is :code:`ROOTDIR/test/arza/main.arza`
 

@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'arza'
+project = u'Arza'
 copyright = u'2018, gloryofrobots'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -199,7 +199,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'arza.tex', u'arza Documentation',
+  ('index', 'arza.tex', u'Arza Documentation',
    u'gloryofrobots', 'manual'),
 ]
 
@@ -229,7 +229,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'arza', u'arza Documentation',
+    ('index', 'Arza', u'Arza Documentation',
      [u'gloryofrobots'], 1)
 ]
 
@@ -243,8 +243,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'arza', u'arza Documentation',
-   u'gloryofrobots', 'arza', 'One line description of project.',
+  ('index', 'Arza', u'Arza Documentation',
+   u'gloryofrobots', 'Arza', 'One line description of project.',
    'Miscellaneous'),
 ]
 

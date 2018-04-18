@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to arza's documentation!
+Welcome to Arza's documentation!
 ================================
 
 Source code on `GitHub
