@@ -8,7 +8,7 @@ Current interpreter is implemented in Python (without RPython)
 
 There is no REPL at the moment.
 
-Detailed [documentation](arza.readthedocs.io)
+Detailed [documentation](https://arza.readthedocs.io)
 
 ## To run tests
 ```
