@@ -277,7 +277,7 @@ class DefPatternParser(PatternParser):
         prefix(self, TT_OF, None, prefix_def_of)
 
 
-def def_plus_super_parser_init(parser):
+def override_super_parser_init(parser):
     literal(parser, TT_NAME, NT_NAME)
     literal(parser, TT_WILDCARD, NT_WILDCARD)
     return parser
@@ -291,14 +291,14 @@ class DefParser(BaseParser):
         self.fun_pattern_parser = DefPatternParser()
         self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
-        self.def_plus_super_parser = def_plus_super_parser_init(BaseParser())
+        self.override_super_parser = override_super_parser_init(BaseParser())
 
         self.add_subparsers([
             self.expression_parser,
             self.fun_pattern_parser,
             self.guard_parser,
             self.name_parser,
-            self.def_plus_super_parser
+            self.override_super_parser
         ])
 
 
@@ -316,7 +316,7 @@ class TraitParser(BaseParser):
 
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
-        prefix(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
+        prefix(self, TT_OVERRIDE, None, stmt_override, layout=layout_def)
         prefix(self, TT_INSTANCE, None, prefix_instance)
         # infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
@@ -474,7 +474,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
         stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
-        stmt(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
+        stmt(self, TT_OVERRIDE, None, stmt_override, layout=layout_def)
         stmt(self, TT_IMPORT, None, stmt_import)
         stmt(self, TT_INCLUDE, None, stmt_include)
         stmt(self, TT_EXPORT, None, stmt_export)

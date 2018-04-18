@@ -50,7 +50,7 @@ Example
     def add(x of Int, y of Int) = x + y
 
     @add1(10)
-    def+(super) sub(x of Int, y of Int) =  super(x, y) + super(x, y)
+    override (super) sub(x of Int, y of Int) =  super(x, y) + super(x, y)
 
     // decorators can be used in traits also
     trait Add(T) for Float =
@@ -59,7 +59,7 @@ Example
         def add(x of T, y of T) = x + y
 
         @add2(0.001, 0.0001)
-        def+ (super) add(x of T, y of T) = super(x, y) * -1
+        override (super) add(x of T, y of T) = super(x, y) * -1
 
     // lets test our new functions
     affirm:is_equal_all(f(1,2), add(1,2), 13.3)
@@ -82,7 +82,7 @@ This tuple will consist of supertype, fields as list of symbols and initialisati
     // this decorator will add field #y
     let add_y = add_field(_, #y)
 
-    // this decorator will init specific field with value after initialisation 
+    // this decorator will init specific field with value after initialisation
     fun init_field((supertype, fields, _init), field, value) =
         let
             fun _wrap(...args) =

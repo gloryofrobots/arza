@@ -123,7 +123,7 @@ instance TStorageWithItems(Dictionary, StorageKey)
 instance TStorageWithItems(Array, Int)
 
 //redefine array size to avoid list
-def+(prev) size(a of Array) =
+override (prev) size(a of Array) =
     a.size
 
 type InvalidKeyError is Error
@@ -131,10 +131,10 @@ type InvalidKeyError is Error
 // redefine set function for Array
 // to avoid index out of range problems
 // prev is previous method
-// def+ expression do not adds this method to specific signature set(Array, Int)
+// override expression do not adds this method to specific signature set(Array, Int)
 // but replaces it completely
 // so only indexes > 0 and < size will be accepted
-def+(prev) set(arr of Array, i of Int, val)
+override (prev) set(arr of Array, i of Int, val)
     | ({size}, i, val) when i >= 0 and i < size = prev(arr, i, val)
     | (_, i, _) = throw InvalidKeyError(i)
 

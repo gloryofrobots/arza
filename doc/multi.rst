@@ -82,7 +82,7 @@ Interfaces in Arza perform two important functions
   If custom type used as first argument in :code:`first` and :code:`rest` generics,
   it can be destructured by :code:`x::xs and [x, x1, ...xs]` patterns.
 
-  Because in prelude  there is interface 
+  Because in prelude  there is interface
 
   ::
 
@@ -91,7 +91,7 @@ Interfaces in Arza perform two important functions
         rest(Seq)
 
   Compiler just perform this check :code:`arza:is_implemented(customtype, Seq) == True`
-  
+
   Also consider complex program with a lot of multimethods. In some point you may want to ensure that specific
   generics implemented for specifice types
 
@@ -169,7 +169,7 @@ Method definition can be simple function and two level functions but not case fu
 Also method definition can have guards
 
 ::
-   
+
     interface Racer(R) =
         race_winner(v1 of R, v2 of R)
 
@@ -192,12 +192,12 @@ Also method definition can have guards
 
 Sometimes there is a need to override existing method
 
-To do so use :code:`def+` expression
+To do so use :code:`override` expression
 
 
 ::
 
-   interface F =
+    interface F =
         f1(F)
 
     def f1(i of Int)
@@ -205,24 +205,23 @@ To do so use :code:`def+` expression
         | i = i
 
     // overriding
-    // expression (_) after def+ means that we do not need previous method
-    def+(_) f1(i of Int) = 21
+    // expression (_) after override means that we do not need previous method
+    override(_) f1(i of Int) = 21
 
     // here we bind previous method to name super and call it in our new method
-    def+(super) f1(i of Int) = super(i) + 21
+    override(super) f1(i of Int) = super(i) + 21
 
     // this can be done indefinitely
-    def+(super) f1(i of Int) = super(i) + 42
+    override(super) f1(i of Int) = super(i) + 42
 
 
     type Val(val)
 
     // defining builtin operator +
-    // here whitespace between def and + is significant
-    def + (v1 of Val, v2 of Val) = v1.val + v2.val
+    override + (v1 of Val, v2 of Val) = v1.val + v2.val
 
-    //redefining +. 
-    def+(super) + (v1 of Val, v2 of Val) = super(v1, v2) * 2
+    //redefining +
+    override (super) + (v1 of Val, v2 of Val) = super(v1, v2) * 2
 
     fun test() =
         affirm:is_equal(signatures(f1), [[Int]])

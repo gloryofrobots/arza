@@ -1079,8 +1079,8 @@ def _compile_GENERIC(compiler, code, node):
     _compile(compiler, code, generic)
 
 
-def _compile_DEF_PLUS(compiler, code, node):
-    simplified = simplify.simplify_def_plus(compiler, code, node)
+def _compile_OVERRIDE(compiler, code, node):
+    simplified = simplify.simplify_override(compiler, code, node)
     _compile(compiler, code, simplified)
 
 
@@ -1279,8 +1279,8 @@ def _compile_node(compiler, code, node):
         _compile_MODULE(compiler, code, node)
     elif NT_DEF == ntype:
         _compile_DEF(compiler, code, node)
-    elif NT_DEF_PLUS == ntype:
-        _compile_DEF_PLUS(compiler, code, node)
+    elif NT_OVERRIDE == ntype:
+        _compile_OVERRIDE(compiler, code, node)
     elif NT_INTERFACE == ntype:
         _compile_INTERFACE(compiler, code, node)
     elif NT_GENERIC == ntype:

@@ -997,7 +997,7 @@ def prefix_decorator(parser, op, token):
         args = list_node([])
 
     decorated = statement(parser)
-    check_node_types(parser, decorated, [NT_TYPE, NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
+    check_node_types(parser, decorated, [NT_TYPE, NT_FUN, NT_DEF, NT_OVERRIDE, NT_DECORATOR])
     # decorated = expect_expression_of_types(parser, 0, [NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
     # if parser.token_type in [TT_DEF, TT_FUN, TT_AT_SIGN]:
     #     name, funcs = _parse_named_function(parser.expression_parser, token)
@@ -1346,16 +1346,16 @@ def infix_def_of(parser, op, token, left):
 
 # DEFPLUS
 
-def _parse_defplus(parser, op, token, allow_non_determined=False):
+def _parse_override(parser, op, token, allow_non_determined=False):
     advance_expected(parser, TT_LPAREN)
-    super_name = expression(parser.def_parser.def_plus_super_parser, 0)
+    super_name = expression(parser.def_parser.override_super_parser, 0)
     advance_expected(parser, TT_RPAREN)
     method = _parse_def(parser, op, token, allow_non_determined)
-    return nodes.node_2(NT_DEF_PLUS, token, super_name, method)
+    return nodes.node_2(NT_OVERRIDE, token, super_name, method)
 
 
-def stmt_def_plus(parser, op, token):
-    return _parse_defplus(parser, op, token, False)
+def stmt_override(parser, op, token):
+    return _parse_override(parser, op, token, False)
 
 
 # INTERFACE
@@ -1479,8 +1479,8 @@ def _trait_for_ensure_tuple(node):
         return node
 
 
-def prefix_trait_def_plus(parser, op, token):
-    return _parse_defplus(parser, op, token, True)
+def prefix_trait_override(parser, op, token):
+    return _parse_override(parser, op, token, True)
 
 
 def prefix_trait_def(parser, op, token):

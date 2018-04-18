@@ -63,7 +63,7 @@ instance TOrder(Val2, Val2)
 instance TCmp(Val2, Val2)
 instance TMaxMin(Val2, Val2)
 
-def+(_) le(this of Val2, other of Val2) = this.v <= other.v
+override(_) le(this of Val2, other of Val2) = this.v <= other.v
 
 fun test () =
     let

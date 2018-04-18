@@ -123,7 +123,7 @@ def _replace_name(node, level, names):
     return node
 
 
-def simplify_def_plus(compiler, code, node):
+def simplify_override(compiler, code, node):
     super_name = nodes.node_first(node)
     def_method = nodes.node_second(node)
     func, signature, method, ast, outers_list = _simplify_def(compiler, code, def_method)
@@ -455,8 +455,8 @@ def simplify_decorator(compiler, code, node):
         return _decorate_fun(decorated, decorators)
     elif ntype == nt.NT_DEF:
         return _decorate_def(decorated, decorators)
-    elif ntype == nt.NT_DEF_PLUS:
-        return _decorate_def_plus(decorated, decorators)
+    elif ntype == nt.NT_OVERRIDE:
+        return _decorate_override(decorated, decorators)
     elif ntype == nt.NT_TYPE:
         return _decorate_type(decorated, decorators)
     else:
@@ -504,12 +504,12 @@ def _decorate_def(subj, decorators):
     return nodes.node_4(nt.NT_DEF, node_token(subj), func, signature, decorator_call, pattern)
 
 
-def _decorate_def_plus(decorated, decorators):
+def _decorate_override(decorated, decorators):
     super_name = node_first(decorated)
     subj = node_second(decorated)
 
     method = _decorate_def(subj, decorators)
-    return nodes.node_2(nt.NT_DEF_PLUS, node_token(decorated), super_name, method)
+    return nodes.node_2(nt.NT_OVERRIDE, node_token(decorated), super_name, method)
 
 
 def _decorate_fun(subj, decorators):

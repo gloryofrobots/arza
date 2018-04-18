@@ -27,3 +27,15 @@ fun main() =
 
 
 
+override (prev) set(arr of Array, i of Int, val)
+
+override
+def (prev) set(arr of Array, i of Int, val)
+def:(prev) set(arr of Array, i of Int, val)
+
+defoverride (prev) set(arr of Array, i of Int, val)
+defo (prev) set(arr of Array, i of Int, val)
+
+def+(prev) set(arr of Array, i of Int, val)
+    | ({size}, i, val) when i >= 0 and i < size = prev(arr, i, val)
+    | (_, i, _) = throw InvalidKeyError(i)
