@@ -1,9 +1,11 @@
 # Arza programming language
 
 Arza is a functional programming language supporting multiple dispatch, immutable data and actor model out of the box.
+
 Arza is in a prototype state of development. 
 Current interpreter is implemented in Python (without RPython)
 
+Detailed documentation here 
 
 ## To run 
 ```
@@ -35,5 +37,3 @@ There are no working REPL at the moment.
 * Special syntax for modifiing deeply nested immutable structures
 * Special support for creating links to parts of immutable structures aka lenses
 
-
-To learn more please read documentation
