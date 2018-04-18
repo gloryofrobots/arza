@@ -1,9 +1,12 @@
 # Arza programming language
 
-Arza is a functional programming language supporting multiple dispatch, immutable data and actor model out of the box.
+Arza is a functional programming language with multiple dispatch,
+immutable data structures and actor model out of the box.
 
 Arza is in a prototype state of development. 
 Current interpreter is implemented in Python (without RPython)
+
+There is no REPL at the moment.
 
 Detailed documentation here 
 
@@ -11,10 +14,8 @@ Detailed documentation here
 ```
 python targetarza.py test/arza/main.arza
 ```
-or better use pypy
 
-Currently, compilation via RPython toolchain is not supported but it can be done with some effort.
-There are no working REPL at the moment.
+or better use pypy
 
 ## Features
 
