@@ -19,7 +19,7 @@ or better use pypy
 
 ## Features
 
-* Laconic whitespace aware syntax inspired by F#, Python with posibility to write code in Lisp style
+* Laconic whitespace aware syntax inspired by F#, Python, Lisp
 * Immutable data structures (lists, tuples, maps)
 * Pattern matching
 * Lexical clojures and lambdas
@@ -32,7 +32,7 @@ or better use pypy
 * Traits as functions operating on types
 * Special syntax for partial application
 * Stackless virtual machine
-* Asymmetric and symetric coroutines
+* Asymmetric coroutines
 * Symmetric coroutines aka processes 
 * Decorators for functions, types and generic specialisations
 * Special syntax for modifiing deeply nested immutable structures
