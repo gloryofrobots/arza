@@ -14,7 +14,7 @@ I am considering either to add RPython jit generation or to rewrite full interpr
 Most prominent features of arza
 -------------------------------
 
-* Laconic whitespace aware syntax inspired by F#, Python with posibility to write code in Lisp style
+* Laconic whitespace aware syntax inspired by F#, Python, Lisp
 * Immutable data structures (lists, tuples, maps)
 * Pattern matching
 * Lexical clojures and lambdas
